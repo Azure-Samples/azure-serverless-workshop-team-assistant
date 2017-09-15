@@ -1,0 +1,105 @@
+[
+    {
+        "kind": "calendar#events",
+        "etag": "\"p32k9vse4muitc0g\"",
+        "summary": "azureserverlessdemo@gmail.com",
+        "updated": "2017-09-14T19:42:05.529Z",
+        "timeZone": "America/Los_Angeles",
+        "accessRole": "owner",
+        "defaultReminders": [
+            {
+                "method": "popup",
+                "minutes": 30
+            }
+        ],
+        "items": [
+            {
+                "kind": "calendar#event",
+                "etag": "\"3010835784790000\"",
+                "id": "783ka7ijdonf7jmeteorolhr1d",
+                "status": "confirmed",
+                "htmlLink": "https://www.google.com/calendar/event?eid=Nzgza2E3aWpkb25mN2ptZXRlb3JvbGhyMWQgYXp1cmVzZXJ2ZXJsZXNzZGVtb0Bt",
+                "created": "2017-09-14T19:38:12Z",
+                "updated": "2017-09-14T19:38:12.395Z",
+                "summary": "Busy",
+                "creator": "azureserverlessdemo@gmail.com",
+                "organizer": "azureserverlessdemo@gmail.com",
+                "start": "2017-09-15T16:30:00+00:00",
+                "end": "2017-09-15T18:30:00+00:00",
+                "iCalUID": "783ka7ijdonf7jmeteorolhr1d@google.com",
+                "sequence": 0,
+                "reminders": {
+                    "useDefault": true
+                },
+                "description": "",
+                "location": "",
+                "attendees": "",
+                "endTimeUnspecified": false
+            },
+            {
+                "kind": "calendar#event",
+                "etag": "\"3010835790684000\"",
+                "id": "1q62gsq6nj8c45fu9go2k1vd99",
+                "status": "confirmed",
+                "htmlLink": "https://www.google.com/calendar/event?eid=MXE2MmdzcTZuajhjNDVmdTlnbzJrMXZkOTkgYXp1cmVzZXJ2ZXJsZXNzZGVtb0Bt",
+                "created": "2017-09-14T19:38:15Z",
+                "updated": "2017-09-14T19:38:15.342Z",
+                "summary": "Busy",
+                "creator": "azureserverlessdemo@gmail.com",
+                "organizer": "azureserverlessdemo@gmail.com",
+                "start": "2017-09-15T18:30:00+00:00",
+                "end": "2017-09-15T21:30:00+00:00",
+                "iCalUID": "1q62gsq6nj8c45fu9go2k1vd99@google.com",
+                "sequence": 0,
+                "reminders": {
+                    "useDefault": true
+                },
+                "description": "",
+                "location": "",
+                "attendees": "",
+                "endTimeUnspecified": false
+            }
+        ]
+    },
+    {
+        "kind": "calendar#events",
+        "etag": "\"p320fjftlmuitc0g\"",
+        "summary": "Thiago Almeida",
+        "description": "Thiago Almeida's calendar",
+        "updated": "2017-09-14T19:41:33.264Z",
+        "timeZone": "America/Los_Angeles",
+        "accessRole": "owner",
+        "defaultReminders": [],
+        "items": [
+            {
+                "kind": "calendar#event",
+                "etag": "\"3010835814630000\"",
+                "id": "1r5b5g7239ah5e1ekenlksmf7a",
+                "status": "confirmed",
+                "htmlLink": "https://www.google.com/calendar/event?eid=MXI1YjVnNzIzOWFoNWUxZWtlbmxrc21mN2EgdWptcXZyNW91azhwOW5taWEybzRoNm8zM29AZw",
+                "created": "2017-09-14T19:38:20Z",
+                "updated": "2017-09-14T19:38:28.653Z",
+                "summary": "Busy",
+                "creator": "azureserverlessdemo@gmail.com",
+                "organizer": "ujmqvr5ouk8p9nmia2o4h6o33o@group.calendar.google.com",
+                "start": "2017-09-15T21:30:00+00:00",
+                "end": "2017-09-15T23:00:00+00:00",
+                "iCalUID": "1r5b5g7239ah5e1ekenlksmf7a@google.com",
+                "sequence": 0,
+                "reminders": {
+                    "useDefault": false,
+                    "overrides": [
+                        {
+                            "method": "popup",
+                            "minutes": 30
+                        }
+                    ]
+                },
+                "description": "",
+                "location": "",
+                "attendees": "",
+                "endTimeUnspecified": false
+            }
+        ]
+    }
+]
