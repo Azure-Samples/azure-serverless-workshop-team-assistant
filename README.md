@@ -10,6 +10,6 @@ Layout:
 4. Bot create GitHub issue - owner: Kanio
 5. Slack integration - owner: Chris
 6. Voting bot - owner: Thiago/Kanio
-7. Schedule bot - owner: Jeff
+7. [Schedule bot](7-scheduler-bot/README.md) - owner: Jeff
 8. Custom vision bot - owner: Donna
 9. Extra credit, Coder Cards - owner: Donna
