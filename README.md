@@ -1,57 +1,15 @@
-# Project Name
+## Related Links
 
-(short, 1-3 sentenced, description of the project)
+If not checking in - please update README with a link to your module.
 
-## Features
+Layout:
 
-This project framework provides the following features:
-
-* Feature 1
-* Feature 2
-* ...
-
-## Getting Started
-
-### Prerequisites
-
-(ideally very short, if any)
-
-- OS
-- Library version
-- ...
-
-### Installation
-
-(ideally very short)
-
-- npm install [package name]
-- mvn install
-- ...
-
-### Quickstart
-(Add steps to get up and running quickly)
-
-1. git clone [repository clone url]
-2. cd [respository name]
-3. ...
-
-
-## Demo
-
-A demo app is included to show how to use the project.
-
-To run the demo, follow these steps:
-
-(Add steps to start up the demo)
-
-1.
-2.
-3.
-
-## Resources
-
-(Any additional resources or related projects)
-
-- Link to supporting information
-- Link to similar sample
-- ...
+1. Setup, Introduction, and Install - owner: EVERYONE
+2. Hello world Function (ASCII ART) - owner: Chris
+3. Setup Squire Bot - owner: Chris
+4. Bot create GitHub issue - owner: Kanio
+5. Slack integration - owner: Chris
+6. Voting bot - owner: Thiago/Kanio
+7. Schedule bot - owner: Jeff
+8. Custom vision bot - owner: Donna
+9. Extra credit, Coder Cards - owner: Donna
