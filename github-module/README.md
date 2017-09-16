@@ -48,4 +48,40 @@ This project  provides the following features:
   
   ![Logic App Parameters](Content/Images/6-LogicAppBlankTemplate.png)
   
+  - In the Connector Search select Request / Response Connector
+  
+   ![Logic App Request](Content/Images/7-LogicAppRequest.png)
+   
+   - Press “Use sample payload to generate schema” button
+   
+   ![Logic App Request Body](Content/Images/8-LogicAppRequestBody.png)
+   
+   - And paste the following JSON
+   
+      ```javascript
+      {
+        "title": "My new issue",
+        "text": "My new issue description"
+      }
+      ```
+    
+    - The contron should look like the picture below. Next press Done 
+    
+   ![JSON object](Content/Images/9-LogicAppJsonObject.png)
+   
+    - The result will look like 
+   
+   ![JSON schema](Content/Images/10-JsonSchema.png)
+   
+    - Then press “New Step” button, select “Add an action” and select GitHub Connector with Action – “Create an issue”
+   
+   ![Github step](Content/Images/11-GitHub.png)
+   
+     - Next, please select Sign In and input your GitHub account credentials and fill the required data that will be used for creating the GitHub issue
+   
+    ![Github data](Content/Images/12-GitHubFields.png)
+   
+   
+   
+   
 
