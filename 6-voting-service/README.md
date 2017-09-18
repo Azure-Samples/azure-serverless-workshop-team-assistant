@@ -6,7 +6,7 @@
 
 In this part of the workshop we will create a voting service that allows a team to create polls to vote on, and then surface it from the Squire bot.  
 
-![Architecture](/Content/Images/Architecture.PNG)
+![Architecture](src/Content/Images/Architecture.PNG)
 
 We will be using Node.js, JSON documents, Cosmos DB, and Azure Functions to implement the service. 
 
@@ -148,7 +148,7 @@ Location | East US
 
 Here is an example:
 
-![Create Cosmos DB Account](/Content/Images/CosmosDB-1.PNG)
+![Create Cosmos DB Account](src/Content/Images/CosmosDB-1.PNG)
 
 > Note: this Cosmos DB account create step takes a few minutes to finish
 
@@ -164,11 +164,11 @@ Database | Use Existing, votingbot
 
  A partition key is a property (or path) within your documents that is used to distribute your data among the servers or partitions for scale.
 
-![Create database and collection in your Azure Cosmos DB account](/Content/Images/CosmosDB-2.PNG)
+![Create database and collection in your Azure Cosmos DB account](src/Content/Images/CosmosDB-2.PNG)
 
 4. Next we need to get the database connection string.You can find it under the section Keys in the left menu on the main screen for your Azure Cosmos DB account
 
-![Get Connection string for Azure Cosmos DB](/Content/Images/CosmosDB-3.PNG)
+![Get Connection string for Azure Cosmos DB](src/Content/Images/CosmosDB-3.PNG)
 
 Copy the value of the Primary Connection String and save it. Soon we will add it to the local settings file in Visual Studio Code. 
 
@@ -311,7 +311,7 @@ Now we are ready to test the function. In this function we create the voting ses
 
 One option is to use Postman on that URL, with the content of a Voting Session without the ids. As a result, if it's successful, we will get the document we created in Azure Cosmos DB with the ids:
 
-![Postman testing](/Content/Images/CreateVoting-Postman.PNG)
+![Postman testing](src/Content/Images/CreateVoting-Postman.PNG)
 
 You can also debug the function - once the function is running, in Visual Studio Code, in the Debug view, select Attach to Azure Functions. You can attach breakpoints, inspect variables, and step through code. Try it out!
 
@@ -420,7 +420,7 @@ module.exports = function (context, req) {
 
 Let's run and test the function in the same way we did in Create Voting function. You will notice that the URL for this function is at http://localhost:7071/api/CloseVotingNode and you can test it as follows:
 
-![Postman testing](/Content/Images/CloseVoting-Postman.PNG)
+![Postman testing](src/Content/Images/CloseVoting-Postman.PNG)
 
 ### 3.4.  Serverless Function - Vote on a Voting Session
 
@@ -559,9 +559,14 @@ module.exports = function (context, req) {
     context.done();
 };
 ```
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+NEEDS UPDATING TO REMOVE VOTE FROM OTHER OPTIONS IF USER HAD VOTED ALREADY
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 Run and test it similarly to the previous two functions. You should get the new document back. For example:
-![Postman testing](/Content/Images/Vote-Postman.PNG)
+![Postman testing](src/Content/Images/Vote-Postman.PNG)
 
 ### 3.5.  Serverless Function - Voting Session Status 
 
@@ -637,7 +642,7 @@ module.exports = function (context, req) {
 ```
 
 Run and test it similarly to the previous functions. For example:
-![Postman testing](/Content/Images/VotingStatus-Postman.PNG)
+![Postman testing](src/Content/Images/VotingStatus-Postman.PNG)
 
 ### 3.6.  Serverless Function - Delete Voting Session 
 
@@ -773,7 +778,7 @@ func run all
 ```
 
 Run and test it similarly to the previous functions. For example:
-![Postman testing](/Content/Images/DeleteVoting-Postman.PNG)
+![Postman testing](src/Content/Images/DeleteVoting-Postman.PNG)
 
 ## 4. Azure Configuration
 
