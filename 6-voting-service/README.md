@@ -1,6 +1,6 @@
 # Voting Service
 
-## A voting service based on Node.js and Azure Functions 
+## Create a serverless service using Node.js and Azure Functions 
 
 ## 1. Overview
 
@@ -12,9 +12,9 @@ We will be using Node.js, JSON documents, Cosmos DB, and Azure Functions to impl
 
 ### 1.1 Voting Session Document 
 
-The Voting Session document will keep all the information about the voting session, including the question, avaialable options, and the votes. Here is an example JSON document for a Voting session after it's been filled out:
+The Voting Session document will keep all the information about the voting session, including the question, avaialable options, and the votes. Here is an example JSON document for a Voting session after it's been filled out with a few votes:
 
-```JSON
+```javascript
 {
     "votingname": "pizzavote",
     "name": "Pizza Voting",
@@ -24,18 +24,18 @@ The Voting Session document will keep all the information about the voting sessi
         {
             "text": "Pepperoni",
             "votes": 3,
-            "voters": ["thiago", "bella", "karla"]
+            "voters": ["Thiago", "Jeff", "Raman"]
 
         },
         {
             "text": "Mushrooms",
             "votes": 1,
-            "voters": ["james"]
+            "voters": ["David"]
         },
         {
             "text": "Margherita",
-            "votes": 2,
-            "voters": ["neil", "chris"]
+            "votes": 3,
+            "voters": ["Donna", "Kanio", "Chris"]
         },
         {
             "text": "Quattro Stagioni",
@@ -75,7 +75,7 @@ Ensure you have the following prerequisites before proceeding:
 
 Now it's time to start building our service. 
 
-### 3.1. Azure Cosmos DB
+### 3.1. Serverless Data Store - Azure Cosmos DB
 
 First, let's prepare our data store - [Azure Cosmos DB](https://docs.microsoft.com/en-us/azure/cosmos-db/introduction). Cosmos DB is Microsoft's globally distributed, multi-model data service. We will use it's document database API called DocumentDB to store the voting session contents for our service. DocumentDB provides rich and familiar SQL query capabilities with consistent low latencies over schema-less JSON data, which is perfect for our service. You can create it on your Azure subscription via the Azure CLI or the Azure Portal:
 
@@ -87,7 +87,7 @@ Using the Azure CLI, or the Cloud Shell button on the menu in the upper-right of
 
 > Note: the Cosmos DB account create step takes a few minutes to finish
 
-```bash
+```sh
 #!/bin/bash
 
 # Set variables for the new account, database, and collection
@@ -140,7 +140,7 @@ Follow these instructions if you didn't use the Azure CLI or Cloud Shell to crea
 
 Field | Value
 ------------ | -------------
-Id | <<<make up a unique id for you!>>>
+Id | <<<make up a unique name for you!>>>
 API | SQL (DocumentDB) 
 Subscription | Your subscription (should already be selected)
 Resource Group | Create new, votingbot
@@ -197,7 +197,7 @@ Next let's modify the main files for this function.
 
 Modify the `appsettings.json` file in the `VotingBot` folder and add a `votingbot_DOCUMENTDB` entry to the values section, then update the connection string with the values for your Cosmos DB account name and the primary key, or connection string, that you copied earlier:
 
-```JSON
+```javascript
 {
   "IsEncrypted": false,
   "Values": {
@@ -214,7 +214,7 @@ The function will be triggered via an HTTP call (HttpTrigger), and will have a C
 
 In Visual Studio Code modify the `function.json` file in the `CreateVotingode` folder to define the trigger and bindings as follows:
 
-```JSON
+```javascript
 {
   "bindings": [
     {
@@ -286,7 +286,7 @@ func run all
 Follow the instructions in the prompt and soon you will see from the logs that the function is running locally on http://localhost:7071/api/CreateVotingNode
 
 Now we are ready to test the function. In this function we create the voting session by accepting POST requests with the following JSON body, so this will be the object we process in the body of the function:
-```JSON
+```javascript
 {
     "votingname": "pizzavote",
     "name": "Pizza Voting",
@@ -315,7 +315,7 @@ One option is to use Postman on that URL, with the content of a Voting Session w
 
 You can also debug the function - once the function is running, in Visual Studio Code, in the Debug view, select Attach to Azure Functions. You can attach breakpoints, inspect variables, and step through code. Try it out!
 
-### 3.3. Close / Re-Open Voting Session
+### 3.3. Serverless Function - Close / Re-Open Voting Session
 
 In this function we will disable or enable a voting session by modifying the value of `isOpen` in the stored voting session document.
 
@@ -334,16 +334,18 @@ code .
 
 This function will accept POST request with the following request object:
 
-```JSON
+```javascript
 {
-	"votingname":"<<<voting_name>>>", //the name of the voting session
-	"isOpen":false // false for disabling and true for enabling
+	"votingname":"<<<voting_name>>>", 
+	"isOpen": false 
 }
 ```
 
+You can change isOpen to true or false to open or close a voting session.
+
 The bindings configuration for this function is different from the Create Voting function. We define both an in binding to find the existing document using the `votingname` value from the request, and an output binding to update the document on our data store. Update `function.json` in the `CloseVotingNode` folder with the following:
 
-```JSON
+```javascript
 {
   "disabled": false,
   "bindings": [
@@ -420,7 +422,7 @@ Let's run and test the function in the same way we did in Create Voting function
 
 ![Postman testing](/Content/Images/CloseVoting-Postman.PNG)
 
-### 3.4. Vote on a Voting Session
+### 3.4.  Serverless Function - Vote on a Voting Session
 
 In this function we will receive votes and update the voting session.
 
@@ -439,7 +441,7 @@ code .
 
 The function will work with the following request object:
 
-```JSON
+```javascript
 {
     "votingname": "pizzavote",
     "user": "don",
@@ -450,7 +452,7 @@ The function will work with the following request object:
 Update `function.json` in the `VoteNode` folder as follows to include an output binding for our data store, it's the same as the previous function:
 
 
-```JSON
+```javascript
 {
   "disabled": false,
   "bindings": [
@@ -494,52 +496,58 @@ module.exports = function (context, req) {
     context.log('JavaScript HTTP trigger function processed a request.');
 
     if (req.body && req.body.votingname && req.body.user && req.body.option) {
-        if (context.bindings.inputDocument && context.bindings.inputDocument.length == 1)
-        {
-            var body = context.bindings.inputDocument[0];
-            var found = false;
-            var alreadyset = false;
-            for (var index = 0; index < body.options.length; ++index) {
-                if (body.options[index].text.toLowerCase() == req.body.option.toLowerCase()) {
-                    found = true;
-                    for (var index2 = 0; index2 < body.options[index].voters.length; index2++) {
-                        if (body.options[index].voters[index2].toLowerCase() == req.body.user.toLowerCase()) {
-                            context.res = {
-                                status: 201,
-                                body: "Vote was already there, nothing updated"
-                            };
-                            alreadyset = true;
-                            break;
+        if (context.bindings.inputDocument && context.bindings.inputDocument.length == 1) {
+            if (context.bindings.inputDocument[0].isOpen){
+                var body = context.bindings.inputDocument[0];
+                var found = false;
+                var alreadyset = false;
+                for (var index = 0; index < body.options.length; ++index) {
+                    if (body.options[index].text.toLowerCase() == req.body.option.toLowerCase()) {
+                        found = true;
+                        for (var index2 = 0; index2 < body.options[index].voters.length; index2++) {
+                            if (body.options[index].voters[index2].toLowerCase() == req.body.user.toLowerCase()) {
+                                context.res = {
+                                    status: 201,
+                                    body: "Vote was already there, nothing updated"
+                                };
+                                alreadyset = true;
+                                break;
+                            }
                         }
+                        if (found & !alreadyset){
+                            body.options[index].votes++;
+                            body.options[index].voters.push(req.body.user);
+                        }
+                        break;
                     }
-                    if (found & !alreadyset){
-                        body.options[index].votes++;
-                        body.options[index].voters.push(req.body.user);
-                    }
-                    break;
+                }
+                if (found & !alreadyset){
+                    context.bindings.outputDocument = body;
+                    context.res = {
+                        status: 201, 
+                        body: context.bindings.outputDocument
+                    };
+                }
+                else {
+                    if (!alreadyset){
+                        context.res = {
+                            status: 400,
+                            body: "No vote option found with value " + req.body.option + " in voting session " + req.body.votingname
+                        }
+                    }           
                 }
             }
-            if (found & !alreadyset){
-                context.bindings.outputDocument = body;
-                context.res = {
-                    status: 201, 
-                    body: context.bindings.outputDocument
-                };
-            }
             else {
-                if (!alreadyset){
-                    context.res = {
-                        status: 400,
-                        body: "No vote option found with value " + req.body.option + " in voting session " + req.body.votingname
-                    }
-                }           
+                context.res = {
+                    status: 400,
+                    body: "This voting session is closed"
+                }               
             }
         }
         else {
             context.res = {
                 status: 400,
-                body: "Record with this votingname can not be found. Please pass a votingname of an existing document in the request body"}; 
-                context.done(null, context.res); 
+                body: "Record with this votingname can not be found. Please pass a votingname of an existing document in the request body"};  
         };
     }
     else {
@@ -555,7 +563,7 @@ module.exports = function (context, req) {
 Run and test it similarly to the previous two functions. You should get the new document back. For example:
 ![Postman testing](/Content/Images/Vote-Postman.PNG)
 
-### 3.5. Voting Session Status 
+### 3.5.  Serverless Function - Voting Session Status 
 
 Voting Status will give us the score of a voting session. 
 
@@ -576,7 +584,7 @@ This functions will accept the GET HTTP method and expect the voting session id 
 
 Update `function.json` with the following:
 
-```JSON
+```javascript
 {
   "disabled": false,
   "bindings": [
@@ -631,7 +639,7 @@ module.exports = function (context, req) {
 Run and test it similarly to the previous functions. For example:
 ![Postman testing](/Content/Images/VotingStatus-Postman.PNG)
 
-### 3.6. Delete Voting Session 
+### 3.6.  Serverless Function - Delete Voting Session 
 
 Delete Voting Session will delete the voting session document with all its votes. 
 
@@ -651,7 +659,7 @@ code .
 This functions will expect the voting session id in the request body.
 
 Update `function.json` with the following:
-```JSON
+```javascript
 {
   "disabled": false,
   "bindings": [
