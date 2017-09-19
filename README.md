@@ -4,7 +4,7 @@ If not checking in - please update README with a link to your module.
 
 Layout:
 
-1. Setup, Introduction, and Install - owner: EVERYONE
+1. Setup, Introduction, and Install - owner: Chris for bot, will need an intro for getting a subscription
 2. Hello world Function (ASCII ART) - owner: Chris
 3. Setup Squire Bot - owner: Chris
 4. [Bot create GitHub issue](https://github.com/Azure-Samples/azure-serverless-workshop-team-assistant/blob/kanio-github-module/github-module/README.md) - owner: Kanio
