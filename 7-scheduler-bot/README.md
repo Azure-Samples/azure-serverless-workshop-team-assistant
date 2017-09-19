@@ -69,9 +69,30 @@ with this snippet: [code snippet](src/step-2/index.snippet.js)  (the full index.
     ]
 }
 ```
+1. Publish the function app to Azure
+    * `func azure functionapp publish {yourAzureFunctionAppName}`  
 
 Now the function can correctly return back available times - we just need to write a Logic App to pull in calendar data.
 
 ## Building the Logic App
 
 1. Go to the [Azure Portal](https://portal.azure.com)
+1. Create a new logic app called `scheduler-bot` in any region you prefer
+1. Open the logic app and add a `Request` trigger
+**TODO: Add in how the request schema should be with SQUIREBOT**
+1. Add an action - **Google Calendar - List the events on a calendar**  
+![google calendar action](images/1.png)  
+1. Sign in with the following account:
+    * username: `azureserverlessdemo@gmail.com`
+    * password: `s3verless1`
+1. For the **Calendar ID** select **Enter custom value**.  Drop in the **calendars - Item** from the trigger (this is the name of the calendar to choose).
+    * You may notice it automatically dropped the action in a "For each" loop.  This is because it will now execute a list event for each item provided  
+    ![foreach](images/2.png)
+1. After the foreach, call the function to evaluate the responses.
+    * Add a function, select your app, select the `ScheduleBot` function
+1. The expression for all the listed items doesn't show by default, 
+
+
+## TODO: Wait for how to hook up to the Bot from Chris
+
+![](images/3.png)
