@@ -31,7 +31,7 @@ module.exports = function (context, req) {
     else {
         context.res = {
             status: 400,
-            body: "Please pass a voting object in the request body"
+            body: { "message" : "Please pass a voting object in the request body"}
         };
     }
     context.done();
