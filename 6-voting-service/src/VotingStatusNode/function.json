@@ -6,7 +6,7 @@
       "type": "httpTrigger",
       "direction": "in",
       "methods": [ "get" ],
-      "route": "VotingStatusNode/{votingname}",
+      "route": "VotingStatusNode/{id}",
       "name": "req"
     },
     {
@@ -19,7 +19,7 @@
       "name": "inputDocument",
       "databaseName": "votingbot",
       "collectionName": "votingbot",
-      "sqlQuery": "SELECT * from c where c.votingname = {votingname}",
+      "sqlQuery": "SELECT * from c where c.id = {id}",
       "connection": "votingbot_DOCUMENTDB",
       "direction": "in"
     }
