@@ -291,7 +291,7 @@ Now we are ready to test the function. In this function we create the voting ses
     "votingname": "pizzavote",
     "isOpen": true,
     "question": "What pizza do you want?",
-    "options": [ "Pepperoni", "Mushrooms", "Margherita", "Quattro Stagioni"]
+    "options": "Pepperoni,Mushrooms,Margherita,Quattro Stagioni"
 }
 ``` 
 
