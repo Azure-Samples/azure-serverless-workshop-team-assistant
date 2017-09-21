@@ -1,7 +1,7 @@
  # GitHub Issue Bot 
 
-In this part of the workshop you will extend our bot with the capability to create issue in GitHub. 
-We will build logic app with 3 steps. We will use Request / Response Step Connector for invoking the Logic App and providing the final response where our second step will be creating a GitHub issue.
+In this part of the workshop you will extend our bot with the capability to create an issue in GitHub. 
+We will build a logic app with 3 steps. We will use Request / Response Step Connector for invoking the Logic App and providing the final response where our second step will be creating a GitHub issue.
 Please refer to the diagram below showing the steps in logic app.
 
 ![Architecture](Content/Images/1-Architecutre.png)
@@ -11,7 +11,7 @@ Please refer to the diagram below showing the steps in logic app.
 This project  provides the following features:
 
 * Create GitHub Issue 
-* Post link to the issue back to Slack
+* Providing link to the created GitHub issue in the response 
 
 ## Getting Started
 
@@ -38,7 +38,7 @@ This project  provides the following features:
   
   ![Add Logic App](Content/Images/4-AzureCreateLogicApp.png)
   
-  - And fill the required data and press the create button at the bottom
+  - And fill the required data and press Create button at the bottom
   
   ![Logic App Parameters](Content/Images/5-LogicAppParameters.png)
   
@@ -59,7 +59,7 @@ This project  provides the following features:
       ```javascript
       {
         "title": "My new issue",
-        "text": "My new issue description"
+        "text":  "My new issue description"
       }
       ```
     
@@ -83,10 +83,10 @@ This project  provides the following features:
      
      ![Github dynamic data](Content/Images/13-GitHubDyniamicValues.png)
      
-     - Press “New step” and select Response
+     - Press “New step” and search for Response and select Request - Response step:
      
-     ![Slack post message](Content/Images/14-Slack.png)
-     
+     ![Slack post message](Content/Images/21-RequestResponse.PNG)
+  
      - Next we will configure the step by selecting 200 for response code, specifying the repository and its owner. It is also very important to define the body with the following json object. Squire bot will expect message propery in the body object to display the final message to the user:
      
 ```javascript
@@ -97,12 +97,15 @@ This project  provides the following features:
 }
 ```
 
-   - For the issue ID in the link we construct we use dynamic value. Message content is using Markdown. 
+   - For the issue ID in the link we construct we use dynamic value. Message content is using Markdown:
+   
+      ![Slack post message](Content/Images/14-Slack.png)
      
    - Save your work and now you are ready to test. Go to the Request / Response connector step and copy the URL
       ![URL capturing](Content/Images/16-URL.png)
       
    - If you want to your logic app immediatelly, go to Postman or similar app and POST to the provided URL. Do not forget to set Content-Type header to “application/json”
+   
        ![Postman testing 1](Content/Images/17-Postman1.png)
        
     - For the body use the JSON schema we defined several steps ago 
