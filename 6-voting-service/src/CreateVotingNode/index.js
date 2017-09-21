@@ -5,6 +5,7 @@ module.exports = function (context, req) {
         var body = req.body;
         var votingname = body.votingname.replace(/\s/g,'').toLowerCase();
         body.votingname = votingname;
+        body.id = votingname;
         var optionsValues = req.body.options.replace(/\s/g,'').split(",");
         var options = [];
         for(var i=0; i< optionsValues.length; i++){
@@ -21,7 +22,7 @@ module.exports = function (context, req) {
 
         var responseBody = {};
         responseBody.voting = body;
-        responseBody.message =  "Wow! Voting with votingname '" + votingname + "' was created!";
+        responseBody.message =  "Wow! Voting with id '" + votingname + "' was created!";
 
         context.res = {
             status: 201, 
