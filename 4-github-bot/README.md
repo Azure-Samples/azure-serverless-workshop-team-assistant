@@ -83,10 +83,10 @@ This project  provides the following features:
      
      ![Github dynamic data](Content/Images/13-GitHubDyniamicValues.png)
      
-     - Press “New step” and select Response
+     - Press “New step” and search for Response and select Request - Response step:
      
-     ![Slack post message](Content/Images/14-Slack.png)
-     
+     ![Slack post message](Content/Images/21-RequestResponse.PNG)
+  
      - Next we will configure the step by selecting 200 for response code, specifying the repository and its owner. It is also very important to define the body with the following json object. Squire bot will expect message propery in the body object to display the final message to the user:
      
 ```javascript
@@ -97,12 +97,15 @@ This project  provides the following features:
 }
 ```
 
-   - For the issue ID in the link we construct we use dynamic value. Message content is using Markdown. 
+   - For the issue ID in the link we construct we use dynamic value. Message content is using Markdown:
+   
+      ![Slack post message](Content/Images/14-Slack.png)
      
    - Save your work and now you are ready to test. Go to the Request / Response connector step and copy the URL
       ![URL capturing](Content/Images/16-URL.png)
       
    - If you want to your logic app immediatelly, go to Postman or similar app and POST to the provided URL. Do not forget to set Content-Type header to “application/json”
+   
        ![Postman testing 1](Content/Images/17-Postman1.png)
        
     - For the body use the JSON schema we defined several steps ago 
