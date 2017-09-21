@@ -253,23 +253,40 @@ module.exports = function (context, req) {
 
     if (req.body && req.body.votingname && req.body.question && req.body.options) {
         var body = req.body;
-
-        for(var i=0; i< body.options.length; i++){
-            body.options[i].votes = 0;
-            body.options[i].voters = [];
+	
+        var votingname = body.votingname.replace(/\s/g,'').toLowerCase();
+        
+	body.votingname = votingname;
+        
+	var optionsValues = req.body.options.replace(/\s/g,'').split(",");
+        
+	var options = [];
+        
+	for(var i=0; i< optionsValues.length; i++){
+            var option = {};
+            option.text = optionsValues[i];
+            option.votes = 0;
+            option.voters = [];
+            options.push(option);
         }
+
+        body.options = options;
 
         context.bindings.outputDocument = body;
 
+        var responseBody = {};
+        responseBody.voting = body;
+        responseBody.message =  "Wow! Voting with votingname '" + votingname + "' was created!";
+
         context.res = {
             status: 201, 
-            body: body
+            body:responseBody
         };
     }
     else {
         context.res = {
             status: 400,
-            body: "Please pass a voting object in the request body"
+            body: { "message" : "Please pass a voting object in the request body"}
         };
     }
     context.done();
@@ -288,7 +305,7 @@ Follow the instructions in the prompt and soon you will see from the logs that t
 Now we are ready to test the function. In this function we create the voting session by accepting POST requests with the following JSON body, so this will be the object we process in the body of the function:
 ```javascript
 {
-    "votingname": "pizzavote",
+    "votingname": "pizza vote",
     "isOpen": true,
     "question": "What pizza do you want?",
     "options": "Pepperoni, Mushrooms, Margherita, Quattro Stagioni"
