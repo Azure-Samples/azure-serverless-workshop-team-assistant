@@ -1,8 +1,8 @@
-# GitHub Issue Bot 
+ # GitHub Issue Bot 
 
 In this part of the workshop you will extend our bot with the capability to create issue in GitHub. 
-We will build logic app with 3 steps. We will use Request / Response Step Connector for invoking the Logic App. Then we will pass the HTTP payload to GitHub Connector and create an issue. 
-The last and final step will be to post issue’s link to the Slack channel. Please refer to the diagram below showing the steps in logic app.
+We will build logic app with 3 steps. We will use Request / Response Step Connector for invoking the Logic App and providing the final response where our second step will be creating a GitHub issue.
+Please refer to the diagram below showing the steps in logic app.
 
 ![Architecture](Content/Images/1-Architecutre.png)
 
@@ -19,9 +19,7 @@ This project  provides the following features:
 
 1.	You need to have GitHub account, if you don’t please create one here https://github.com
 
-2.	Access to Slack account, please verify it here – https://slack.com
-
-3.	Access to Azure Subscription, please check here https://portal.azure.com
+2.	Access to Azure Subscription, please check here https://portal.azure.com
 
 
 ### Walkthrough 
@@ -85,29 +83,35 @@ This project  provides the following features:
      
      ![Github dynamic data](Content/Images/13-GitHubDyniamicValues.png)
      
-     - Press “New step” and select Slack with Action – “Post message”
+     - Press “New step” and select Response
      
      ![Slack post message](Content/Images/14-Slack.png)
      
-     - Press Sign In and provide your Slack credentials and confirm the requested permissions 
+     - Next we will configure the step by selecting 200 for response code, specifying the repository and its owner. It is also very important to define the body with the following json object. Squire bot will expect message propery in the body object to display the final message to the user:
      
-     - Select the channel you want to use and format the message following similar pattern as shown below. We will use dynamic content “Id” field to retrieve issue id for creating the link. Use the link to your repo in the beggining of the expression.
+```javascript
+{
+  
+	"message": "[GitHub Issue Link](https://github.com/{input-repo-owner}/{input-repo}/issues/@{body('Create_an_issue')?['number']})"
+
+}
+```
+
+   - For the issue ID in the link we construct we use dynamic value. Message content is using Markdown. 
      
-     ![Slack dynamic  data](Content/Images/15-SlackDyniamicValues.png)
-     
-     - Save your work and now you are ready to test. Go to the Request / Response connector step and copy the URL
+   - Save your work and now you are ready to test. Go to the Request / Response connector step and copy the URL
       ![URL capturing](Content/Images/16-URL.png)
       
-      - If you want to your logic app immediatelly, go to Postman or similar app and POST to the provided URL. Do not forget to set Content-Type header to “application/json”
+   - If you want to your logic app immediatelly, go to Postman or similar app and POST to the provided URL. Do not forget to set Content-Type header to “application/json”
        ![Postman testing 1](Content/Images/17-Postman1.png)
        
-      - For the body use the JSON schema we defined several steps ago 
+    - For the body use the JSON schema we defined several steps ago 
        ![Postman testing 2](Content/Images/18-Postman2.png)
        
-      - You should receive the message in Slack as follows
+     - You should receive the following reponse in Postman:
         ![Slack post](Content/Images/19-SlackPost.png)
         
-      - You can go to your Logic App home screen and see the history of execution and troubleshoot 
+     - You can go to your Logic App home screen and see the history of execution and troubleshoot 
        ![Logic app executions](Content/Images/20-LogicAppsRuns.png)
        
      
