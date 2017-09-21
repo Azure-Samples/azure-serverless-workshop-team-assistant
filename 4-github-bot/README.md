@@ -1,7 +1,7 @@
  # GitHub Issue Bot 
 
-In this part of the workshop you will extend our bot with the capability to create issue in GitHub. 
-We will build logic app with 3 steps. We will use Request / Response Step Connector for invoking the Logic App and providing the final response where our second step will be creating a GitHub issue.
+In this part of the workshop you will extend our bot with the capability to create an issue in GitHub. 
+We will build a logic app with 3 steps. We will use Request / Response Step Connector for invoking the Logic App and providing the final response where our second step will be creating a GitHub issue.
 Please refer to the diagram below showing the steps in logic app.
 
 ![Architecture](Content/Images/1-Architecutre.png)
@@ -11,7 +11,7 @@ Please refer to the diagram below showing the steps in logic app.
 This project  provides the following features:
 
 * Create GitHub Issue 
-* Post link to the issue back to Slack
+* Providing link to the created GitHub issue in the response 
 
 ## Getting Started
 
@@ -38,7 +38,7 @@ This project  provides the following features:
   
   ![Add Logic App](Content/Images/4-AzureCreateLogicApp.png)
   
-  - And fill the required data and press the create button at the bottom
+  - And fill the required data and press Create button at the bottom
   
   ![Logic App Parameters](Content/Images/5-LogicAppParameters.png)
   
@@ -59,7 +59,7 @@ This project  provides the following features:
       ```javascript
       {
         "title": "My new issue",
-        "text": "My new issue description"
+        "text":  "My new issue description"
       }
       ```
     
