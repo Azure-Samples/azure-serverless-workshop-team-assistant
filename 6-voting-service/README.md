@@ -822,6 +822,7 @@ func run all
 ```
 
 Run and test it similarly to the previous functions. For example:
+
 ![Postman testing](src/Content/Images/DeleteVoting-Postman.PNG)
 
 ## 4. Azure Configuration
