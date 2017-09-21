@@ -3,7 +3,8 @@ module.exports = function (context, req) {
 
     if (req.body && req.body.votingname && req.body.question && req.body.options) {
         var body = req.body;
-        body.votingname = body.votingname.replace(/\s/g,'').toLowerCase();
+        var votingname = body.votingname.replace(/\s/g,'').toLowerCase();
+        body.votingname = votingname;
         var optionsValues = req.body.options.replace(/\s/g,'').split(",");
         var options = [];
         for(var i=0; i< optionsValues.length; i++){
@@ -18,9 +19,13 @@ module.exports = function (context, req) {
 
         context.bindings.outputDocument = body;
 
+        var responseBody = {};
+        responseBody.voting = body;
+        responseBody.message =  "Wow! Voting with votingname '" + votingname + "' was created!";
+
         context.res = {
             status: 201, 
-            body: body
+            body:responseBody
         };
     }
     else {
