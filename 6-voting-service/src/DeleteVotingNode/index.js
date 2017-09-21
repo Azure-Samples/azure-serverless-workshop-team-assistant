@@ -15,7 +15,7 @@ module.exports = function (context, req) {
                 console.log(`Deleted document: ${req.body.id}`);
                 context.res = {
                     status : 201,
-                    body: { "message" : `Deleted document: ${req.body.id}` }
+                    body: { "message" : `Deleted document with id ${req.body.id}` }
                 };
                 context.done(null, context.res);                
             },
