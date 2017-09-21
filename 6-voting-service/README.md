@@ -830,11 +830,7 @@ In order to get the code running in Azure you need a little bit more work.
 
 First create function app in Azure portal and deploy the code you developed locally there.
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-ADD CLI COMMANDS ON HOW TO CREATE AND DEPLOY
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+You can follow the instructions here - https://docs.microsoft.com/en-us/azure/azure-functions/functions-create-first-azure-function-azure-cli
 
 The last step is the configure App Settings. Go again to Platform Features of your Function App and select Application Settings.
 
@@ -843,10 +839,6 @@ You have to set the following App Setting:
 Variable | Details
 ------------ | -------------
 votingbot_DOCUMENTDB | connection string for DocumentDB as per previous steps
-
-And now you have a working voting service! You can get the deployed function URL and test it like we did locally. Have fun with it and then proceed to the next module.
-
-Thank you!
 
 ## 5. Integrate into Squire Bot
 
