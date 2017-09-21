@@ -545,8 +545,6 @@ module.exports = function (context, req) {
     context.done();
 };
 ```
-This voting service will allow the users to select multiple choices. Feel free to modify the algorythm if you want to introduce additional restrictions.  
-
 Run and test it similarly to the previous two functions. You should get the new document back. For example:
 ![Postman testing](src/Content/Images/Vote-Postman.PNG)
 
