@@ -294,7 +294,7 @@ module.exports = function (context, req) {
 Now it is time to test the function. Again, in the Integrated Terminal, type 
 ```javascript
 cd ..
-func run all
+func host start
 ```
 
 Follow the instructions in the prompt and soon you will see from the logs that the function is running locally on http://localhost:7071/api/CreateVotingNode
@@ -818,7 +818,7 @@ npm install documentdb
 Now it is time to test the function. Again, in the Integrated Terminal, type 
 ```javascript
 cd ..
-func run all
+func host start
 ```
 
 Run and test it similarly to the previous functions. For example:
