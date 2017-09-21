@@ -336,8 +336,8 @@ This function will accept POST request with the following request object:
 
 ```javascript
 {
-	"votingname":"<<<voting_name>>>", 
-	"isOpen": false 
+	"id":"pizzavote",
+	"isOpen":false
 }
 ```
 
@@ -366,7 +366,7 @@ The bindings configuration for this function is different from the Create Voting
       "name": "inputDocument",
       "databaseName": "votingbot",
       "collectionName": "votingbot",
-      "sqlQuery": "SELECT * from c where c.votingname = {votingname}",
+      "sqlQuery": "SELECT * from c where c.id = {id}",
       "connection": "votingbot_DOCUMENTDB",
       "direction": "in"
     },
@@ -388,22 +388,36 @@ In this function the bindings do a lot of the work for us. Update `index.js` in 
 module.exports = function (context, req) {
     context.log('JavaScript HTTP trigger function processed a request.');
 
-     if (req.body && req.body.votingname && req.body.isOpen != null) {
+     if (req.body && req.body.id && req.body.isOpen != null) {
 
         if (context.bindings.inputDocument && context.bindings.inputDocument.length == 1)
         {
-            context.bindings.outputDocument = context.bindings.inputDocument[0];
+            var voting =  context.bindings.inputDocument[0];
+            context.bindings.outputDocument = voting;
             context.bindings.outputDocument.isOpen = req.body.isOpen;
+
+            var responseBody = {
+            "voting" : {
+                "votingname" : voting.votingname,
+                "isOpen" : voting.isOpen,
+                "question" : voting.question,
+                "options" : voting.options,
+                "id" : voting.id
+            },
+            "message" : "Nice! Voting with id '" + req.body.id + "' was updated!"
+        };
+
             context.res = {
                 status: 200,
-                body: context.bindings.outputDocument
+                body: responseBody
             };
             context.done(null, context.res); 
         }
         else {
             context.res = {
                 status: 400,
-                body: "Record with this votingname can not be found. Please pass a votingname of an existing document in the request body"}; 
+                body: { "message" : "Record with this votingname can not be found. Please pass a votingname of an existing document in the request body"}
+            }; 
                 context.done(null, context.res); 
         };
     }
@@ -443,9 +457,9 @@ The function will work with the following request object:
 
 ```javascript
 {
-    "votingname": "pizzavote",
-    "user": "Don",
-    "option": "Pepperoni"
+    "id": "pizzavote",
+    "user": "Ted",
+    "option": "QuattroStagioni"
 }
 ```
 
@@ -473,7 +487,7 @@ Update `function.json` in the `VoteNode` folder as follows to include an output 
       "name": "inputDocument",
       "databaseName": "votingbot",
       "collectionName": "votingbot",
-      "sqlQuery": "SELECT * from c where c.votingname = {votingname}",
+      "sqlQuery": "SELECT * from c where c.id = {id}",
       "connection": "votingbot_DOCUMENTDB",
       "direction": "in"
     },
@@ -495,65 +509,72 @@ The logic for this function is to update the Voting Session document with a new 
 module.exports = function (context, req) {
     context.log('JavaScript HTTP trigger function processed a request.');
 
-    if (req.body && req.body.votingname && req.body.user && req.body.option) {
-        if (context.bindings.inputDocument && context.bindings.inputDocument.length == 1) {
-            if (context.bindings.inputDocument[0].isOpen){
-                var body = context.bindings.inputDocument[0];
-                var found = false;
-                var alreadyset = false;
-                for (var index = 0; index < body.options.length; ++index) {
-                    if (body.options[index].text.toLowerCase() == req.body.option.toLowerCase()) {
-                        found = true;
-                        for (var index2 = 0; index2 < body.options[index].voters.length; index2++) {
-                            if (body.options[index].voters[index2].toLowerCase() == req.body.user.toLowerCase()) {
-                                context.res = {
-                                    status: 201,
-                                    body: "Vote was already there, nothing updated"
-                                };
-                                alreadyset = true;
-                                break;
-                            }
+    if (req.body && req.body.id && req.body.user && req.body.option) {
+        if (context.bindings.inputDocument && context.bindings.inputDocument.length == 1)
+        {
+            var body = context.bindings.inputDocument[0];
+            var found = false;
+            var alreadyset = false;
+            for (var index = 0; index < body.options.length; ++index) {
+                if (body.options[index].text.toLowerCase() == req.body.option.toLowerCase()) {
+                    found = true;
+                    for (var index2 = 0; index2 < body.options[index].voters.length; index2++) {
+                        if (body.options[index].voters[index2].toLowerCase() == req.body.user.toLowerCase()) {
+                            context.res = {
+                                status: 201,
+                                body: { "message" : "Vote was already there, nothing updated" }
+                            };
+                            alreadyset = true;
+                            break;
                         }
-                        if (found & !alreadyset){
-                            body.options[index].votes++;
-                            body.options[index].voters.push(req.body.user);
-                        }
-                        break;
                     }
-                }
-                if (found & !alreadyset){
-                    context.bindings.outputDocument = body;
-                    context.res = {
-                        status: 201, 
-                        body: context.bindings.outputDocument
-                    };
-                }
-                else {
-                    if (!alreadyset){
-                        context.res = {
-                            status: 400,
-                            body: "No vote option found with value " + req.body.option + " in voting session " + req.body.votingname
-                        }
-                    }           
+                    if (found & !alreadyset){
+                        body.options[index].votes++;
+                        body.options[index].voters.push(req.body.user);
+                    }
+                    break;
                 }
             }
-            else {
+            if (found & !alreadyset){
+                context.bindings.outputDocument = body;
+
+                var responseBody = {
+                    "voting" : {
+                        "votingname" : body.votingname,
+                        "isOpen" : body.isOpen,
+                        "question" : body.question,
+                        "options" : body.options,
+                        "id" : body.id
+                    },
+                    "message" : "Nice! Your vote was counted!"
+                };
+
                 context.res = {
-                    status: 400,
-                    body: "This voting session is closed"
-                }               
+                    status: 201, 
+                    body: responseBody
+                };
+            }
+            else {
+                if (!alreadyset){
+                    context.res = {
+                        status: 400,
+                        body: { "message" : "No vote option found with value " + req.body.option + " in voting session " + req.body.id }
+                    }
+                }           
             }
         }
         else {
             context.res = {
                 status: 400,
-                body: "Record with this votingname can not be found. Please pass a votingname of an existing document in the request body"};  
+                body: { "message" : "Record with this id can not be found. Please pass a id of an existing document in the request body" }
+            }; 
+                context.done(null, context.res); 
         };
     }
     else {
         context.res = {
             status: 400,
-            body: "Please pass a vote object in the request body"
+            body: { "message" : "Please pass a vote object in the request body" }
         };
     }
     context.done();
