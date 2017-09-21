@@ -11,7 +11,7 @@ Please refer to the diagram below showing the steps in logic app.
 This project  provides the following features:
 
 * Create GitHub Issue 
-* Providing link to the created GitHub issue in the response 
+* Provide link to the created GitHub issue in the response 
 
 ## Getting Started
 
@@ -20,7 +20,6 @@ This project  provides the following features:
 1.	You need to have GitHub account, if you don’t please create one here https://github.com
 
 2.	Access to Azure Subscription, please check here https://portal.azure.com
-
 
 ### Walkthrough 
 
@@ -79,7 +78,7 @@ This project  provides the following features:
    
     ![Github data](Content/Images/12-GitHubFields.png)
    
-     - For title and body will pick dynamic content fields - title and text    
+     - For title and body will pick dynamic content fields - title and text. Also set the correct repository and its owner.    
      
      ![Github dynamic data](Content/Images/13-GitHubDyniamicValues.png)
      
@@ -89,26 +88,26 @@ This project  provides the following features:
   
      - Next we will configure the step by selecting 200 for response code, specifying the repository and its owner. It is also very important to define the body with the following json object. Squire bot will expect message propery in the body object to display the final message to the user:
      
-```javascript
-{
+  ```javascript
+  {
   
-	"message": "[GitHub Issue Link](https://github.com/{input-repo-owner}/{input-repo}/issues/@{body('Create_an_issue')?['number']})"
+   	"message": "[GitHub Issue Link](https://github.com/{input-repo-owner}/{input-repo}/issues/@{body('Create_an_issue')?['number']})"
 
-}
-```
+  }
+  ```
 
-   - For the issue ID in the link we construct we use dynamic value. Message content is using Markdown:
+    - We use dynamic value for issue ID when constructing the link. We use Markdown format for the message content:
    
       ![Slack post message](Content/Images/14-Slack.png)
      
-   - Save your work and now you are ready to test. Go to the Request / Response connector step and copy the URL
+    - Save your work and now you are ready to test. Go to the Request / Response connector step and copy the URL
       ![URL capturing](Content/Images/16-URL.png)
       
-   - If you want to your logic app immediatelly, go to Postman or similar app and POST to the provided URL. Do not forget to set Content-Type header to “application/json”
+    - If you want to your logic app immediatelly, go to Postman or similar app and POST to the provided URL. Do not forget to set Content-Type header to “application/json”
    
        ![Postman testing 1](Content/Images/17-Postman1.png)
        
-    - For the body use the JSON schema we defined several steps ago 
+     - For the body use the JSON schema we defined several steps ago 
        ![Postman testing 2](Content/Images/18-Postman2.png)
        
      - You should receive the following reponse in Postman:
