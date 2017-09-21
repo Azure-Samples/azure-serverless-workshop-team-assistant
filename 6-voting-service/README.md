@@ -248,21 +248,18 @@ The main logic inside the function will be to add votes and voters fields to the
 Now change the contents of `index.js` with the following code. This file contains all the code logic for this function:
 
 ```javascript
+
 module.exports = function (context, req) {
     context.log('JavaScript HTTP trigger function processed a request.');
 
     if (req.body && req.body.votingname && req.body.question && req.body.options) {
         var body = req.body;
-	
         var votingname = body.votingname.replace(/\s/g,'').toLowerCase();
-        
-	body.votingname = votingname;
-        
-	var optionsValues = req.body.options.replace(/\s/g,'').split(",");
-        
-	var options = [];
-        
-	for(var i=0; i< optionsValues.length; i++){
+        body.votingname = votingname;
+        body.id = votingname;
+        var optionsValues = req.body.options.replace(/\s/g,'').split(",");
+        var options = [];
+        for(var i=0; i< optionsValues.length; i++){
             var option = {};
             option.text = optionsValues[i];
             option.votes = 0;
@@ -276,7 +273,7 @@ module.exports = function (context, req) {
 
         var responseBody = {};
         responseBody.voting = body;
-        responseBody.message =  "Wow! Voting with votingname '" + votingname + "' was created!";
+        responseBody.message =  "Wow! Voting with id '" + votingname + "' was created!";
 
         context.res = {
             status: 201, 
