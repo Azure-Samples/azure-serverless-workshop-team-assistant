@@ -9,20 +9,20 @@ var client = new documentClient(endpoint, { "masterKey": primaryKey });
 module.exports = function (context, req) {
     context.log('JavaScript HTTP trigger function processed a request.');
 
-    if (req.body && req.body.votingname) {
+    if (req.body && req.body.id) {
         if(context.bindings.inputDocument && context.bindings.inputDocument.length == 1) {
-            deleteDocument(req.body.votingname, context.bindings.inputDocument[0].id).then((result) => {
-                console.log(`Deleted document: ${req.body.votingname}`);
+            deleteDocument(req.body.id, context.bindings.inputDocument[0].id).then((result) => {
+                console.log(`Deleted document: ${req.body.id}`);
                 context.res = {
                     status : 201,
-                    body: `Deleted document: ${req.body.votingname}`
+                    body: { "message" : `Deleted document: ${req.body.id}` }
                 };
                 context.done(null, context.res);                
             },
             (err) => {
                 context.log('error: ', err);
                 context.res = {
-                    body: "Error: " + JSON.stringify(err)
+                    body: {"message" : "Error: " + JSON.stringify(err) }
                 };
                 context.done(null, context.res);
             });
@@ -30,7 +30,7 @@ module.exports = function (context, req) {
         else {
             context.res = {
                 status : 400,
-                body: "Record with this votingname can not be found. Please pass a votingname of an existing document in the request body"
+                body: { "message" : "Record with this id can not be found. Please pass a id of an existing document in the request body" }
             };
             context.done(null, context.res);
         }
@@ -38,7 +38,7 @@ module.exports = function (context, req) {
     else {
         res = {
             status: 400,
-            body: "Please pass a name on the query string or in the request body"
+            body: {"message" : "Please pass a name on the query string or in the request body" }
         };
         context.done(null, res);
     }
