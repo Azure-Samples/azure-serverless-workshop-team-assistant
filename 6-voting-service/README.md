@@ -600,7 +600,7 @@ func new
 code . 
 ```
 
-This functions will accept the GET HTTP method and expect the voting session id in the request URL. Notice the change in the bindings to accept the GET method, and expect the votingname in the URL. We map the votingname to the documentDB outputbinding sqlQuery.
+This functions will accept the GET HTTP method and expect the voting session id in the request URL - http://localhost:7071/api/VotingStatusNode/pizzavote. Notice the change in the bindings to accept the GET method, and expect the votingname in the URL. We map the votingname to the documentDB outputbinding sqlQuery.
 
 Update `function.json` with the following:
 
@@ -613,7 +613,7 @@ Update `function.json` with the following:
       "type": "httpTrigger",
       "direction": "in",
       "methods": [ "get" ],
-      "route": "VotingStatusNode/{votingname}",
+      "route": "VotingStatusNode/{id}",
       "name": "req"
     },
     {
@@ -626,7 +626,7 @@ Update `function.json` with the following:
       "name": "inputDocument",
       "databaseName": "votingbot",
       "collectionName": "votingbot",
-      "sqlQuery": "SELECT * from c where c.votingname = {votingname}",
+      "sqlQuery": "SELECT * from c where c.id = {id}",
       "connection": "votingbot_DOCUMENTDB",
       "direction": "in"
     }
@@ -639,17 +639,40 @@ The binding will return the voting document with all of the votes. We then retur
 ```javascript
 module.exports = function (context, req) {
     context.log('JavaScript HTTP trigger function processed a request.');
-    if(context.bindings.inputDocument && context.bindings.inputDocument.length == 1) {
+
+    if (context.bindings.inputDocument && context.bindings.inputDocument.length == 1)
+    {
+        var voting =  context.bindings.inputDocument[0];
+
+        var message = "Here we go, these are the current results - ";
+
+        for(var i=0; i < voting.options.length; i++){
+            var votes = voting.options[i].votes;
+            message += voting.options[i].text + " has " +  votes + (votes === 1 ? " vote" : " votes");
+            if(i < voting.options.length-1 ) { message += ", "}
+        }
+
+        var responseBody = {
+            "voting" : {
+                "votingname" : voting.votingname,
+                "isOpen" : voting.isOpen,
+                "question" : voting.question,
+                "options" : voting.options,
+                "id" : voting.id
+            },
+            "message" : message
+        };
+
         context.res = {
             status : 200,
-            body : context.bindings.inputDocument[0]
+            body : responseBody
         };
         context.done(null, context.res);
     }
     else {
         context.res = {
             status : 400,
-            body: "Record with this votingname can not be found. Please pass a votingname of an existing document in the request body"
+            body: { "message" : "Record with this id can not be found. Please pass an id of an existing document in the request body" }
         };
         context.done(null, context.res);
     }
@@ -676,7 +699,13 @@ func new
 code . 
 ```
 
-This functions will expect the voting session id in the request body.
+This functions will expect the voting session id in the request body:
+
+```javascript
+{
+	"id":"pizzavote"
+}
+```
 
 Update `function.json` with the following:
 ```javascript
@@ -699,7 +728,7 @@ Update `function.json` with the following:
       "name": "inputDocument",
       "databaseName": "votingbot",
       "collectionName": "votingbot",
-      "sqlQuery": "SELECT * from c where c.votingname = {votingname}",
+      "sqlQuery": "SELECT * from c where c.id = {id}",
       "connection": "votingbot_DOCUMENTDB",
       "direction": "in"
     }
@@ -721,20 +750,20 @@ var client = new documentClient(endpoint, { "masterKey": primaryKey });
 module.exports = function (context, req) {
     context.log('JavaScript HTTP trigger function processed a request.');
 
-    if (req.body && req.body.votingname) {
+    if (req.body && req.body.id) {
         if(context.bindings.inputDocument && context.bindings.inputDocument.length == 1) {
-            deleteDocument(req.body.votingname, context.bindings.inputDocument[0].id).then((result) => {
-                console.log(`Deleted document: ${req.body.votingname}`);
+            deleteDocument(req.body.id, context.bindings.inputDocument[0].id).then((result) => {
+                console.log(`Deleted document: ${req.body.id}`);
                 context.res = {
                     status : 201,
-                    body: `Deleted document: ${req.body.votingname}`
+                    body: { "message" : `Deleted document: ${req.body.id}` }
                 };
                 context.done(null, context.res);                
             },
             (err) => {
                 context.log('error: ', err);
                 context.res = {
-                    body: "Error: " + JSON.stringify(err)
+                    body: {"message" : "Error: " + JSON.stringify(err) }
                 };
                 context.done(null, context.res);
             });
@@ -742,7 +771,7 @@ module.exports = function (context, req) {
         else {
             context.res = {
                 status : 400,
-                body: "Record with this votingname can not be found. Please pass a votingname of an existing document in the request body"
+                body: { "message" : "Record with this id can not be found. Please pass a id of an existing document in the request body" }
             };
             context.done(null, context.res);
         }
@@ -750,7 +779,7 @@ module.exports = function (context, req) {
     else {
         res = {
             status: 400,
-            body: "Please pass a name on the query string or in the request body"
+            body: {"message" : "Please pass a name on the query string or in the request body" }
         };
         context.done(null, res);
     }
