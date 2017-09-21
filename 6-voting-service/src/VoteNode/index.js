@@ -1,7 +1,7 @@
 module.exports = function (context, req) {
     context.log('JavaScript HTTP trigger function processed a request.');
 
-    if (req.body && req.body.votingname && req.body.user && req.body.option) {
+    if (req.body && req.body.id && req.body.user && req.body.option) {
         if (context.bindings.inputDocument && context.bindings.inputDocument.length == 1)
         {
             var body = context.bindings.inputDocument[0];
@@ -14,7 +14,7 @@ module.exports = function (context, req) {
                         if (body.options[index].voters[index2].toLowerCase() == req.body.user.toLowerCase()) {
                             context.res = {
                                 status: 201,
-                                body: "Vote was already there, nothing updated"
+                                body: { "message" : "Vote was already there, nothing updated" }
                             };
                             alreadyset = true;
                             break;
@@ -29,16 +29,28 @@ module.exports = function (context, req) {
             }
             if (found & !alreadyset){
                 context.bindings.outputDocument = body;
+
+                var responseBody = {
+                    "voting" : {
+                        "votingname" : body.votingname,
+                        "isOpen" : body.isOpen,
+                        "question" : body.question,
+                        "options" : body.options,
+                        "id" : body.id
+                    },
+                    "message" : "Nice! Your vote was counted!"
+                };
+
                 context.res = {
                     status: 201, 
-                    body: context.bindings.outputDocument
+                    body: responseBody
                 };
             }
             else {
                 if (!alreadyset){
                     context.res = {
                         status: 400,
-                        body: "No vote option found with value " + req.body.option + " in voting session " + req.body.votingname
+                        body: { "message" : "No vote option found with value " + req.body.option + " in voting session " + req.body.id }
                     }
                 }           
             }
@@ -46,14 +58,15 @@ module.exports = function (context, req) {
         else {
             context.res = {
                 status: 400,
-                body: "Record with this votingname can not be found. Please pass a votingname of an existing document in the request body"}; 
+                body: { "message" : "Record with this id can not be found. Please pass a id of an existing document in the request body" }
+            }; 
                 context.done(null, context.res); 
         };
     }
     else {
         context.res = {
             status: 400,
-            body: "Please pass a vote object in the request body"
+            body: { "message" : "Please pass a vote object in the request body" }
         };
     }
     context.done();
