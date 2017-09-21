@@ -163,7 +163,7 @@ Partition Key | /votingname
 Database | Use Existing, votingbot
 
  A partition key is a property (or path) within your documents that is used to distribute your data among the servers or partitions for scale.
-
+ 
 ![Create database and collection in your Azure Cosmos DB account](src/Content/Images/CosmosDB-2.PNG)
 
 4. Next we need to get the database connection string.You can find it under the section Keys in the left menu on the main screen for your Azure Cosmos DB account
