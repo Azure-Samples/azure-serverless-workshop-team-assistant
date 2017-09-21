@@ -3,11 +3,18 @@ module.exports = function (context, req) {
 
     if (req.body && req.body.votingname && req.body.question && req.body.options) {
         var body = req.body;
-
-        for(var i=0; i< body.options.length; i++){
-            body.options[i].votes = 0;
-            body.options[i].voters = [];
+        body.votingname = body.votingname.replace(/\s/g,'').toLowerCase();
+        var optionsValues = req.body.options.replace(/\s/g,'').split(",");
+        var options = [];
+        for(var i=0; i< optionsValues.length; i++){
+            var option = {};
+            option.text = optionsValues[i];
+            option.votes = 0;
+            option.voters = [];
+            options.push(option);
         }
+
+        body.options = options;
 
         context.bindings.outputDocument = body;
 
