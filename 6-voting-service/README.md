@@ -289,23 +289,9 @@ Now we are ready to test the function. In this function we create the voting ses
 ```javascript
 {
     "votingname": "pizzavote",
-    "name": "Pizza Voting",
     "isOpen": true,
     "question": "What pizza do you want?",
-    "options": [
-        {
-            "text": "Pepperoni"
-        },
-        {
-            "text": "Mushrooms"
-        },
-        {
-            "text": "Margherita"
-        },
-        {
-            "text": "Quattro Stagioni"
-        }
-    ]
+    "options": [ "Pepperoni", "Mushrooms", "Margherita", "Quattro Stagioni"]
 }
 ``` 
 
@@ -444,7 +430,7 @@ The function will work with the following request object:
 ```javascript
 {
     "votingname": "pizzavote",
-    "user": "don",
+    "user": "Don",
     "option": "Pepperoni"
 }
 ```
@@ -559,11 +545,7 @@ module.exports = function (context, req) {
     context.done();
 };
 ```
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-NEEDS UPDATING TO REMOVE VOTE FROM OTHER OPTIONS IF USER HAD VOTED ALREADY
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+This voting service will allow the users to select multiple choices. Feel free to modify the algorythm if you want to introduce additional restrictions.  
 
 Run and test it similarly to the previous two functions. You should get the new document back. For example:
 ![Postman testing](src/Content/Images/Vote-Postman.PNG)
