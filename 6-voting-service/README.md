@@ -862,6 +862,14 @@ Please follow the instructions for starting Squire Bot locally. Then access the 
 
 Please use the following table to configure the rest of the tasks
 
+Task | Parameters
+------------ | -------------
+Create Voting | votingname, isOpen, question, options
+Close / Re-Open Voting | id, isOpen
+Vote | id, user, option
+Voting Status | id
+Delete Voting | id
+
 Now it is time to test Voting Service with Squire Bot. 
 
 Please start Bot Framework emulator and connect to http://localhost:7071/api/bot
