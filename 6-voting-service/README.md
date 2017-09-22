@@ -829,9 +829,9 @@ Run and test it similarly to the previous functions. For example:
 
 In order to get the code running in Azure you need a little bit more work.
 
-First create function app in Azure portal and deploy the code you developed locally there.
-
-You can follow the instructions here - https://docs.microsoft.com/en-us/azure/azure-functions/functions-create-first-azure-function-azure-cli
+1. Push your code in GitHub 
+2. Setup Azure Portal CLI following the instructions here - https://docs.microsoft.com/en-us/azure/azure-functions/functions-create-first-azure-function-azure-cli
+3. Then deploy your Function App by following the instructions here - https://docs.microsoft.com/en-us/azure/azure-functions/functions-create-first-azure-function-azure-cli
 
 The last step is the configure App Settings. Go again to Platform Features of your Function App and select Application Settings.
 
