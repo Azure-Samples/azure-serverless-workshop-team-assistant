@@ -831,7 +831,14 @@ In order to get the code running in Azure you need a little bit more work.
 
 1. Push your code in GitHub 
 2. Setup Azure Portal CLI following the instructions here - https://docs.microsoft.com/en-us/azure/azure-functions/functions-create-first-azure-function-azure-cli
-3. Then deploy your Function App by following the instructions here - https://docs.microsoft.com/en-us/azure/azure-functions/functions-create-first-azure-function-azure-cli
+3. Then in the command prompt navigate to the folder of your funtion app and execute the following command:\
+
+```javascript
+
+func azure functionapp publish <FunctionAppName>
+
+```
+Where FunctionAppName is the name of the Azure Function App.
 
 The last step is the configure App Settings. Go again to Platform Features of your Function App and select Application Settings.
 
