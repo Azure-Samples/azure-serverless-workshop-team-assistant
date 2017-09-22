@@ -71,6 +71,8 @@ Ensure you have the following prerequisites before proceeding:
 
 - RESTful Client that will help you test the functions both locally and when deployed to Azure. One option is Postman https://www.getpostman.com/
 
+- Bot Framework Emulator - https://github.com/Microsoft/BotFramework-Emulator/releases/
+
 ## 3. Development 
 
 Now it's time to start building our service. 
@@ -850,8 +852,20 @@ votingbot_DOCUMENTDB | connection string for DocumentDB as per previous steps
 
 ## 5. Integrate into Squire Bot
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+In this final step of the lab we will integrate Voting Service with Squire Bot. 
 
-INTEGRATE WITH SQUIRE BOT
+We will add Voting Service to the features of Squire Bot. The first step is to add all the functions we created as tasks in Squire Bot's web app. 
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Please follow the instructions for starting Squire Bot locally. Then access the webapp at http://localhost:4200 and configure each of the tasks providing name, description, POST url and required parametets. You can see below how Create Voting was setup:
+
+Please use the following table to configure the rest of the tasks
+
+Now it is time to test Voting Service with Squire Bot. 
+
+Please start Bot Framework emulator and connect to http://localhost:7071/api/bot
+
+Then start the dialong by typing the name of the task you defined in Squire Bot web app. Here it is an example for the voting task:
+
+
+
+Great! You completed the module and now our Squire Bot is even smarter and can help you collect votes from friends and colleagues!
