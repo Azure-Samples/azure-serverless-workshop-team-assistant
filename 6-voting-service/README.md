@@ -602,7 +602,7 @@ func new
 code . 
 ```
 
-This functions will accept the GET HTTP method and expect the voting session id in the request URL - http://localhost:7071/api/VotingStatusNode/pizzavote. Notice the change in the bindings to accept the GET method, and expect the votingname in the URL. We map the votingname to the documentDB outputbinding sqlQuery.
+This functions will accept POST HTTP method in order to integrate with the Squire. The function requires id value in the body of the request. Below you can find function.json file contents. We map the votingname to the documentDB outputbinding sqlQuery.
 
 Update `function.json` with the following:
 
@@ -614,8 +614,7 @@ Update `function.json` with the following:
       "authLevel": "function",
       "type": "httpTrigger",
       "direction": "in",
-      "methods": [ "get" ],
-      "route": "VotingStatusNode/{id}",
+      "methods": [ "post" ],
       "name": "req"
     },
     {
@@ -634,6 +633,7 @@ Update `function.json` with the following:
     }
   ]
 }
+
 ```
 
 The binding will return the voting document with all of the votes. We then return the whole voting document:
