@@ -5,8 +5,7 @@
       "authLevel": "function",
       "type": "httpTrigger",
       "direction": "in",
-      "methods": [ "get" ],
-      "route": "VotingStatusNode/{id}",
+      "methods": [ "post" ],
       "name": "req"
     },
     {
