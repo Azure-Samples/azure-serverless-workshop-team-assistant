@@ -1,4 +1,4 @@
- # GitHub Issue Bot 
+# GitHub Issue Bot 
 
 In this part of the workshop you will extend our bot with the capability to create an issue in GitHub. 
 We will build a logic app with 3 steps. We will use Request / Response Step Connector for invoking the Logic App and providing the final response where our second step will be creating a GitHub issue.
@@ -20,6 +20,8 @@ This project  provides the following features:
 1.	You need to have GitHub account, if you don’t please create one here https://github.com
 
 2.	Access to Azure Subscription, please check here https://portal.azure.com
+
+3. Bot Framework Emulator - https://github.com/Microsoft/BotFramework-Emulator/releases/
 
 ### Walkthrough 
 
