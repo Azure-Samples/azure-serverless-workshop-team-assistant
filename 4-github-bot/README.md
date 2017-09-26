@@ -116,6 +116,13 @@ This project  provides the following features:
      - You can go to your Logic App home screen and see the history of execution and troubleshoot 
        ![Logic app executions](Content/Images/20-LogicAppsRuns.png)
        
+     - Now it is time to integrate GitHub Bot with the Squire Bot. Please follow the instructions for running locally the Squire Bot. And then copy the POST URL of the logic app we created in order to setup new task for Squire Bot. It should look very similar to the image below:
+      ![Squire Bot GitHub Setup](Content/Images/23-SquireBotSetup.PNG)
+      
+     - Next start Bot Framework Emulator and connect to http://localhost:7071/api/bot . And now are you are ready to test GitHub Issuer via the Squire Bot. Please type the name of the task you created to start the conversation and the interaction should be very similar to the screenshot below:
+     
+     ![Squire Bot GitHub Task Test](Content/Images/22-BotConversation.PNG)
+       
      
  Congratulations! You competed the module! 
  
