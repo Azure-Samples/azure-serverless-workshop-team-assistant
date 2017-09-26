@@ -122,7 +122,11 @@ This project  provides the following features:
      - Next start Bot Framework Emulator and connect to http://localhost:7071/api/bot . And now are you are ready to test GitHub Issuer via the Squire Bot. Please type the name of the task you created to start the conversation and the interaction should be very similar to the screenshot below:
      
      ![Squire Bot GitHub Task Test](Content/Images/22-BotConversation.PNG)
-       
+     
+    
+     - And if you click on the link in the last message you will be able to open the GitHub Issue we just created via Squire Bot:
+     
+       ![GitHub Issue](Content/Images/24-GitHubIssueCreated.PNG)
      
  Congratulations! You competed the module! 
  
