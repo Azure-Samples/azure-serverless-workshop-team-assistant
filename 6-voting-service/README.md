@@ -210,7 +210,7 @@ Modify the `appsettings.json` file in the `VotingBot` folder and add a `votingbo
 
 ```
 
-This `appsettings.json` file is where you can put local values to be used by all your functions in this function app.
+This `local.settings.json` file is where you can put local values to be used by all your functions in this function app.
 
 The function will be triggered via an HTTP call (HttpTrigger), and will have a Cosmos DB Binding. Before continuing [learn more about Azure Functions triggers and bindings here](https://docs.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings). 
 
