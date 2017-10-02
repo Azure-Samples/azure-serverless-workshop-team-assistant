@@ -55,7 +55,7 @@ Vote | Submit user's vote
 Voting Status | Get the latest results from the poll
 Delete Voting Session | Remove the voting session from the data store
 
-Each of the operations will map to an Azure Function that we will develop in this module.
+Each of the operations will map to an Azure Function that we will develop in this module. While Azure Functions can accept any HTTP verb, we are using POST for all of these functions so it can integrate with the Squire Bot at the end of the module.
 
 ## 2. Prerequisites
 
@@ -83,7 +83,7 @@ First, let's prepare our data store - [Azure Cosmos DB](https://docs.microsoft.c
 
 #### 3.1.1 Create the Cosmos DB Database and Collection via the Azure CLI in the Portal
 
-You can [install the Azure CLI] (https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) on your machine, or use it from the [Cloud Shell inside the Azure Portal](https://docs.microsoft.com/en-us/azure/cloud-shell/overview).
+You can [install the Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) on your machine, or use it from the [Cloud Shell inside the Azure Portal](https://docs.microsoft.com/en-us/azure/cloud-shell/overview).
 
 Using the Azure CLI, or the Cloud Shell button on the menu in the upper-right of the Azure portal, replace the value of `databaseAccountname` with a unique name, and run the following file to create our Cosmos DB account and collection:
 
