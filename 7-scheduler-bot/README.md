@@ -5,7 +5,7 @@
 In this module we will use Azure Functions and Logic Apps to build in functionality that integrates with team calendars.  The idea is you can ask your bot to find a suitable meeting time between teammates, and it will respond back with available times.
 
 The eventual flow will be:  
-1. Bot is notified of a command to find schedules `/squire schedule jeff thiago`
+1. Bot is notified of a command to find schedules `Schedule appointment` for `jeff,thiago`
 1. Logic Apps goes and grabs the calendar details for each person provided
 1. A Function is called to calculate availability in calendars
 1. A response is returned to the user with available times
@@ -79,20 +79,57 @@ Now the function can correctly return back available times - we just need to wri
 1. Go to the [Azure Portal](https://portal.azure.com)
 1. Create a new logic app called `scheduler-bot` in any region you prefer
 1. Open the logic app and add a `Request` trigger
-**TODO: Add in how the request schema should be with SQUIREBOT**
+1. Click on the `Use sample payload to generate schema` button to specify the shape of the request.
+1. Paste in the following example request from the bot:  
+    ```json
+    {
+        "people": "azureserverlessdemo@gmail.com,ujmqvr5ouk8p9nmia2o4h6o33o@group.calendar.google.com"
+    }
+    ```
+    This is specifying that the bot will send in a "people" parameter.
+1. Now we need to initialize a variable that will store each event schedule.  Add a step for **Initialize variable**.  Name the variable **schedules**, make it an Array, and you can leave the value empty.  
+    ![](images/4.png)
+1. Add a New step, and under **..More** select **Add a for each** as we need to grab calendar details FOR EACH of the `people` from the trigger.
+1. In the `Select an output from previous steps`, select the **Expression** tab on the right and type in the following expression to split the people by a `,`: `split(triggerBody()['people'], ',')` -> then press **OK**  
+    **HINT**: If you don't see expressions, zoom your browser out. You may be in "responsive" mode.  
+    ![](images/5.png)
 1. Add an action - **Google Calendar - List the events on a calendar**  
 ![google calendar action](images/1.png)  
 1. Sign in with the following account:
     * username: `azureserverlessdemo@gmail.com`
-    * password: `s3verless1`
-1. For the **Calendar ID** select **Enter custom value**.  Drop in the **calendars - Item** from the trigger (this is the name of the calendar to choose).
-    * You may notice it automatically dropped the action in a "For each" loop.  This is because it will now execute a list event for each item provided  
-    ![foreach](images/2.png)
-1. After the foreach, call the function to evaluate the responses.
+    * password: `s3rverless1`
+1. For the **Calendar ID** select **Enter custom value**.  Choose another expression to get the current item of the foreach loop.  The expression is: `item()`
+1. Add another step in the foreach to **Append to array variable** - append the **Event List** to the "schedules" array.  
+    ![](images/6.png)  
+1. After/outside the foreach, call the function to evaluate the responses.
     * Add a function, select your app, select the `ScheduleBot` function
-1. The expression for all the listed items doesn't show by default, 
+    * Pass in the **schedules** variable to the function
+1. Add a response after the function, paste in the following to return a message to the bot:  
+    ```json
+    {
+    "message": "@{body('SchedulerBot')}"
+    }
+    ```  
+    ![](images/7.png)
+1. Save the logic app, and grab the trigger invoke URL from the trigger
+
+## Train the bot
+Go to the Squire UX and add a new skill.
 
 
-## TODO: Wait for how to hook up to the Bot from Chris
+|Field|Value|
+|--|--|
+|Title|Schedule appointment|
+|Description|Get available time to meet with people|
+|Method|POST|
+|URL|*Copy the URL from your Logic app trigger*|
+|Parameter Name|people|
+|Parameter Prompt|Who do you want to schedule it with? (Comma seperated)|
 
-![](images/3.png)
+
+Go to your bot and ask it to `Schedule appointment`.
+
+When it asks with whom, paste in the following 2 google calendars:
+`azureserverlessdemo@gmail.com,ujmqvr5ouk8p9nmia2o4h6o33o@group.calendar.google.com`
+
+We could continue to improve the bot by adding in some aliases for the Logic App via CosmosDB or some other store. For instance `jeff` could substitute to `azureserverlessdemo@gmail.com`, making the bot easier to communicate with. For sake of simplicity we will leave as-is for now.
