@@ -2,27 +2,41 @@
 
 This bot will generate a photo mosaic of an input image, using [Cognitive Services Custom Vision Service](https://azure.microsoft.com/en-us/services/cognitive-services/custom-vision-service/) to generate a photo mosaic from an input image.
 
-For example, you can train your model with NYC landmarks. Custom Vision will recognize an image of the Brooklyn Bridge, and the function will create a photo mosaic composed of Bing image search results for "Brooklyn Bridge." 
+For example, you can train your model with Orlando landmarks, such as the Orlando Eye. Custom Vision will recognize an image of the Orlando Eye, and the function will create a photo mosaic composed of Bing image search results for "Orlando Eye." See example below.
+
+![Orlando Eye Mosaic](images/orlando-eye-both.jpg)
 
 ## Prerequisites
 
 1. Bot Framework Emulator - https://github.com/Microsoft/BotFramework-Emulator/releases/. If installing on a Mac, there's a problem with the latest installers. So, install [botframework\-emulator\-3\.5\.19\-mac\.zip](https://github.com/Microsoft/BotFramework-Emulator/releases/download/v3.5.19/botframework-emulator-3.5.19-mac.zip). The emulator will automatically download updates when it launches, and you simply have to restart it once that is complete.
 
 1. Visual Studio, either:
-   - Visual Studio 2017 Update 3 with the Azure workload installed
-   - Visual Studio Code with the [C# extension](https://code.visualstudio.com/docs/languages/csharp). 
+   - Visual Studio 2017 Update 3 with the Azure workload installed (Windows)
+   - Visual Studio Code with the [C# extension](https://code.visualstudio.com/docs/languages/csharp) (Mac/Linux)
 
-1. If running on a Mac/Linux, [.NET Core 2.0](https://www.microsoft.com/net/core#macos).
+1. If running on a Mac/Linux, [.NET Core 2.0](https://www.microsoft.com/net/core#macos)
 
-1. If running on a Mac/Linx, install [azure\-functions\-core\-tools](https://www.npmjs.com/package/azure-functions-core-tools) from npm.
+1. If running on a Mac/Linx, install [azure\-functions\-core\-tools](https://www.npmjs.com/package/azure-functions-core-tools) from npm
 
 1. Azure Storage Account
 
-1. (optional) Instance of Cognitive Services Vision 
-
 1. [Azure CLI 2.0](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
 
-## 1. Set up Custom Vision Service project
+## 1. Create API keys
+
+1. Create a Bing Search API key:
+
+    - In the Azure portal, click **+ New** and search for **Bing Search APIs**. 
+    - Enter the required information in the Create blade. You may use the lowest service tier of **S1** for this module.
+
+1. (Optional) Create a Computer Vision API key. The function will fall back to the regular Computer Vision API if there isn't a match with images that have been trained in the Custom Vision Service. If you plan to test only with images that will match custom vision, you can skip this step.
+
+    To create a Computer Vision API key:
+
+    - In the Azure portal, click **+ New** and search for **Bing Search APIs**.
+    - Enter the required information in the Create blade. You may use the free tier **F0** for this module.
+
+## 2. Set up Custom Vision Service project
 
 1. Go to https://www.customvision.ai/
 
@@ -38,7 +52,8 @@ For example, you can train your model with NYC landmarks. Custom Vision will rec
 
 1. Click on the **Performance** tab. If you have more than one iteration, choose the latest iteration and click **Make default**.
 
-## 2. Configure the photo mosaic project
+
+## 3. Configure the photo mosaic project
 
 1. Get the [photo mosaic project on GitHub](https://github.com/lindydonna/photo-mosaic), either by `git clone` or downloading the zip.
 
@@ -51,7 +66,7 @@ For example, you can train your model with NYC landmarks. Custom Vision will rec
 
     ```
     az login
-    python storage-account-name storage-account-resource-group`
+    python storage-account-name storage-account-resource-group
     ```
 
     Ensure that you see "Setup successful!" in the output.
@@ -66,9 +81,11 @@ For example, you can train your model with NYC landmarks. Custom Vision will rec
 
     ![Prediction API key](images/custom-vision-keys.png)
 
+1. In the Azure portal, select your Bing Search APIs instance. Select the **Keys** menu item and copy the value of **KEY 1**. Paste the value for the key `SearchAPIKey`in **local.settings.json**.
+
 1. (Optional) Photo mosaic will fall back to the regular vision service if there is not a match with custom vision. Paste your key for your Cognitive Services Vision Service as the value for `MicrosoftVisionApiKey` in **local.settings.json**.
 
-## 3. Run the project
+## 4. Run the project
 
 1. Compile and run:
 
@@ -102,7 +119,7 @@ Debugger listening on [::]:5858
 
 2. To test that the host is up and running, navigate to [http://localhost:7072/api/Settings](http://localhost:7072/api/Settings).
 
-## 4. Use the bot
+## 5. Use the bot
 
 1. Go to the Squire UX and add a new skill:
 
