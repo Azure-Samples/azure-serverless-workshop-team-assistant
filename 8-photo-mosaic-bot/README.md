@@ -87,6 +87,32 @@ For example, you can train your model with Orlando landmarks, such as the Orland
 
 1. (Optional) Photo mosaic will fall back to the regular vision service if there is not a match with custom vision. Paste your key for your Cognitive Services Vision Service as the value for `MicrosoftVisionApiKey` in **local.settings.json**.
 
+### Summary of App Settings 
+
+| Key                  | Description |
+|-----                 | ------|
+| AzureWebJobsStorage  | Storage account connection string. |
+| SearchAPIKey         | Key for [Bing Search API](https://azure.microsoft.com/en-us/services/cognitive-services/bing-web-search-api/). |
+| MicrosoftVisionApiKey | Key for [Computer Vision Service](https://azure.microsoft.com/en-us/services/cognitive-services/computer-vision/). |
+| PredictionApiUrl     | Endpoint for [Cognitive Services Custom Vision Service](https://azure.microsoft.com/en-us/services/cognitive-services/custom-vision-service/). It should end with "image". |
+| PredictionApiKey     | Prediction key for [Cognitive Services Custom Vision Service](https://azure.microsoft.com/en-us/services/cognitive-services/custom-vision-service/). |
+| generate-mosaic      | Name of Storage queue for to trigger mosaic generation. Default value is "generate-mosaic". |
+| input-container      | Name of Storage container for input images. Default value is "input-images". |
+| output-container     | Name of Storage container for output images. Default value is "mosaic-output". |
+| tile-image-container | Name of Storage container for tile images. Default value is "tile-images". |
+| SITEURL              | Set to `http://localhost:7072` locally. Not required on Azure. |
+| STORAGE_URL          | URL of storage account, in the form `https://accountname.blob.core.windows.net/` |
+| CONTAINER_SAS        | SAS token for uploading to input-container. Include the "?" prefix. |
+| APPINSIGHTS_INSTRUMENTATIONKEY | (optional) Application Insights instrumentation key. | 
+| MosaicTileWidth      | Default width of each mosaic tile. |
+| MosaicTileHeight     | Default height of each mosaic tile. |
+
+If you want to set these values in Azure, you can set them in **local.settings.json** and use the Azure Functions Core Tools to publish to Azure.
+
+```
+func azure functionapp publish function-app-name --publish-app-settings
+```
+
 ## 4. Run the project
 
 1. Compile and run:
@@ -151,3 +177,18 @@ For example, you can train your model with Orlando landmarks, such as the Orland
     [10/4/2017 1:34:59 AM] Function completed (Success, Id=a1d2a381-4eb6-4d82-8dc9-324ad90932c4, Duration=4993ms)
     [10/4/2017 1:34:59 AM] Executed 'CreateMosaic' (Succeeded, Id=a1d2a381-4eb6-4d82-8dc9-324ad90932c4)
     ```
+
+## (Optional) 6. Run manaually
+
+To run manually, send an HTTP request using Postman or CURL:
+
+`POST http://localhost:7072/api/RequestMosaic`
+
+Body: 
+```json
+{
+"InputImageUrl": "http://url.of.your.image",
+"ImageContentString": "optional keyword for mosaic tiles",
+"TilePixels": 20 // optional dimentions of tile images
+}
+```
