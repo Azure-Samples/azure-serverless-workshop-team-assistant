@@ -8,7 +8,9 @@ For example, you can train your model with Orlando landmarks, such as the Orland
 
 ## Prerequisites
 
-1. Bot Framework Emulator - https://github.com/Microsoft/BotFramework-Emulator/releases/. If installing on a Mac, there's a problem with the latest installers. So, install [botframework\-emulator\-3\.5\.19\-mac\.zip](https://github.com/Microsoft/BotFramework-Emulator/releases/download/v3.5.19/botframework-emulator-3.5.19-mac.zip). The emulator will automatically download updates when it launches, and you simply have to restart it once that is complete.
+1. [Bot Framework Emulator](https://github.com/Microsoft/BotFramework-Emulator/releases/). 
+
+    * NOTE: There's a problem with the latest Mac installers. So, install the older release [botframework\-emulator\-3\.5\.19\-mac\.zip](https://github.com/Microsoft/BotFramework-Emulator/releases/download/v3.5.19/botframework-emulator-3.5.19-mac.zip). The emulator will automatically download updates when it launches, and you simply have to restart it once that is complete.
 
 1. Visual Studio, either:
    - Visual Studio 2017 Update 3 with the Azure workload installed (Windows)
@@ -66,7 +68,7 @@ For example, you can train your model with Orlando landmarks, such as the Orland
 
     ```
     az login
-    python storage-account-name storage-account-resource-group
+    python <Storage Account Name> <Resource group>
     ```
 
     Ensure that you see "Setup successful!" in the output.
@@ -75,7 +77,7 @@ For example, you can train your model with Orlando landmarks, such as the Orland
 
 1. Open the file **MosaicMaker/local.settings.json** 
 
-1. In the [Custom Vision portal](https://www.customvision.ai/), get the URL for your prediction service. Select **Prediction URL** and copy the second URL in the dialog box, under the section **If you have an image file**. It will have the form `https://southcentralus.api.cognitive.microsoft.com/customvision/v1.0/Prediction/<guid>/image`. Paste this value for the key `PredictionApiUrl` in **local.settings.json**.
+1. In the [Custom Vision portal](https://www.customvision.ai/), get the URL for your prediction service. Select **Prediction URL** and copy the second URL in the dialog box, under the section "**If you have an image file**". It will have the form `https://southcentralus.api.cognitive.microsoft.com/customvision/v1.0/Prediction/<guid>/image`. Paste this value for the key `PredictionApiUrl` in **local.settings.json**.
 
 1. In the Custom Vision portal, select the settings gear in the upper right. Copy the value of **Prediction Key** for the key `PredictionApiKey` in **local.settings.json**.
 
@@ -89,33 +91,33 @@ For example, you can train your model with Orlando landmarks, such as the Orland
 
 1. Compile and run:
 
-- If using Visual Studio, just press F5 to compile and run **PhotoMosaic.sln**.
+    - If using Visual Studio, just press F5 to compile and run **PhotoMosaic.sln**.
 
-- If using VS Code on a Mac, the build task will run `dotnet build`. Then, navigate to the output folder and run the Functions core tools:
+    - If using VS Code on a Mac, the build task will run `dotnet build`. Then, navigate to the output folder and run the Functions core tools:
+
+        ```
+        cd photo-mosaic/MosaicMaker/bin/Debug/netstandard2.0/osx
+        func host start
+        ```
+
+    You should see output similar to the following:
 
     ```
-    cd photo-mosaic/MosaicMaker/bin/Debug/netstandard2.0/osx
-    func host start
+    Http Functions:
+
+            RequestMosaic: http://localhost:7072/api/RequestMosaic
+
+            Settings: http://localhost:7072/api/Settings
+
+    [10/4/2017 10:24:20 PM] Host lock lease acquired by instance ID '000000000000000000000000C9A597BE'.
+    [10/4/2017 10:24:20 PM] Found the following functions:
+    [10/4/2017 10:24:20 PM] MosaicMaker.MosaicBuilder.RequestImageProcessing
+    [10/4/2017 10:24:20 PM] MosaicMaker.MosaicBuilder.Settings
+    [10/4/2017 10:24:20 PM] MosaicMaker.MosaicBuilder.CreateMosaicAsync
+    [10/4/2017 10:24:20 PM]
+    [10/4/2017 10:24:20 PM] Job host started
+    Debugger listening on [::]:5858
     ```
-
-You should see output similar to the following:
-
-```
-Http Functions:
-
-        RequestMosaic: http://localhost:7072/api/RequestMosaic
-
-        Settings: http://localhost:7072/api/Settings
-
-[10/4/2017 10:24:20 PM] Host lock lease acquired by instance ID '000000000000000000000000C9A597BE'.
-[10/4/2017 10:24:20 PM] Found the following functions:
-[10/4/2017 10:24:20 PM] MosaicMaker.MosaicBuilder.RequestImageProcessing
-[10/4/2017 10:24:20 PM] MosaicMaker.MosaicBuilder.Settings
-[10/4/2017 10:24:20 PM] MosaicMaker.MosaicBuilder.CreateMosaicAsync
-[10/4/2017 10:24:20 PM]
-[10/4/2017 10:24:20 PM] Job host started
-Debugger listening on [::]:5858
-```
 
 2. To test that the host is up and running, navigate to [http://localhost:7072/api/Settings](http://localhost:7072/api/Settings).
 
