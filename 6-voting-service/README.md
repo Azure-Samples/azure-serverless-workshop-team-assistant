@@ -67,7 +67,7 @@ Ensure you have the following prerequisites before proceeding:
 
 - Visual Studio Code https://code.visualstudio.com/Download
 
-- Azure Functions CLI tooling https://www.npmjs.com/package/azure-functions-cli
+- Azure Functions Core Tools https://www.npmjs.com/package/azure-functions-core-tools
 
 - RESTful Client that will help you test the functions both locally and when deployed to Azure. One option is Postman https://www.getpostman.com/
 
