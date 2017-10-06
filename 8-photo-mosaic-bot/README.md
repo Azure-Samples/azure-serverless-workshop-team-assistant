@@ -8,17 +8,17 @@ For example, you can train your model with Orlando landmarks, such as the Orland
 
 ## Prerequisites
 
-1. [Bot Framework Emulator](https://github.com/Microsoft/BotFramework-Emulator/releases/). 
-
-    * NOTE: There's a problem with the latest Mac installers. So, install the older release [botframework\-emulator\-3\.5\.19\-mac\.zip](https://github.com/Microsoft/BotFramework-Emulator/releases/download/v3.5.19/botframework-emulator-3.5.19-mac.zip). The emulator will automatically download updates when it launches, and you simply have to restart it once that is complete.
-
 1. Visual Studio, either:
-   - Visual Studio 2017 Update 3 with the Azure workload installed (Windows)
-   - Visual Studio Code with the [C# extension](https://code.visualstudio.com/docs/languages/csharp) (Mac/Linux)
+   - [Visual Studio 2017 Update 3](https://www.visualstudio.com/downloads/) with the Azure workload installed (Windows)
+   - [Visual Studio Code](https://code.visualstudio.com/download) with the [C# extension](https://code.visualstudio.com/docs/languages/csharp) (Mac/Linux)
 
 1. If running on a Mac/Linux, [.NET Core 2.0](https://www.microsoft.com/net/core#macos)
 
-1. If running on a Mac/Linx, install [azure\-functions\-core\-tools](https://www.npmjs.com/package/azure-functions-core-tools) from npm
+1. If running on a Mac/Linx, install [azure\-functions\-core\-tools](https://www.npmjs.com/package/azure-functions-core-tools)@core from npm. For more information, see https://aka.ms/func-xplat.
+
+1. [Bot Framework Emulator](https://github.com/Microsoft/BotFramework-Emulator/releases/). 
+
+    * NOTE: There's a problem with the latest Mac installers. So, install the older release [botframework\-emulator\-3\.5\.19\-mac\.zip](https://github.com/Microsoft/BotFramework-Emulator/releases/download/v3.5.19/botframework-emulator-3.5.19-mac.zip). The emulator will automatically download updates when it launches, and you simply have to restart it once that is complete.
 
 1. Azure Storage Account
 
@@ -35,7 +35,7 @@ For example, you can train your model with Orlando landmarks, such as the Orland
 
     To create a Computer Vision API key:
 
-    - In the Azure portal, click **+ New** and search for **Bing Search APIs**.
+    - In the Azure portal, click **+ New** and search for **Computer Vision API**.
     - Enter the required information in the Create blade. You may use the free tier **F0** for this module.
 
 ## 2. Set up Custom Vision Service project
@@ -57,23 +57,27 @@ For example, you can train your model with Orlando landmarks, such as the Orland
 
 ## 3. Configure the photo mosaic project
 
-1. Get the [photo mosaic project on GitHub](https://github.com/lindydonna/photo-mosaic), either by `git clone` or downloading the zip.
+1. Get the [photo mosaic project on GitHub](https://github.com/Azure-Samples/functions-dotnet-photo-mosaic), either by `git clone` or downloading the zip.
 
    - Use the `master` branch if you're on Windows
    - Use the `core` branch if you're on a Mac.
 
 1. In the portal, find the resource group and account name for the Azure Storage account you wish to use.
 
-1. From a terminal, navigate to the `photo-mosaic` directory. Run the following, using the storage account name and resource group from above:
+1. From a terminal, navigate to the **functions-dotnet-photo-mosaic** directory. Run the following, using the storage account name and resource group from above:
 
     ```
     az login
     python <Storage Account Name> <Resource group>
     ```
 
+    This will modify the file **local.settings.json**.
+
+    Alternatively, you can run the script from the Azure Cloud Shell in the Azure Portal. Just run `python` and paste the script. The script prints out settings values that you can use to manually modify `local.settings.json`. 
+
     Ensure that you see "Setup successful!" in the output.
 
-1. If using Visual Studio, open **MosaicMaker.sln**. On a Mac, open the **photo-mosaic** folder in VS Code. 
+1. If using Visual Studio, open **MosaicMaker.sln**. On a Mac, open the **functions-dotnet-photo-mosaic** folder in VS Code. 
 
 1. Open the file **MosaicMaker/local.settings.json** 
 
@@ -122,7 +126,7 @@ func azure functionapp publish function-app-name --publish-app-settings
     - If using VS Code on a Mac, the build task will run `dotnet build`. Then, navigate to the output folder and run the Functions core tools:
 
         ```
-        cd photo-mosaic/MosaicMaker/bin/Debug/netstandard2.0/osx
+        cd MosaicMaker/bin/Debug/netstandard2.0/osx
         func host start
         ```
 
@@ -151,14 +155,14 @@ func azure functionapp publish function-app-name --publish-app-settings
 
 1. Go to the Squire UX and add a new skill:
 
-|Field|Value|
-|--|--|
-|Title|generate mosaic|
-|Description|Generate a photo mosaic|
-|Method|POST|
-|URL| http://localhost:7072/api/RequestMosaic|
-|Parameter Name|InputImageUrl|
-|Parameter Prompt|What is the source image URL?|
+    |Field|Value|
+    |--|--|
+    |Title|generate mosaic|
+    |Description|Generate a photo mosaic|
+    |Method|POST|
+    |URL| http://localhost:7072/api/RequestMosaic|
+    |Parameter Name|InputImageUrl|
+    |Parameter Prompt|What is the source image URL?|
 
 2. Go to your bot and ask it to `generate mosaic`. Use an Google or Bing image URL of a landmark you've already trained, but try to use an image that you haven't trained it on.
 
@@ -189,6 +193,6 @@ Body:
 {
 "InputImageUrl": "http://url.of.your.image",
 "ImageContentString": "optional keyword for mosaic tiles",
-"TilePixels": 20 // optional dimentions of tile images
+"TilePixels": 20 
 }
 ```
