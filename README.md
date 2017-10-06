@@ -12,4 +12,4 @@ Layout:
 6. [Voting bot](https://github.com/nzthiago/VotingService) - owner: Thiago/Kanio
 7. [Schedule bot](7-scheduler-bot/README.md) - owner: Jeff
 8. [Custom vision bot](8-photo-mosaic-bot/README.md) - owner: Donna
-9. Extra credit, Coder Cards - owner: Donna
+9. [Coder Cards](9-coder-cards/README.md) - owner: Donna
