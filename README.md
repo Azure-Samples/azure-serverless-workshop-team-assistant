@@ -1,57 +1,14 @@
-# Project Name
+# Azure Serverless Workshop
 
-(short, 1-3 sentenced, description of the project)
+This is a serverless workshop that will take you through 8 modules involving building a serverless personal assistant in Azure.
 
-## Features
+## Table of contents
 
-This project framework provides the following features:
-
-* Feature 1
-* Feature 2
-* ...
-
-## Getting Started
-
-### Prerequisites
-
-(ideally very short, if any)
-
-- OS
-- Library version
-- ...
-
-### Installation
-
-(ideally very short)
-
-- npm install [package name]
-- mvn install
-- ...
-
-### Quickstart
-(Add steps to get up and running quickly)
-
-1. git clone [repository clone url]
-2. cd [respository name]
-3. ...
-
-
-## Demo
-
-A demo app is included to show how to use the project.
-
-To run the demo, follow these steps:
-
-(Add steps to start up the demo)
-
-1.
-2.
-3.
-
-## Resources
-
-(Any additional resources or related projects)
-
-- Link to supporting information
-- Link to similar sample
-- ...
+1. [Intro and Prerequisites](1-intro-and-prereqs/README.md)
+2. [Hello Functions](2-hello-functions/README.md)
+3. Serverless Bot
+4. [GitHub Assistant](4-github-bot/README.md)
+5. [Voting Service](5-voting-service/README.md)
+6. [Schedule Assistant](6-scheduler-bot/README.md)
+7. [Photo Mosaic Bot](7-photo-mosaic-bot/README.md)
+8. [Extra Credit: Coder Cards](8-coder-cards/README.md)
