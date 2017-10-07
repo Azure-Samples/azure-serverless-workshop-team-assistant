@@ -1,15 +1,14 @@
-## Related Links
+# Azure Serverless Workshop
 
-If not checking in - please update README with a link to your module.
+This is a serverless workshop that will take you through 8 modules involving building a serverless personal assistant in Azure.
 
-Layout:
+## Table of contents
 
-1. Setup, Introduction, and Install - owner: Chris for bot, will need an intro for getting a subscription
-2. Hello world Function (ASCII ART) - owner: Chris
-3. Setup Squire Bot - owner: Chris
-4. [Bot create GitHub issue](https://github.com/Azure-Samples/azure-serverless-workshop-team-assistant/blob/kanio-github-module/github-module/README.md) - owner: Kanio
-5. Slack integration - owner: Chris
-6. [Voting bot](https://github.com/nzthiago/VotingService) - owner: Thiago/Kanio
-7. [Schedule bot](7-scheduler-bot/README.md) - owner: Jeff
-8. [Custom vision bot](8-photo-mosaic-bot/README.md) - owner: Donna
-9. [Coder Cards](9-coder-cards/README.md) - owner: Donna
+1. [Intro and Prerequisites](1-intro-and-prereqs/README.md)
+2. [Hello Functions](2-hello-functions/README.md)
+3. Serverless Bot
+4. [GitHub Assistant](4-github-bot/README.md)
+5. [Voting Service](5-voting-service/README.md)
+6. [Schedule Assistant](6-scheduler-bot/README.md)
+7. [Photo Mosaic Bot](7-photo-mosaic-bot/README.md)
+8. [Extra Credit: Coder Cards](8-coder-cards/README.md)

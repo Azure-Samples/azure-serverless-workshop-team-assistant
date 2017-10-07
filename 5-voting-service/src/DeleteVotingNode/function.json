@@ -1,0 +1,25 @@
+{
+  "disabled": false,
+  "bindings": [
+    {
+      "authLevel": "function",
+      "type": "httpTrigger",
+      "direction": "in",
+      "name": "req"
+    },
+    {
+      "type": "http",
+      "direction": "out",
+      "name": "res"
+    },
+    {
+      "type": "documentDB",
+      "name": "inputDocument",
+      "databaseName": "votingbot",
+      "collectionName": "votingbot",
+      "sqlQuery": "SELECT * from c where c.id = {id}",
+      "connection": "votingbot_DOCUMENTDB",
+      "direction": "in"
+    }
+  ]
+}
