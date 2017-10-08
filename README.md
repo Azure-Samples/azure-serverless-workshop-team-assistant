@@ -6,7 +6,7 @@ This is a serverless workshop that will take you through 8 modules involving bui
 
 1. [Intro and Prerequisites](1-intro-and-prereqs/README.md)
 2. [Hello Functions](2-hello-functions/README.md)
-3. Serverless Bot
+3. [Serverless Bot](3-squirebot/README.md)
 4. [GitHub Assistant](4-github-bot/README.md)
 5. [Voting Service](5-voting-service/README.md)
 6. [Schedule Assistant](6-scheduler-bot/README.md)
