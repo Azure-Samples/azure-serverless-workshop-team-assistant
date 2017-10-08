@@ -1,10 +1,10 @@
 # Voting Service
 
-## Create a serverless service using Node.js and Azure Functions v2
+## Create a serverless service using Node.js and Azure Functions 
 
 ## 1. Overview
 
-In this part of the workshop we will create a voting service that allows a team to create polls to vote on, and then surface it from the Squire bot. We are using the new [cross-platform developer experience](https://blogs.msdn.microsoft.com/appserviceteam/2017/09/25/develop-azure-functions-on-any-platform/) enabled by the Azure Functions runtime 2.0.
+In this part of the workshop we will create a voting service that allows a team to create polls to vote on, and then surface it from the Squire bot.  
 
 ![Architecture](src/Content/Images/Architecture.PNG)
 
@@ -63,11 +63,11 @@ Ensure you have the following prerequisites before proceeding:
 
 - An active Azure account. If you don't have one, you can sign up for a free account https://azure.microsoft.com/en-us/free/
 
-- Latest current Node.js and npm https://nodejs.org/en/download/current/
+- Node.js and npm https://nodejs.org/en/download/
 
 - Visual Studio Code https://code.visualstudio.com/Download
 
-- Azure Functions Core Tools v2. Follow the "Running on your local machine" instructions here to install it: https://blogs.msdn.microsoft.com/appserviceteam/2017/09/25/develop-azure-functions-on-any-platform/
+- Azure Functions Core Tools https://www.npmjs.com/package/azure-functions-core-tools
 
 - RESTful Client that will help you test the functions both locally and when deployed to Azure. One option is Postman https://www.getpostman.com/
 
@@ -179,30 +179,25 @@ Now we are ready to start creating our voting service using the Azure Functions 
 ### 3.2. Create Voting Function
 
 Create a folder called `VotingBot` on your machine. It will contain all the code for our functions. 
-Next let's use the Azure Functions CLI to create a new Function app in the current folder, initialize a git repo, add the CosmosDB extension, and create the first function in the app. From the Terminal, in the `VotingBot` folder, enter the following commands: 
+Next let's use the Azure Functions CLI to create a new Function app in the current folder, initialize a git repo, and create the first function in the app. From the Terminal, in the `VotingBot` folder, enter the following commands: 
 
 ```javascript
-
-//Install the CosmosDB extension for your Functions to use
-func extensions install -p Microsoft.Azure.WebJobs.Extensions.CosmosDB -v 3.0.0-beta4
-
 //This initializes the function app and repo
 func init
 
 //This creates a new function in the function app
 func new 
-// next enter 2 (to choose 2. JavaScript)
-// next enter 2 (to choose 2. HttpTrigger) 
+// next select JavaScript
+// next select HttpTrigger 
 // next provide CreateVotingNode as the name of the function
 
-
-// Now type the following to open Visual Studio Code
+// this will open Visual Studio Code with your function app and the new CreateVotingNode function in it
 code . 
 ```
 
 Next let's modify the main files for this function.
 
-Modify the `local.settings.json` file in the `VotingBot` folder and add a `votingbot_DOCUMENTDB` entry to the values section, then update the connection string with the values for your Cosmos DB account name and the primary key, or connection string, that you copied earlier:
+Modify the `appsettings.json` file in the `VotingBot` folder and add a `votingbot_DOCUMENTDB` entry to the values section, then update the connection string with the values for your Cosmos DB account name and the primary key, or connection string, that you copied earlier:
 
 ```javascript
 {
@@ -237,12 +232,12 @@ In Visual Studio Code modify the `function.json` file in the `CreateVotingode` f
       "name": "res"
     },
     {
-      "type": "cosmosDB",
+      "type": "documentDB",
       "name": "outputDocument",
       "databaseName": "votingbot",
       "collectionName": "votingbot",
       "createIfNotExists": true,
-      "connectionStringSetting": "votingbot_DOCUMENTDB",
+      "connection": "votingbot_DOCUMENTDB",
       "direction": "out",
       "partitionKey": "/votingname"
     }
@@ -251,8 +246,8 @@ In Visual Studio Code modify the `function.json` file in the `CreateVotingode` f
 }
 ```
 
-The main logic inside the function will be to add votes and voters fields to the voting options, and then use the documentDB binding to save the voting session JSON to our data store.
-Now change the contents of `index.js` with the following code. This file contains all the code logic for this function. The `message` part of the response is what the SquireBot will use once we integrate with it:
+The main logic inside the function will be to add votes and voters fields to the voting options, and then use the documentDB binding to save the session to our data store.
+Now change the contents of `index.js` with the following code. This file contains all the code logic for this function:
 
 ```javascript
 
@@ -298,19 +293,15 @@ module.exports = function (context, req) {
 
 ```
 
-Now it is time to test the function. From the terminal / command line, type the following from your `votingbot` folder (not the CreateVotingNode folder): 
+Now it is time to test the function. Again, in the Integrated Terminal, type 
 ```javascript
+cd ..
 func host start
 ```
 
-You should see the Azure Functions runtime start hosting your CreateVotingNode function locally with the following message at the end:
-```sh
-Http Functions:
+Follow the instructions in the prompt and soon you will see from the logs that the function is running locally on http://localhost:7071/api/CreateVotingNode
 
-        CreateVotingNode: http://localhost:7071/api/CreateVotingNode
-``` 
-
-Now we are ready to test the function, running locally, but connecting to CosmosDB on your Azure subscription. In this function we create the voting session by accepting POST requests with the following JSON body, so this will be the object we process in the body of the function:
+Now we are ready to test the function. In this function we create the voting session by accepting POST requests with the following JSON body, so this will be the object we process in the body of the function:
 ```javascript
 {
     "votingname": "pizza vote",
@@ -324,7 +315,7 @@ One option is to use Postman on that URL, with the content of a Voting Session w
 
 ![Postman testing](src/Content/Images/CreateVoting-Postman.PNG)
 
-You can also debug the function - once the function is running, in Visual Studio Code, in the Debug view, click the Play button next to Attach to Azure Functions. Now you can attach breakpoints, inspect variables, and step through code. Try it out!
+You can also debug the function - once the function is running, in Visual Studio Code, in the Debug view, select Attach to Azure Functions. You can attach breakpoints, inspect variables, and step through code. Try it out!
 
 ### 3.3. Serverless Function - Close / Re-Open Voting Session
 
@@ -335,13 +326,24 @@ In this function we will disable or enable a voting session by modifying the val
 ```javascript
 //This creates a new function in the function app
 func new 
-// next enter 2 (to choose 2. JavaScript)
-// next enter 2 (to choose 2. HttpTrigger) 
+// next select JavaScript
+// next select HttpTrigger 
 // next provide CloseVotingNode as the name of the function
 
-// Now type the following to open Visual Studio Code if you don't have it already open
+// this will open Visual Studio Code with your function app and the new CloseVotingNode function in it. If you already have it open you can skip this command
 code . 
 ```
+
+This function will accept POST request with the following request object:
+
+```javascript
+{
+	"id":"pizzavote",
+	"isOpen":false
+}
+```
+
+You can change isOpen to true or false to open or close a voting session.
 
 The bindings configuration for this function is different from the Create Voting function. We define both an in binding to find the existing document using the `votingname` value from the request, and an output binding to update the document on our data store. Update `function.json` in the `CloseVotingNode` folder with the following:
 
@@ -362,27 +364,27 @@ The bindings configuration for this function is different from the Create Voting
       "name": "res"
     },
     {
-      "type": "cosmosDB",
+      "type": "documentDB",
       "name": "inputDocument",
       "databaseName": "votingbot",
       "collectionName": "votingbot",
       "sqlQuery": "SELECT * from c where c.id = {id}",
-      "connectionStringSetting": "votingbot_DOCUMENTDB",
+      "connection": "votingbot_DOCUMENTDB",
       "direction": "in"
     },
     {
-      "type": "cosmosDB",
+      "type": "documentDB",
       "name": "outputDocument",
       "databaseName": "votingbot",
       "collectionName": "votingbot",
-      "connectionStringSetting": "votingbot_DOCUMENTDB",
+      "connection": "votingbot_DOCUMENTDB",
       "direction": "out"     
     }
   ]
 }
 ```
 
-In this function the bindings do a lot of the work for us, so your code can focus on your logic. Update `index.js` in the `CloseVotingNode` folder with the following:
+In this function the bindings do a lot of the work for us. Update `index.js` in the `CloseVotingNode` folder with the following:
 
 ```javascript
 module.exports = function (context, req) {
@@ -432,28 +434,7 @@ module.exports = function (context, req) {
 };
 ```
 
-This function will accept POST request with the following request object:
-
-```javascript
-{
-	"id":"pizzavote",
-	"isOpen":false
-}
-```
-
-You can change isOpen to true or false to open or close a voting session.
-
-Let's run and test the function in the same way we did in Create Voting function against the URL for this function at http://localhost:7071/api/CloseVotingNode.
-
-From the terminal or command line in your `VotingBot` folder, start hosting the functions locally again with `func host start`. This time you should see both functions being hosted, with the following message at the end of the logs:
-```sh
-Http Functions:
-
-        CloseVotingNode: http://localhost:7071/api/CloseVotingNode
-
-        CreateVotingNode: http://localhost:7071/api/CreateVotingNode
-```
-Here's an example of testing the function using Postman:
+Let's run and test the function in the same way we did in Create Voting function. You will notice that the URL for this function is at http://localhost:7071/api/CloseVotingNode and you can test it as follows:
 
 ![Postman testing](src/Content/Images/CloseVoting-Postman.PNG)
 
@@ -466,12 +447,22 @@ From the `VotingBot` folder in the command prompt executing the following comman
 ```javascript
 //This creates a new function in the function app
 func new 
-// next enter 2 (to choose 2. JavaScript)
-// next enter 2 (to choose 2. HttpTrigger) 
+// next select JavaScript
+// next select HttpTrigger 
 // next provide VoteNode as the name of the function
 
-// Now type the following to open Visual Studio Code if you don't have it already open
+// this will open Visual Studio Code with your function app and the new VoteNode function in it. If you already have it open you can skip this command
 code . 
+```
+
+The function will work with the following request object:
+
+```javascript
+{
+    "id": "pizzavote",
+    "user": "Ted",
+    "option": "QuattroStagioni"
+}
 ```
 
 Update `function.json` in the `VoteNode` folder as follows to include an output binding for our data store, it's the same as the previous function:
@@ -494,20 +485,20 @@ Update `function.json` in the `VoteNode` folder as follows to include an output 
       "name": "res"
     },
     {
-      "type": "cosmosDB",
+      "type": "documentDB",
       "name": "inputDocument",
       "databaseName": "votingbot",
       "collectionName": "votingbot",
       "sqlQuery": "SELECT * from c where c.id = {id}",
-      "connectionStringSetting": "votingbot_DOCUMENTDB",
+      "connection": "votingbot_DOCUMENTDB",
       "direction": "in"
     },
     {
-      "type": "cosmosDB",
+      "type": "documentDB",
       "name": "outputDocument",
       "databaseName": "votingbot",
       "collectionName": "votingbot",
-      "connectionStringSetting": "votingbot_DOCUMENTDB",
+      "connection": "votingbot_DOCUMENTDB",
       "direction": "out"     
     }
   ]
@@ -591,18 +582,7 @@ module.exports = function (context, req) {
     context.done();
 };
 ```
-
-The function will work with the following request object:
-
-```javascript
-{
-    "id": "pizzavote",
-    "user": "Ted",
-    "option": "QuattroStagioni"
-}
-```
-
-Run and test this new function similarly to the previous two functions. You should get the new document back. For example:
+Run and test it similarly to the previous two functions. You should get the new document back. For example:
 ![Postman testing](src/Content/Images/Vote-Postman.PNG)
 
 ### 3.5.  Serverless Function - Voting Session Status 
@@ -614,17 +594,17 @@ From the `VotingBot` folder in the command prompt executing the following comman
 ```javascript
 //This creates a new function in the function app
 func new 
-// next enter 2 (to choose 2. JavaScript)
-// next enter 2 (to choose 2. HttpTrigger) 
+// next select JavaScript
+// next select HttpTrigger 
 // next provide VotingStatusNode as the name of the function
 
-// Now type the following to open Visual Studio Code if you don't have it already open
+// this will open Visual Studio Code with your function app and the new VotingStatusNode function in it. If you already have it open you can skip this command
 code . 
 ```
 
-While this function could just implement the GET HTTP method and require an `id` in the query string, we will make it work with an POST HTTP method in order to integrate with the Squire Bot. The function therefore requires an id value in the body of the request.
+This functions will accept POST HTTP method in order to integrate with the Squire. The function requires id value in the body of the request. Below you can find function.json file contents. We map the votingname to the documentDB outputbinding sqlQuery.
 
-Update `function.json` of your VotingStatusNode function with the following:
+Update `function.json` with the following:
 
 ```javascript
 {
@@ -643,16 +623,17 @@ Update `function.json` of your VotingStatusNode function with the following:
       "name": "res"
     },
     {
-      "type": "cosmosDB",
+      "type": "documentDB",
       "name": "inputDocument",
       "databaseName": "votingbot",
       "collectionName": "votingbot",
       "sqlQuery": "SELECT * from c where c.id = {id}",
-      "connectionStringSetting": "votingbot_DOCUMENTDB",
+      "connection": "votingbot_DOCUMENTDB",
       "direction": "in"
     }
   ]
 }
+
 ```
 
 The binding will return the voting document with all of the votes. We then return the whole voting document:
@@ -700,15 +681,7 @@ module.exports = function (context, req) {
 };
 ```
 
-Run and test it similarly to the previous functions. The function will work with the following request object:
-
-```javascript
-{
-    "id": "pizzavote"
-}
-```
-
-For example:
+Run and test it similarly to the previous functions. For example:
 ![Postman testing](src/Content/Images/VotingStatus-Postman.PNG)
 
 ### 3.6.  Serverless Function - Delete Voting Session 
@@ -720,12 +693,20 @@ From the `VotingBot` folder in the command prompt executing the following comman
 ```javascript
 //This creates a new function in the function app
 func new 
-// next enter 2 (to choose 2. JavaScript)
-// next enter 2 (to choose 2. HttpTrigger) 
+// next select JavaScript
+// next select HttpTrigger 
 // next provide DeleteVotingNode as the name of the function
 
-// Now type the following to open Visual Studio Code if you don't have it already open
+// this will open Visual Studio Code with your function app and the new DeleteVotingNode function in it. If you already have it open you can skip this command
 code . 
+```
+
+This functions will expect the voting session id in the request body:
+
+```javascript
+{
+	"id":"pizzavote"
+}
 ```
 
 Update `function.json` with the following:
@@ -745,12 +726,12 @@ Update `function.json` with the following:
       "name": "res"
     },
     {
-      "type": "cosmosDB",
+      "type": "documentDB",
       "name": "inputDocument",
       "databaseName": "votingbot",
       "collectionName": "votingbot",
       "sqlQuery": "SELECT * from c where c.id = {id}",
-      "connectionStringSetting": "votingbot_DOCUMENTDB",
+      "connection": "votingbot_DOCUMENTDB",
       "direction": "in"
     }
   ]
@@ -824,22 +805,22 @@ function deleteDocument(partitionKey, id) {
 
 In this file we are using the `documentdb` npm package. So that you can test the function locally, you need to install the package too. You can easily do that in Visual Studio Code or from the command line / terminal:
 
-1. From the command line or terminal, browse to the folder of the DeleteVotingNode function:
+1. Open the Integrated Terminal in Visual Studio Code by clicking Ctrl + ` or from the menu View -> Integrated Terminal
+
+2. Navigate to the folder for your function:
 ```javascript
 cd DeleteVotingNode
 ```
 
-2. Then type
+3. Then type
 ```javascript
 npm install documentdb
 ```
 
-This functions will expect the voting session id in the request body:
-
+Now it is time to test the function. Again, in the Integrated Terminal, type 
 ```javascript
-{
-	"id":"pizzavote"
-}
+cd ..
+func host start
 ```
 
 Run and test it similarly to the previous functions. For example:
@@ -848,26 +829,26 @@ Run and test it similarly to the previous functions. For example:
 
 ## 4. Azure Configuration
 
-Alright. Now that we have all the functions running locally, we can push it to Azure. Azure Functions on Azure can be deployed (through several ways)[https://docs.microsoft.com/en-us/azure/azure-functions/functions-continuous-deployment]. In order to get the code running in Azure you need a little bit more work.
+In order to get the code running in Azure you need a little bit more work.
 
-1. Setup a new Azure Function in your Azure subscription. You can do it via either:
-    1. The Azure CLI (stop after Create a function app)   https://docs.microsoft.com/en-us/azure/azure-functions/functions-create-first-azure-function-azure-cli
-    2. [The Azure Portal](https://docs.microsoft.com/en-us/azure/azure-functions/functions-create-first-azure-function, or 
-2. Once you have created the Function App on your Azure subscription, navigate to your `VotingBot` folder and execute the following command following the instructions:
+1. Push your code in GitHub 
+2. Setup Azure Portal CLI following the instructions here - https://docs.microsoft.com/en-us/azure/azure-functions/functions-create-first-azure-function-azure-cli
+3. Then in the command prompt navigate to the folder of your funtion app and execute the following command:\
 
 ```javascript
-func azure functionapp publish <<FunctionAppName>>
+
+func azure functionapp publish <FunctionAppName>
+
 ```
+Where FunctionAppName is the name of the Azure Function App.
 
-Where FunctionAppName is the name of the Azure Function App you created earlier.
+The last step is the configure App Settings. Go again to Platform Features of your Function App and select Application Settings.
 
-Finally, the last configuration step is the configure App Settings. In the Azure Portal (go to Platform Features of your Function App)[https://docs.microsoft.com/en-us/azure/azure-functions/functions-how-to-use-azure-function-app-settings] and set the following App Setting:
+You have to set the following App Setting:
 
 Variable | Details
 ------------ | -------------
 votingbot_DOCUMENTDB | connection string for DocumentDB as per previous steps
-
-You can then test your function using Postman again, but using the URL of your deployed function on Azure.
 
 ## 5. Integrate into Squire Bot
 
