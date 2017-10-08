@@ -202,14 +202,14 @@ code .
 
 Next let's modify the main files for this function.
 
-Modify the `local.settings.json` file in the `VotingBot` folder and add a `votingbot_DOCUMENTDB` entry to the values section, then update the connection string with the values for your Cosmos DB account name and the primary key, or connection string, that you copied earlier:
+Modify the `local.settings.json` file in the `VotingBot` folder and add a `votingbot_COSMOSDB` entry to the values section, then update the connection string with the values for your Cosmos DB account name and the primary key, or connection string, that you copied earlier:
 
 ```javascript
 {
   "IsEncrypted": false,
   "Values": {
     "AzureWebJobsStorage": "",
-    "votingbot_DOCUMENTDB": "AccountEndpoint=https://<<<<Replace-with-Your-CosmosDB-Account-Name>>>>.documents.azure.com:443/;AccountKey=<<<<Replace-with-Your-CosmosDB-Primary-Key>>>>;"
+    "votingbot_COSMOSDB": "AccountEndpoint=https://<<<<Replace-with-Your-CosmosDB-Account-Name>>>>.documents.azure.com:443/;AccountKey=<<<<Replace-with-Your-CosmosDB-Primary-Key>>>>;"
   }
 }
 
@@ -242,7 +242,7 @@ In Visual Studio Code modify the `function.json` file in the `CreateVotingode` f
       "databaseName": "votingbot",
       "collectionName": "votingbot",
       "createIfNotExists": true,
-      "connectionStringSetting": "votingbot_DOCUMENTDB",
+      "connectionStringSetting": "votingbot_COSMOSDB",
       "direction": "out",
       "partitionKey": "/votingname"
     }
@@ -367,7 +367,7 @@ The bindings configuration for this function is different from the Create Voting
       "databaseName": "votingbot",
       "collectionName": "votingbot",
       "sqlQuery": "SELECT * from c where c.id = {id}",
-      "connectionStringSetting": "votingbot_DOCUMENTDB",
+      "connectionStringSetting": "votingbot_COSMOSDB",
       "direction": "in"
     },
     {
@@ -375,7 +375,7 @@ The bindings configuration for this function is different from the Create Voting
       "name": "outputDocument",
       "databaseName": "votingbot",
       "collectionName": "votingbot",
-      "connectionStringSetting": "votingbot_DOCUMENTDB",
+      "connectionStringSetting": "votingbot_COSMOSDB",
       "direction": "out"     
     }
   ]
@@ -499,7 +499,7 @@ Update `function.json` in the `VoteNode` folder as follows to include an output 
       "databaseName": "votingbot",
       "collectionName": "votingbot",
       "sqlQuery": "SELECT * from c where c.id = {id}",
-      "connectionStringSetting": "votingbot_DOCUMENTDB",
+      "connectionStringSetting": "votingbot_COSMOSDB",
       "direction": "in"
     },
     {
@@ -507,7 +507,7 @@ Update `function.json` in the `VoteNode` folder as follows to include an output 
       "name": "outputDocument",
       "databaseName": "votingbot",
       "collectionName": "votingbot",
-      "connectionStringSetting": "votingbot_DOCUMENTDB",
+      "connectionStringSetting": "votingbot_COSMOSDB",
       "direction": "out"     
     }
   ]
@@ -648,7 +648,7 @@ Update `function.json` of your VotingStatusNode function with the following:
       "databaseName": "votingbot",
       "collectionName": "votingbot",
       "sqlQuery": "SELECT * from c where c.id = {id}",
-      "connectionStringSetting": "votingbot_DOCUMENTDB",
+      "connectionStringSetting": "votingbot_COSMOSDB",
       "direction": "in"
     }
   ]
@@ -750,7 +750,7 @@ Update `function.json` with the following:
       "databaseName": "votingbot",
       "collectionName": "votingbot",
       "sqlQuery": "SELECT * from c where c.id = {id}",
-      "connectionStringSetting": "votingbot_DOCUMENTDB",
+      "connectionStringSetting": "votingbot_COSMOSDB",
       "direction": "in"
     }
   ]
@@ -761,7 +761,7 @@ We can't delete CosmosDB documents using bindings, so we will use the `documentd
 
 ```javascript
 var documentClient = require("documentdb").DocumentClient;
-var connectionString = process.env["votingbot_DOCUMENTDB"];
+var connectionString = process.env["votingbot_COSMOSDB"];
 var arr = connectionString.split(';');
 var endpoint = arr[0].split('=')[1];
 var primaryKey = arr[1].split('=')[1] + "==";
@@ -850,24 +850,53 @@ Run and test it similarly to the previous functions. For example:
 
 Alright. Now that we have all the functions running locally, we can push it to Azure. Azure Functions on Azure can be deployed (through several ways)[https://docs.microsoft.com/en-us/azure/azure-functions/functions-continuous-deployment]. In order to get the code running in Azure you need a little bit more work.
 
-1. Setup a new Azure Function in your Azure subscription. You can do it via either:
-    1. The Azure CLI (stop after Create a function app)   https://docs.microsoft.com/en-us/azure/azure-functions/functions-create-first-azure-function-azure-cli
-    2. [The Azure Portal](https://docs.microsoft.com/en-us/azure/azure-functions/functions-create-first-azure-function, or 
-2. Once you have created the Function App on your Azure subscription, navigate to your `VotingBot` folder and execute the following command following the instructions:
+#### 4.1 Create the Function App via the Azure CLI in the Portal
+
+You can [install the Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) on your machine, or use it from the [Cloud Shell inside the Azure Portal](https://docs.microsoft.com/en-us/azure/cloud-shell/overview).
+
+Using the Azure CLI, or the Cloud Shell button on the menu in the upper-right of the Azure portal, replace the value of the `storageAccountName` and `functionAppName` variables below with unique names that you make up, and `votingBotCosmosDBConnStr` with the same connection string to your CosmosDB instance from before. Then run the following file to create our Function App:
+
+```sh
+#!/bin/bash
+
+# Set variables 
+resourceGroupName='votingbot'
+location='eastus'
+storageAccountName='<<<<Replace-with-Your-Unique-Name>>>>'
+functionAppName='<<<<Replace-with-Your-Unique-Name>>>>'
+votingBotCosmosDBConnStr='<<<<Replace-with-Your-CosmosDB-ConnStr>>>>'
+databaseName='votingbot'
+collectionName='votingbot'
+partitionkeypath='/votingname'
+
+# Create an azure storage account
+az storage account create \
+  --name $storageAccountName \
+  --location $location \
+  --resource-group $resourceGroupName \
+  --sku Standard_LRS
+
+# Create Function App
+az functionapp create \
+  --name $functionAppName \
+  --storage-account $storageAccountName \
+  --consumption-plan-location $location \
+  --resource-group $resourceGroupName
+
+# Configure the function for v2 and add the cosmosDB connection string
+az functionapp config appsettings set --name $functionAppName \
+--resource-group $resourceGroupName \
+--settings FUNCTIONS_EXTENSION_VERSION=beta votingbot_COSMOSDB=$votingBotCosmosDBConnStr
+```
+
+Once you have created the Function App on your Azure subscription, navigate to your `VotingBot` folder and execute the following command following the instructions, replacing `FunctionAppName` for the name of your function app from the previous script:
 
 ```javascript
 func azure functionapp publish <<FunctionAppName>>
 ```
 
-Where FunctionAppName is the name of the Azure Function App you created earlier.
+You can then test your function using Postman again, but using the URL of your deployed function on Azure. (Use the Azure Portal to get the URLs of your deployed functions)[https://docs.microsoft.com/en-us/azure/azure-functions/functions-create-first-azure-function#test-the-function].
 
-Finally, the last configuration step is the configure App Settings. In the Azure Portal (go to Platform Features of your Function App)[https://docs.microsoft.com/en-us/azure/azure-functions/functions-how-to-use-azure-function-app-settings] and set the following App Setting:
-
-Variable | Details
------------- | -------------
-votingbot_DOCUMENTDB | connection string for DocumentDB as per previous steps
-
-You can then test your function using Postman again, but using the URL of your deployed function on Azure.
 
 ## 5. Integrate into Squire Bot
 
