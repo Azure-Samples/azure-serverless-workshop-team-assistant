@@ -1,0 +1,20 @@
+{
+  "votingname": "pizzavote",
+  "name": "Pizza Voting",
+  "isOpen": true,
+  "question": "What pizza do you want?",
+  "options": [
+      {
+          "text": "Pepperoni"
+      },
+      {
+          "text": "Mushrooms"
+      },
+      {
+          "text": "Margherita"
+      },
+      {
+          "text": "Quattro Stagioni"
+      }
+  ]
+}
