@@ -13,12 +13,12 @@
       "name": "res"
     },
     {
-      "type": "documentDB",
+      "type": "cosmosDB",
       "name": "inputDocument",
       "databaseName": "votingbot",
       "collectionName": "votingbot",
       "sqlQuery": "SELECT * from c where c.id = {id}",
-      "connection": "votingbot_DOCUMENTDB",
+      "connectionStringSetting": "votingbot_DOCUMENTDB",
       "direction": "in"
     }
   ]

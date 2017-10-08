@@ -13,12 +13,12 @@
       "name": "res"
     },
     {
-      "type": "cosmosDB",
+      "type": "documentDB",
       "name": "outputDocument",
       "databaseName": "votingbot",
       "collectionName": "votingbot",
       "createIfNotExists": true,
-      "connectionStringSetting": "votingbot_DOCUMENTDB",
+      "connection": "votingbot_DOCUMENTDB",
       "direction": "out",
       "partitionKey": "/votingname"
     }

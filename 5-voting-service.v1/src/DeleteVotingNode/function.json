@@ -1,10 +1,10 @@
 {
+  "disabled": false,
   "bindings": [
     {
       "authLevel": "function",
       "type": "httpTrigger",
       "direction": "in",
-      "methods": [ "post" ],
       "name": "req"
     },
     {
@@ -13,15 +13,13 @@
       "name": "res"
     },
     {
-      "type": "cosmosDB",
-      "name": "outputDocument",
+      "type": "documentDB",
+      "name": "inputDocument",
       "databaseName": "votingbot",
       "collectionName": "votingbot",
-      "createIfNotExists": true,
-      "connectionStringSetting": "votingbot_DOCUMENTDB",
-      "direction": "out",
-      "partitionKey": "/votingname"
+      "sqlQuery": "SELECT * from c where c.id = {id}",
+      "connection": "votingbot_DOCUMENTDB",
+      "direction": "in"
     }
-  ],
-  "disabled": false
+  ]
 }
