@@ -1,0 +1,27 @@
+{
+  "bindings": [
+    {
+      "authLevel": "function",
+      "type": "httpTrigger",
+      "direction": "in",
+      "methods": [ "post" ],
+      "name": "req"
+    },
+    {
+      "type": "http",
+      "direction": "out",
+      "name": "res"
+    },
+    {
+      "type": "cosmosDB",
+      "name": "outputDocument",
+      "databaseName": "votingbot",
+      "collectionName": "votingbot",
+      "createIfNotExists": true,
+      "connectionStringSetting": "votingbot_DOCUMENTDB",
+      "direction": "out",
+      "partitionKey": "/votingname"
+    }
+  ],
+  "disabled": false
+}

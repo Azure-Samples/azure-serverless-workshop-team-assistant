@@ -1,0 +1,25 @@
+{
+  "disabled": false,
+  "bindings": [
+    {
+      "authLevel": "function",
+      "type": "httpTrigger",
+      "direction": "in",
+      "name": "req"
+    },
+    {
+      "type": "http",
+      "direction": "out",
+      "name": "res"
+    },
+    {
+      "type": "cosmosDB",
+      "name": "inputDocument",
+      "databaseName": "votingbot",
+      "collectionName": "votingbot",
+      "sqlQuery": "SELECT * from c where c.id = {id}",
+      "connectionStringSetting": "votingbot_DOCUMENTDB",
+      "direction": "in"
+    }
+  ]
+}
