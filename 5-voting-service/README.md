@@ -895,7 +895,7 @@ Once you have created the Function App on your Azure subscription, navigate to y
 func azure functionapp publish <<FunctionAppName>>
 ```
 
-You can then test your function using Postman again, but using the URL of your deployed function on Azure. (Use the Azure Portal to get the URLs of your deployed functions)[https://docs.microsoft.com/en-us/azure/azure-functions/functions-create-first-azure-function#test-the-function].
+You can then test your function using Postman again, but using the URL of your deployed function on Azure. [Use the Azure Portal to get the URLs of your deployed functions](https://docs.microsoft.com/en-us/azure/azure-functions/functions-create-first-azure-function#test-the-function).
 
 
 ## 5. Integrate into Squire Bot
