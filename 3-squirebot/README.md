@@ -385,7 +385,7 @@ If you go to your Resource Group you created for your Function App, you should a
 
 Be sure you create your container with the name "content". If you change it, you need to modify the package.json "build" script to use a different name. Also be sure you create it with "Blob" selected for anonymous access.
 
-< Container create screen shot >
+![Container create screenshot](./images/container-create.png)
 
 Now click upload and select all the content in the `dist` directory.
 
