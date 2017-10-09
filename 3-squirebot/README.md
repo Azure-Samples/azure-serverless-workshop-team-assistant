@@ -213,6 +213,7 @@ az group create \
 az cosmosdb create \
 	--name $databaseAccountname \
 	--resource-group $resourceGroupName
+	--kind MongoDB
 
 # Create a database
 az cosmosdb database create \
