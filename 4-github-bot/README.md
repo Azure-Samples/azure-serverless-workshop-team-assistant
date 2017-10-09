@@ -17,7 +17,9 @@ This project  provides the following features:
 
 ### Prerequisites
 
-1.	You need to have GitHub account, if you don’t please create one here https://github.com
+1.	You need to have GitHub account with a repo, if you don’t please create one here https://github.com - or you can use the provided account:  
+  Username: azureserverlessdemo@gmail.com
+  Password: S3rverless1
 
 2.	Access to Azure Subscription, please check here https://portal.azure.com
 
@@ -80,7 +82,11 @@ This project  provides the following features:
    
     ![Github data](Content/Images/12-GitHubFields.png)
    
-     - For title and body will pick dynamic content fields - title and text. Also set the correct repository and its owner.    
+     - For title and body will pick dynamic content fields - title and text. Also set the correct repository and its owner.  If using the associated GitHub account (azureservlessdemo@gmail.com) there is a repo already set up.  You can use this info **only if you authenticated with the demo account**.  If not use a repo in your own GitHub.   
+      Repo Owner: azuerserverlessdemo  
+      Repo Name: squirebotdemo  
+      Title: You can pass in the title from the trigger here.   
+      Text: You can pass in the text from the trigger here.  
      
      ![Github dynamic data](Content/Images/13-GitHubDyniamicValues.png)
      
