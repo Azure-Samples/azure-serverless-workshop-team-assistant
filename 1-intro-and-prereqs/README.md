@@ -48,12 +48,14 @@ Today you'll need the following developer tools:
  - [Azure Functions Core Tools 2.0 aka @core](https://www.npmjs.com/package/azure-functions-core-tools)
     - npm i -g azure-functions-core-tools@core
  - [Bot Framework Emulator](https://github.com/Microsoft/BotFramework-Emulator/releases/tag/v3.5.31). 
-     * NOTE: If you have a problem with the latest Mac installers. So, install the older release [botframework\-emulator\-3\.5\.19\-mac\.zip](https://github.com/Microsoft/BotFramework-Emulator/releases/download/v3.5.19/botframework-emulator-3.5.19-mac.zip). The emulator will automatically download updates when it launches, and you simply have to restart it once that is complete.
+     * NOTE: If you have a problem with the latest Mac installers, you can install the older release [botframework\-emulator\-3\.5\.19\-mac\.zip](https://github.com/Microsoft/BotFramework-Emulator/releases/download/v3.5.19/botframework-emulator-3.5.19-mac.zip). The emulator will automatically download updates when it launches, and you simply have to restart it once that is complete.
  - [Azure CLI 2.0](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
  - [Azure Storage Explorer](https://azure.microsoft.com/en-us/features/storage-explorer/).
  - A modern browser
  - A REST API tool (cURL or [Postman](https://www.getpostman.com/) will do)
- - [VS Code](https://code.visualstudio.com/Download)
+ -  Visual Studio, either:
+   - [Visual Studio 2017 Update 3](https://www.visualstudio.com/downloads/) with the Azure workload installed (Windows)
+   - [Visual Studio Code](https://code.visualstudio.com/download) with the [C# extension](https://code.visualstudio.com/docs/languages/csharp) (Mac/Linux)
     - If you'd prefer to use a different tool than VS Code, that's totally fine. You might need some help getting debugging working later on, but it's not required.
 
 ## 3. Introduction
