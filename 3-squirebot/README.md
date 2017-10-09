@@ -279,6 +279,8 @@ It should look something like:
 }
 ```
 
+Be sure that "UseInMemoryStore" is set to false!!!
+
 Now go back and restart your Function's host. If you reload the webpage, it should have no Tasks on it now.
 
 Let's deploy the app to Azure before we start adding new tasks.
