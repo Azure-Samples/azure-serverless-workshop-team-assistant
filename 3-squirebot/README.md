@@ -427,9 +427,13 @@ Now go to the route you created for your index file and view your webpage workin
 
 1. To get started, go to the bot framework and (if you haven't already) sign up for an account.
 
-2. Create a new bot. Follow the instructions in the UI to set everything up and provide the URL in the Azure Function's portal for your "bot" function as the bot's main URL. Once it's created you should end up on a page where you can choose which connectors to connect.
+2. Create a new bot. Follow the instructions in the UI to set everything up and provide the URL in the Azure Function's portal for your "bot" function as the bot's main URL. Once it's created you should end up on a page where you can choose which connectors to connect. Save the App ID and Secret that you create to configure the bot.
 
-3. You should be able to then "test" your bot via the "test" button. This opens a web based bot interface. Type "hello" in there and then try to tell it to do something (like "fetch me my lance").
+3. Go to your Function App and set the app settings with the App ID and secret from the previous step:
+    - MICROSOFT_APP_ID
+    - MICROSOFT_APP_PASSWORD
+
+4. You should be able to then "test" your bot via the "test" button. This opens a web based bot interface. Type "hello" in there and then try to tell it to do something (like "fetch me my lance").
 
 It doesn't know how to do that, probably. Well go back to your newly deployed squire bot webpage (either the CORS or non-CORS version) and create a new task. This time, point it to your "hello" funciton in your Function App that you've already deployed (copy+paste the URL from the Functions UI to get the API key). I'd recommend calling the bot "hello world" rather than "hello" since this conflicts with the default greeting. Make sure to create a parameter named "hello" with a prompt like "What is your name?".
 
