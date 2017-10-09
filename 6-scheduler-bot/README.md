@@ -82,6 +82,12 @@ Now the function can correctly return back available times - we just need to wri
 
 ## Building the Logic App
 
+So we have a Google Account setup with the following schedule for calendars from Jeff (azureserverlessdemo - the green items) and Thiago (ujmqvr5.... - the yellow ones).  We need to pull *both* of their agendas and push this data to our Function to calculate when there is an available meeting time between 8am and 5pm.  Here's a sample of both of their calendars:  
+
+![agenda](images/8.png)  
+
+Do this we are going to use Azure Logic Apps and their connectors with services like Google Calendar.  We will also be doing a small "scatter-gather" pattern by spinning a worker for each calendar and then aggregating the results for all calendars.
+
 1. Go to the [Azure Portal](https://portal.azure.com)
 1. Create a new logic app called `scheduler-bot` in any region you prefer
 1. Open the logic app and add a `Request` trigger
