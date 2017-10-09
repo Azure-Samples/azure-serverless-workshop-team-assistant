@@ -10,7 +10,13 @@ The eventual flow will be:
 1. A Function is called to calculate availability in calendars
 1. A response is returned to the user with available times
 
+To simplify the lab we already have a Google account setup with 2 users whos calendars we are going to look into.  However, the lab could work with any number of google calendars - as long as you have an account that can access them.  The Google API requires you reference the calendar by the calendar ID, like `azureserverlessdemo@gmail.com` would be the main calendar for that account.  In a real-world solution we would likely store a "friendly name" for the calendar - but for the purpose of simplicity we will keep the full calendar ID for this module.
+
+First let's build a function that can calculate available timeslots after recieving a list of scheduled appointments.  This function will find all timeslots during a day between 8am and 5pm.
+
 ## Building the function
+
+Let's build a function to find available time slots when the schedule is hard-coded in.
 
 1. In your function app on your machine, create a new javascript function called `SchedulerBot`
     * `func new` -> `JavaScript` -> `HttpTrigger`
@@ -34,7 +40,7 @@ The eventual flow will be:
 }
 ```
 
-This is stating that there is one available timeslot between 2:01pm and 5:00pm.
+This is stating that there is one available timeslot between 2:01pm and 5:00pm. Now let's replace the function so the schedule will be passed in and dynamically generated.  This will work when our Logic App is able to pass in the schedule information from Google Calendar.
 
 1. Go back to the `index.js` file and replace the 
 
@@ -51,7 +57,7 @@ var scheduledEvents = [
 
 with this snippet: [code snippet](src/step-2/index.snippet.js)  (the full index.js should look [like this](src/step-2/index.js))
 
-1. Run the function again after saving changes, and this time when you POST, post with the following JSON body: [sample JSON](src/step-2/sample.json)
+1. Run the function again after saving changes, and this time when you POST, post with the following JSON body: [sample JSON](src/step-2/sample.json).  This is what the Logic App will generate.
 
 **Response from step-2 index.js with sample.json body**
 ```javascript
