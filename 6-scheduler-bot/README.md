@@ -98,10 +98,10 @@ Do this we are going to use Azure Logic Apps and their connectors with services 
         "people": "azureserverlessdemo@gmail.com,ujmqvr5ouk8p9nmia2o4h6o33o@group.calendar.google.com"
     }
     ```
-    This is specifying that the bot will send in a "people" parameter.
+    This is specifying that the bot will send in a "people" parameter.  It will have a single value that is **comma seperated**.  We'll need to split it up in the app.  
 1. Now we need to initialize a variable that will store each event schedule.  Add a step for **Initialize variable**.  Name the variable **schedules**, make it an Array, and you can leave the value empty.  
     ![](images/4.png)
-1. Add a New step, and under **..More** select **Add a for each** as we need to grab calendar details FOR EACH of the `people` from the trigger.
+1. Add a New step, and under **..More** select **Add a for each** as we need to grab calendar details FOR EACH of the `people` from the trigger.  However, if you recall the "people" we are sending in with the sample above are all in a single property.  They are seperated by a comma.  So we need to "split" the people by commas.  Doing a split will return an array, something like: `['person1', 'person2']` which will allow us to iterate over each person.  While we could write an Azure Function to do this, there is a simple [workflow definition language](http://aka.ms/logicappsdocs) to do basic transformations like this.  
 1. In the `Select an output from previous steps`, select the **Expression** tab on the right and type in the following expression to split the people by a `,`: `split(triggerBody()['people'], ',')` -> then press **OK**  
     **HINT**: If you don't see expressions, zoom your browser out. You may be in "responsive" mode.  
     ![](images/5.png)
@@ -110,20 +110,20 @@ Do this we are going to use Azure Logic Apps and their connectors with services 
 1. Sign in with the following account:
     * username: `azureserverlessdemo@gmail.com`
     * password: `s3rverless1`
-1. For the **Calendar ID** select **Enter custom value**.  Choose another expression to get the current item of the foreach loop.  The expression is: `item()`
+1. For the **Calendar ID** select **Enter custom value**.  Choose another expression to get the current item of the foreach loop.  The expression is: `item()`.  Open the expression editor tab again and type in `item()`  
 1. Add another step in the foreach to **Append to array variable** - append the **Event List** to the "schedules" array.  
     ![](images/6.png)  
 1. After/outside the foreach, call the function to evaluate the responses.
     * Add a function, select your app, select the `ScheduleBot` function
     * Pass in the **schedules** variable to the function
-1. Add a response after the function, paste in the following to return a message to the bot:  
+1. Add a response after the function, paste in the following to return a message to the bot.  This will just return a stringified version of the response body from the Function Step (called `SchedulerBot`):  
     ```json
     {
     "message": "@{body('SchedulerBot')}"
     }
     ```  
     ![](images/7.png)
-1. Save the logic app, and grab the trigger invoke URL from the trigger
+1. Save the logic app, and copy the trigger invoke URL from the trigger.  If you want before registering with the bot you can debug by using a REST client (like Postman) and POSTing to the Logic App URL with sample payload from step 5 above.  However you can just register it to your bot to see it work live if you want.
 
 ## Train the bot
 Go to the Squire UX and add a new skill.
