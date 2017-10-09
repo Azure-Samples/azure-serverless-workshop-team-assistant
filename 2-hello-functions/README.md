@@ -211,3 +211,7 @@ The name of your Function is tied to the directory name, which in this case is `
 Now, if you start the funcitons host again, you'll see your API has changed to `api/lanceFetcher`. You don't have to change your Function name to change your route - you can also do it by setting the `route` property in the `function.json`. For example, if I change the `route` property to `foobar`, can access my function on `api/foobar`. If you want to remove `api` from the base route, you can do this in the host.json. You can [learn about host.json settings on docs.microsoft.com](https://docs.microsoft.com/en-us/azure/azure-functions/functions-host-json).
 
 Congratulations, you've now completed module 2 and created your first Function. You now know the basics on how to create a Functions project, how to create a Function from a template, how to edit and rename a Function, and how to run the Function locally.
+
+## 7. (Optional) Create a C# function in Visual Studio
+
+You can create a C# function app in Visual Studio with the same HTTP function as above. Follow the tutorial [Create your first function using Visual Studio](https://docs.microsoft.com/en-us/azure/azure-functions/functions-create-your-first-function-visual-studio).
