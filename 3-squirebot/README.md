@@ -48,15 +48,17 @@ You should now be able to see 1 task already existing for the build in "lanceFet
 
 ### 3. Bot Framework Emulator
 
+If you haven't already installed the emulator, you can download packages for Windows, Linux and macOS from the [GitHub releases page](https://github.com/Microsoft/BotFramework-Emulator/releases).
+
 Start the bot framework emulator and set the url to "http://localhost:7071/api/bot". You don't need to set the application id or secret.
 
 Then type "hello" into the chat, and the bot should greet you.
 
-You can then type "fetch me my lance" and the bot should prompt you with what size do you want your lance and what material. It should then return an ASCII lance to us.
+You can then type "Fetch me my lance" and the bot should prompt you with what size do you want your lance and what material. It should then return an ASCII lance to us.
 
 ## 3. How it works
 
-In the previous step, you started a Function App and a web client. The web client is an Angular project. Running in its current form, the service connects to "http://localhost:7071". This is determined by the `baseUrl` setting in the config file. 
+In the previous step, you started a Function App and a web client. The web client is an Angular project. Running in its current form, the service connects to "http://localhost:7071". This is determined by the `baseUrl` setting in the config file.
 
 Here's a sample from `./src/webapp/src/app/tasks.service.ts`:
 ```typescript
@@ -97,7 +99,7 @@ export class TasksService {
 
 In this case, this calls the `api/tasks` route on the Function App. Let's take a look at this Function. It's under [`./src/task-function/task-api`](https://github.com/christopheranderson/squirebot/blob/master/src/tasks-functions/task-api/index.js#L21-L53)
 
-The code below is the code that will run in response to the requests from our client when there is a GET request. 
+The code below is the code that will run in response to the requests from our client when there is a GET request.
 
 ```javascript
 function run(context, req) {
@@ -145,9 +147,9 @@ There are a few different approaches that people use with HTTP Triggered Functio
 2. 1 Function per Route
 3. 1 Function for many routes
 
-In general, the best practice with Functions is for a Function to "do 1 thing". If we wanted to hold true to that, we might go for option #1. In this case, though, we've done #2, mainly to keep the number of Functions we have to manage low. The nice thing about all of this is that it isn't very hard to refactor this later if we want to. 
+In general, the best practice with Functions is for a Function to "do 1 thing". If we wanted to hold true to that, we might go for option #1. In this case, though, we've done #2, mainly to keep the number of Functions we have to manage low. The nice thing about all of this is that it isn't very hard to refactor this later if we want to.
 
-If you look closer at the logic handling that GET request, it's calling `taskService.getTask(...)`. This `taskService` is coming from a shared module that our Functions use to talk to our database. You can take a look at it in the [`./src/tasks-functions/lib/tasks.js`](https://github.com/christopheranderson/squirebot/blob/master/src/tasks-functions/lib/tasks.js#L145). 
+If you look closer at the logic handling that GET request, it's calling `taskService.getTask(...)`. This `taskService` is coming from a shared module that our Functions use to talk to our database. You can take a look at it in the [`./src/tasks-functions/lib/tasks.js`](https://github.com/christopheranderson/squirebot/blob/master/src/tasks-functions/lib/tasks.js#L145).
 
 ```javascript
 getTasks(count, offset) {
@@ -179,9 +181,9 @@ Now that we've looked at how it all works, let's start getting it on Azure.
 
 ## 4. Working with CosmosDB
 
-You may be thinking, "Cosmos DB? I thought you just said Mongo DB?". 
+You may be thinking, "Cosmos DB? I thought you just said Mongo DB?".
 
-In case you're not aware, Cosmos DB is a managed document database that Microsoft Azure offers with a number of great features for serverless applications. One of the most interesting features for this sample, though, is that it has a Mongo DB compatible endpoint. This is helpful for us since we don't need to standup a Mongo DB instance and pay VM pricing for that.
+In case you're not aware, Cosmos DB is a managed multi-model database that Microsoft Azure offers with a number of great features for serverless applications. One of the most interesting features for this sample, though, is that it has a Mongo DB compatible endpoint. This is helpful for us since we don't need to standup a Mongo DB instance and pay VM pricing for that.
 
 You can create a Cosmos DB via the CLI or portal.
 
@@ -210,9 +212,9 @@ az group create \
 # Create a DocumentDB API Cosmos DB account
 az cosmosdb create \
 	--name $databaseAccountname \
-	--resource-group $resourceGroupName 
+	--resource-group $resourceGroupName
 
-# Create a database 
+# Create a database
 az cosmosdb database create \
 	--name $databaseAccountname \
 	--db-name $databaseName \
@@ -236,7 +238,7 @@ Follow these instructions if you didn't use the Azure CLI or Cloud Shell to crea
 Field | Value
 ------------ | -------------
 Id | <<<make up a unique name for you!>>>
-API | MongoDB 
+API | MongoDB
 Subscription | Your subscription (should already be selected)
 Resource Group | Create new, squire
 Location | East US
@@ -247,13 +249,13 @@ Here is an example:
 
 > Note: this Cosmos DB account create step takes a few minutes to finish
 
-3. After the account is created, create a new database named "squire". We don't need to create collections because MongoDB's client will do this for us automatically.
+3. After the account is created, create a new database named "squire" by selecting `Browse` underneath the `Collections` heading and clicking on `Add Database`. We don't need to create collections because MongoDB's client will do this for us automatically.
 
-4. Next we need to get the database connection string.You can find it under the section Keys in the left menu on the main screen for your Azure Cosmos DB account
+4. Next we need to get the database connection string.You can find it under the section `Connection String` in the left menu on the main screen for your Azure Cosmos DB account
 
-![Get Connection string for Azure Cosmos DB](../5-voting-service/src/Content/Images/CosmosDB-3.PNG)
+![Get Connection string for Azure Cosmos DB](images/connection_string.png)
 
-Copy the value of the Primary Connection String and save it. Soon we will add it to the local settings file in Visual Studio Code. 
+Copy the value of the Primary Connection String and save it. Soon we will add it to the local settings file in Visual Studio Code.
 
 #### Updating local settings
 
@@ -268,7 +270,7 @@ It should look something like:
     "IsEncrypted": false,
     "Host": {
         "CORS": "*"
-    },    
+    },
     "Values": {
         "UseInMemoryStore":"false",
         "MONGO_URL":"mongodb://username:password@host:10255/[database]?ssl=true"
@@ -305,7 +307,7 @@ You can create a new Function App via the Portal CLI or just Portal menu options
 
 ### 2. Package our Functions
 
-Before we publish, one thing we can do to reduce cold start is to pack all our Functions into a single file. One of the largest impacts to Node.js cold start is module resolution. 
+Before we publish, one thing we can do to reduce cold start is to pack all our Functions into a single file. One of the largest impacts to Node.js cold start is module resolution.
 
 We've written a tool for Azure Functions which will webpack your code for you. You can download this tool via npm:
 
@@ -358,7 +360,7 @@ funcpack unpack .
 npm i
 ```
 
-Now that your Function is deployed you should be able to go access "http://<YOURNAME>.azurewebsites.net/api/tasks" via a browser and it will return data (not the webapp, yet) to confirm everything works.
+Now that your Function is deployed you should be able to go access "http://&lt;YOURNAME&gt;.azurewebsites.net/api/tasks" via a browser and it will return data (not the webapp, yet) to confirm everything works.
 
 ### 4. Pointing our Angular App at Azure
 
@@ -386,7 +388,7 @@ Now click upload and select all the content in the `dist` directory.
 
 Now if you click on your "index.html" file you just uploaded and open up the URL is gives you, it should load in the browser. But if you bring up your dev console, it won't be able to talk to the Function App as CORS is not enabled.
 
-We have two options: 
+We have two options:
 
 1. Enable CORS
 2. Route calls for our static content through an Azure Functions proxy

@@ -37,7 +37,7 @@ Fortunately, you don't have to create this all by hand. We can us the Azure Func
 
 ```bash
 # Create a new directory
-md hello-functions
+mkdir hello-functions
 cd hello-functions
 # Initialize that directory
 func init
@@ -53,7 +53,7 @@ Created launch.json
 Initialized empty Git repository in /Users/chris/workspace/hello-functions/.git/
 ```
 
-The tool won't overwrite any existing files, so if ever accidentally delete a file and want to recreate it (like if you don't check in your `.vscode` directory), just run `func init` again.
+The tool won't overwrite any existing files, so if you ever accidentally delete a file and want to recreate it (like if you don't check in your `.vscode` directory), just run `func init` again.
 
 ## 3. Create a your first Function
 
@@ -162,13 +162,13 @@ module.exports = function (context, req) {
          TTTTTTTTT
          TTT`
 
-        const short_lance = 
+        const short_lance =
 `      TTT
     TTTTTTTTTTTT
-      TTT`    
+      TTT`
 
         let material = req.body.lance_material === "wood" ? "w" : "m";
-        
+
         let lance = req.body.lance_length === "short" ? short_lance.replace(/T/gi, material) : long_lance.replace(/T/gi, material);
 
         context.res = {
