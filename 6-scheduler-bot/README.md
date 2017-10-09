@@ -24,7 +24,7 @@ Let's build a function to find available time slots when the schedule is hard-co
 1. In the new `index.js` file, overwrite with the following: [code snippet](src/step-1/index.js)
     * This code will run and return any available slot within a set of scheduled events.  
 1. Test to make sure the function works
-    * `func run .` -> do a POST on the exposed URL locally `http://localhost:7071/api/SchedulerBot`
+    * `func host start` -> do a POST on the exposed URL locally `http://localhost:7071/api/SchedulerBot`
 
 **Response from step-1 index.js**
 
