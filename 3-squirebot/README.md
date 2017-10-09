@@ -428,11 +428,15 @@ Now go to the route you created for your index file and view your webpage workin
 
 ### 5. Connecting your bot to the Bot Framework
 
-1. To get started, go to the bot framework and (if you haven't already) sign up for an account.
+1. To get started, go to the [bot framework developer portal](https://dev.botframework.com/bots/provision?createFirstBot=true) and, if you haven't already, sign up for an account.
 
-2. Create a new bot. Follow the instructions in the UI to set everything up and provide the URL in the Azure Function's portal for your "bot" function as the bot's main URL. Once it's created you should end up on a page where you can choose which connectors to connect. Save the App ID and Secret that you create to configure the bot.
+2. Click the button to create a new bot and choose `Register an existing bot built using Bot Builder SDK`:
+![Create a Bot](./images/create-a-bot.png)
 
-3. Go to your Function App and set the app settings with the App ID and secret from the previous step:
+3.  Fill out the details of your bot. In the `messaging endpoint` value, enter in the Configuration section, enter the url of the `bot` function in your Function App in Azure, including the key in the URL. Then create the Microsoft App ID and Password and save those values for later.
+![Configure the Bot](./images/configure-bot.png)
+
+3. Go to your Function App on Azure and set the app settings with the App ID and secret from the previous step:
     - MICROSOFT_APP_ID
     - MICROSOFT_APP_PASSWORD
 
