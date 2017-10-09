@@ -39,9 +39,9 @@ Today you'll need the following developer tools:
  - A modern browser
  - A REST API tool (cURL or [Postman](https://www.getpostman.com/) will do)
  -  Visual Studio, either:
-   - [Visual Studio 2017 Update 3](https://www.visualstudio.com/downloads/) with the Azure workload installed (Windows)
-   - [Visual Studio Code](https://code.visualstudio.com/download) with the [C# extension](https://code.visualstudio.com/docs/languages/csharp) (Mac/Linux)
-    - If you'd prefer to use a different tool than VS Code, that's totally fine. You might need some help getting debugging working later on, but it's not required.
+     - [Visual Studio 2017 Update 3](https://www.visualstudio.com/downloads/) with the Azure workload installed (Windows)
+     - [Visual Studio Code](https://code.visualstudio.com/download) with the [C# extension](https://code.visualstudio.com/docs/languages/csharp) (Mac/Linux)
+     - If you'd prefer to use a different tool than VS Code, that's totally fine. You might need some help getting debugging working later on, but it's not required.
 
 ## 3. Introduction
 
