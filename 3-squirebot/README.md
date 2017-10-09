@@ -212,7 +212,7 @@ az group create \
 # Create a DocumentDB API Cosmos DB account
 az cosmosdb create \
 	--name $databaseAccountname \
-	--resource-group $resourceGroupName
+	--resource-group $resourceGroupName \
 	--kind MongoDB
 
 # Create a database
