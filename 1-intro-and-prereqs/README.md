@@ -16,22 +16,7 @@ In the workshop, in order for your bot to talk with the world, we'll be using Mi
 
 ### Slack or similar chat service
 
-In the workshop, we're using Slack to prove we connected the bot, but it is 100% optional. If you want a Slack account, you can make one which will allow a small number of intergations [here](https://slack.com/create#email). You can use the Bot Framework's developer chat interface or any of the following interfaces:
-
- - Bing
- - Cortana
- - Email
- - Facebook
- - GroupMe
- - Kik
- - Skype
- - Skype for Business
- - Slack
- - SMS
- - Microsoft Teams
- - Telegram
- - WeChat
- - WebChat
+In the workshop, we're using Slack to prove we connected the bot, but it is 100% optional. If you want a Slack account, you can make one which will allow a small number of intergations [here](https://slack.com/create#email). You can use the Bot Framework's developer chat interface or any of the following interfaces: Bing, Cortana, Email, Facebook, GroupMe, Kik, Skype, Skype for Business, Slack, SMS, Microsoft Teams, Telegram, WeChat, WebChat
 
  You can learn more about what is supported at each level via the [Bot Framework channel inspector docs](https://docs.microsoft.com/en-us/bot-framework/portal-channel-inspector).
 
