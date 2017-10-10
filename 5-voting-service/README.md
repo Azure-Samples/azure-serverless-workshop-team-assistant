@@ -1,6 +1,6 @@
 # Voting Service
 
-## Create a serverless service using Node.js and Azure Functions v2
+## Create a serverless service using Node.js and the new Azure Functions Cross Platform Runtime
 
 ## 1. Overview
 
@@ -67,7 +67,7 @@ Ensure you have the following prerequisites before proceeding:
 
 - Visual Studio Code https://code.visualstudio.com/Download
 
-- Azure Functions Core Tools v2. Follow the "Running on your local machine" instructions here to install it: https://blogs.msdn.microsoft.com/appserviceteam/2017/09/25/develop-azure-functions-on-any-platform/
+- Azure Functions Core Tools. Follow the "Running on your local machine" instructions here to install it: https://blogs.msdn.microsoft.com/appserviceteam/2017/09/25/develop-azure-functions-on-any-platform/
 
 - RESTful Client that will help you test the functions both locally and when deployed to Azure. One option is Postman https://www.getpostman.com/
 
@@ -181,7 +181,7 @@ Now we are ready to start creating our voting service using the Azure Functions 
 Create a folder called `VotingBot` on your machine. It will contain all the code for our functions. 
 Next let's use the Azure Functions CLI to create a new Function app in the current folder, initialize a git repo, add the CosmosDB extension, and create the first function in the app. From the Terminal, in the `VotingBot` folder, enter the following commands: 
 
-```javascript
+```sh
 
 //Install the CosmosDB extension for your Functions to use
 func extensions install -p Microsoft.Azure.WebJobs.Extensions.CosmosDB -v 3.0.0-beta4
@@ -883,7 +883,7 @@ az functionapp create \
   --consumption-plan-location $location \
   --resource-group $resourceGroupName
 
-# Configure the function for v2 and add the cosmosDB connection string
+# Configure the function the new runtime and add the cosmosDB connection string
 az functionapp config appsettings set --name $functionAppName \
 --resource-group $resourceGroupName \
 --settings FUNCTIONS_EXTENSION_VERSION=beta votingbot_COSMOSDB=$votingBotCosmosDBConnStr
