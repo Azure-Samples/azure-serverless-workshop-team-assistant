@@ -146,13 +146,9 @@ cURLもしくはブラウザ で、GET リクエストを送ってみよう。�
 
 ## 5. hello world をアスキーアートに変える
 
-In our workshop, we're building a service called "squirebot（騎士の家来のような意味)". The idea behind the name is that it is a bot which learns how to do things for you, but you have to train it, much like a squire of old. It is only appropriate then, that our first task we'll want squirebot to do for us is fetch us a lance.
+本ワークショップでは、"squirebot" というサービスを作ります。このbotは、あなたのためにどのようなことをするか学びます。ただ、あなたはbot に教える必要があります。例えば、古のsquire(騎士の家来のような意味) のように。最初の我々のタスクは　squirebot が、我々に、槍を差し出すといったものになるでしょう。
 
-本ワークショップでは、"squirebot" というサービスを作ります。このbotは、あなたのためにどのようなことをするか学びます。ただ、あなたはbot に教える必要があります。例えば、古のsquire のように。最初の我々のタスクは　squirebot が、我々に、槍を差し出すといったものになるでしょう。
-
-Let's change our function a bit to instead return some ASCII art. You can read through the code, but essentially we have two different templates for long and short lances and we just do a simple find and replace depending on which letters we want it to be made of.
-
-槍の代わりに私たちの Functions では、アスキーアートを返しましょう。コードを読んでみてください。本質的に、私たちは、２つのテンプレートを持っています。長い槍、短い槍そして、単純に
+槍の代わりに私たちの Functions では、アスキーアートを返しましょう。コードを読んでみてください。本質的に、私たちは、２つのテンプレートを持っています。長い槍、短い槍そして、槍を表現する単純に文字を検索して、リプレースして見ましょう。
 
 ```javascript
 module.exports = function (context, req) {
