@@ -1,26 +1,28 @@
 # Squirebot
 
-This this module, we'll get the squirebot up and running. We'll also examine how it works.
+このモジュールでは、 squirebot を動かしてみます。そして、どのように動くのかを解析してみましょう。
 
-# 1. Pre-reqs
+# 1. 準備事項
+
+下記のソフトウェアがインストールされていること
 
 - Node 8.5.0
 - Azure Functions core tools @ core
     - npm i -g azure-functions-core-tools@core
-    - Also requires dotnet core installed (for now)
+    - このツールを使うには、dotnet core がインストールされている必要があります。
 - Bot Framework Emulator
-- VS Code/text editor, git, terminal
-- Azure Account
-- Bot Framework Account
+ - VS Code もしくは、その他のテキストエディタ
+- Azure アカウント
+- Bot Framework アカウント
 
 ## 2. Set up
 
-### 1. Clone the squirebot repo
+### 1. squirebot リポジトリをクローンする
 ```
 git clone https://github.com/christopheranderson/squirebot
 ```
 
-### 2. Install dependencies and start up hosts
+### 2. 依存(ライブラリ)のインストールとホストの立ち上げ
 
 #### Function App
 ```bash
@@ -29,9 +31,9 @@ npm i
 npm start
 ```
 
-npm start will run the func host start --cors * command
+`npm start` は `func host start --cors * command` を実行しています。
 
-This should spin up the Function host
+このコマンドは、Function のホストを起動します。
 
 #### Web Client
 ```bash
@@ -40,27 +42,32 @@ npm i
 npm start
 ```
 
-This should spin up a local site hosting the static Angular content
+このオペレーションは、Angular の静的コンテンツをホストしたサイトを立ち上げます。
 
-When it has finished building, open up your favorite browser to [http://localhost:4200](http://localhost:4200)
+立ち上がったら、お好みのブラウザを立ち上げて、[http://localhost:4200](http://localhost:4200)にアクセスしましょう。
 
-You should now be able to see 1 task already existing for the build in "lanceFetcher" function. You can click on it to see the configuration.
+`lanceFetcher` の中には、すでに一つのタスクが使用可能になっています。クリックするとその設定をみることができます。
 
 ### 3. Bot Framework Emulator
 
-If you haven't already installed the emulator, you can download packages for Windows, Linux and macOS from the [GitHub releases page](https://github.com/Microsoft/BotFramework-Emulator/releases).
+まだ、Bot Framework Emulator のインストールがお済みでなければ、下記のページからダウンロードしましょう。Windows, Linux そして、MacOS版が揃っています。
 
-Start the bot framework emulator and set the url to "http://localhost:7071/api/bot". You don't need to set the application id or secret.
+* [GitHub releases page](https://github.com/Microsoft/BotFramework-Emulator/releases)
 
-Then type "hello" into the chat, and the bot should greet you.
+Bot Framework Emulator を起動して、URL を `http://localhost:7071/api/bot`にセットしましょう。`application id` や、`secret` はセット不要です。
 
-You can then type "Fetch me my lance" and the bot should prompt you with what size do you want your lance and what material. It should then return an ASCII lance to us.
+そして、チャットに、`hello` とタイプしましょう。ボットが、あなたを歓迎してくれるはずです。
+
+`Fetch me my lance` とタイプしてみてください。bot がどのようなサイズか、どんな素材の槍(lance)がいいのか？を聞いてきます。それに答えると、アスキーアートの槍を返してくれます。
 
 ## 3. How it works
 
-In the previous step, you started a Function App and a web client. The web client is an Angular project. Running in its current form, the service connects to "http://localhost:7071". This is determined by the `baseUrl` setting in the config file.
 
-Here's a sample from `./src/webapp/src/app/tasks.service.ts`:
+以前のステップで、Function App と、Web client をスタートさせました。web client は、Angular のプロジェクトです。現在の状態だと、クライアントは、`http://localhost:7071` に接続しています。これは、コンフィグファイルの`baseUrl` の設定で定義されています。
+
+
+サンプルはこちらにあります。 `./src/webapp/src/app/tasks.service.ts`:
+
 ```typescript
 @Injectable()
 export class TasksService {
@@ -97,9 +104,12 @@ export class TasksService {
  // Rest of the APIs are implemented in the file
 ```
 
-In this case, this calls the `api/tasks` route on the Function App. Let's take a look at this Function. It's under [`./src/task-function/task-api`](https://github.com/christopheranderson/squirebot/blob/master/src/tasks-functions/task-api/index.js#L21-L53)
+この場合、このコードは、Function App の `api/tasks` を呼び出します。Functionをみてみましょう。このディレクトリの下にあります。
+
+* [`./src/task-function/task-api`](https://github.com/christopheranderson/squirebot/blob/master/src/tasks-functions/task-api/index.js#L21-L53)
 
 The code below is the code that will run in response to the requests from our client when there is a GET request.
+このコードは、クライアントからGETリクエストがきた時に、レスポンスを返すコードです。
 
 ```javascript
 function run(context, req) {
@@ -142,14 +152,15 @@ function run(context, req) {
 ```
 
 There are a few different approaches that people use with HTTP Triggered Functions:
+Http Trigger の Function を使う時に、いくつかのアプローチがあります。
 
-1. 1 Function per Route and Method
-2. 1 Function per Route
-3. 1 Function for many routes
+1. 1 Function 毎に Route と Method を設定する
+2. 1 Function 毎に Route を設定する
+3. 1 Function 毎に複数の route を設定する
 
-In general, the best practice with Functions is for a Function to "do 1 thing". If we wanted to hold true to that, we might go for option #1. In this case, though, we've done #2, mainly to keep the number of Functions we have to manage low. The nice thing about all of this is that it isn't very hard to refactor this later if we want to.
+一般的に、Functions のベストプラクティスは、「１つの Function が、１つの事だけをする」というものです。このことに従うならば、オプション#1 が正しいでしょう。しかし、この場合、私たちは #2 を選びました。これは私たちが管理する Functions を少ない数にするためです。どちらにしても、いいことは、あとでリファクタリングしたかったらそんなに難しくないということです。
 
-If you look closer at the logic handling that GET request, it's calling `taskService.getTask(...)`. This `taskService` is coming from a shared module that our Functions use to talk to our database. You can take a look at it in the [`./src/tasks-functions/lib/tasks.js`](https://github.com/christopheranderson/squirebot/blob/master/src/tasks-functions/lib/tasks.js#L145).
+GET リクエストを処理するロジックをよくみてみると、`taskService.getTask(...)`メソッドを読んでいます。この`taskService` は、データベースにアクセスするための、共有モジュールからきています。中身をみてみましょう。　[`./src/tasks-functions/lib/tasks.js`](https://github.com/christopheranderson/squirebot/blob/master/src/tasks-functions/lib/tasks.js#L145).
 
 ```javascript
 getTasks(count, offset) {
@@ -171,29 +182,35 @@ getTasks(count, offset) {
 }
 ```
 
-This example shows how the taskService's `getTasks` method is implemented. In this case, we've done something that isn't necessarily best practice, but we've done it to help you get started. You'll notice that there is an "if" statement which is looking to see if we're going to "useInMemory". This is because we wanted you to be able to get started trying the app without a database created. Normally, I'd encourage you to just have a database for development purposes because reimplementing both pieces of logic isn't helpful. Since we're using MongoDB's client, we could use a locally running MongoDB instance.
+サンプルはtaskService の `getTasks`メソッドがどのように実装されているかを示しています。この場合、ベストプラクティスに必要ないことをしています。しかし、Get Started として、あなたの理解を助けてくれるでしょう。また、`if` ステートメントで`useInMemory` であるかを判別してるのがわかります。これは、はじめに、データベースがなくても、アプリが実行できるようにしています。通常、開発のためには、データベースを持ってもらうことを推奨しますが、そのために同じロジックを２回実装するのはあまりよろしくありません。今回はMongoDBを使っているため、ローカルで動作する　MongoDB インスタンスを使用できました。
 
-When we do provide a `MONGO_URL` environment variable, we will use the MongoDB driver to talk to a database. In this case, we just have a simple MongoDB helper to make it simple to use. You could also use something like Mongoose if you wanted something nicer than raw MongoDB queries.
+`MONGO_URL` という環境変数を設定すると、MongoDB ドライバーがデータベースと接続できるようになります。この場合、私たちは単純な、MongoDB ヘルパを用意するといいでしょう。また、MongoDB のクエリを実行するための、Mongoose などを使ってもいいでしょう。
 
-For those of you familiar with Azure Functions, you might ask why we didn't use the Cosmos DB bindings for this, rather than using a Mongo library. In this case, we did it to show that you can use Mongo DB and other database libraries in Azure Functions very easily. As nice as bindings are to help reduce the amount of code you write, there's no limitations to using other code and it's worth having some samples that show that off. Just because we're not using Cosmos DB bindings doesn't mean we're not using Cosmos DB, though...
+Azure Functions に慣れている人は、MongoDB のライブラリの代わりに、なぜCosmosDB のバインディングを使わないのだろうと思うかもしれません。今回は、MongoDB をはじめとする他のデータベースライブラリが、Azure Functions から簡単に使えるというのを示したかったのです。一方、バインディングっは、コード量を減らしてくれます。他のコードを使うことに何の制限もありません。それは価値のあるいい例になることでしょう。私たちが、Cosmos DB バインディングを使わないというのは、私たちが Cosmos DB を使っていないということではありません。あしからず。
 
-Now that we've looked at how it all works, let's start getting it on Azure.
+どのように動くかをみてみました。さぁ、Azure の上で動かしてみましょう。
 
-## 4. Working with CosmosDB
+## 4. CosmosDB を使ってみる
 
-You may be thinking, "Cosmos DB? I thought you just said Mongo DB?".
+"Cosmos DB だって？今、Mongo DB って言わなかったっけ？" と思うかもしれません。
 
-In case you're not aware, Cosmos DB is a managed multi-model database that Microsoft Azure offers with a number of great features for serverless applications. One of the most interesting features for this sample, though, is that it has a Mongo DB compatible endpoint. This is helpful for us since we don't need to standup a Mongo DB instance and pay VM pricing for that.
+ご存知なければ、Cosmos DB は、マネージドの複数のモデルを持った Microsoft Azure のデータベースです。Serverless application 向けの様々ないい機能があります。その一つが、このサンプルです。MongoDB 互換のエンドポイントをサポートしています。だから、私たちは、Mongo　DB のインスタンスを立ち上げたり、VM にお金を払う必要がありません。
 
-You can create a Cosmos DB via the CLI or portal.
+CosmosDB は、CLI かポータルで作成できます。
 
-#### Create the Cosmos DB Database and Collection via the Azure CLI in the Portal
+#### Azure CLI を使った Cosmos DB データベースと、コレクションの作成
 
 You can [install the Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) on your machine, or use it from the [Cloud Shell inside the Azure Portal](https://docs.microsoft.com/en-us/azure/cloud-shell/overview).
 
-Using the Azure CLI, or the Cloud Shell button on the menu in the upper-right of the Azure portal, replace the value of `databaseAccountname` with a unique name, and run the following file to create our Cosmos DB account and collection:
+Azure CLI をあなたの PC にインストールすることができます。もしくは、Cloud Shell を Azure Portal から使うことができます。
 
-> Note: the Cosmos DB account create step takes a few minutes to finish
+* [install the Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) 
+* [Cloud Shell inside the Azure Portal](https://docs.microsoft.com/en-us/azure/cloud-shell/overview).
+
+Azure CLI もしくは、Azure Portal の右上にある Cloud Shellボタンと使って、`databaseAccountname`　をユニークな名前に変えて、Cosmos DB アカウントとコレクションを作るために下記のファイルを実行してみてください。
+)
+
+> 注意: Cosmos DB アカウントを作るのは、数分かかります。また翻訳者が試した時は、英語大文字が入っているとエラーになりました。
 
 ```sh
 #!/bin/bash
@@ -226,15 +243,16 @@ az cosmosdb list-keys \
     --name $databaseAccountname \
     --resource-group $resourceGroupName
 ```
-At the end of running the commands you should have access to the Cosmos DB account keys. Copy the value of the primaryMasterKey and save it. Soon we will add it to the local settings file in Visual Studio Code.
 
-#### Optional: Create the Cosmos DB Database and Collection via the Azure Portal
+コマンドの実行の最後に、Cosmos DB アカウントのキーが返却されます。primaryMasterKey の値をコピーして保存しておいてください。すぐに、Visual Studio Code の local settings file に追加することになります。
 
-Follow these instructions if you didn't use the Azure CLI or Cloud Shell to create the data store and prefer to use the Azure Portal.
+#### オプション: Azure Portal を使った Cosmos DB データベースとコレクションの作成
 
-1. Login in to the [Azure Portal](https://portal.azure.com)
+Azure CLI や Cloud Shell を使ったことがなく、ポータルでの操作をご希望でしたら、次のインストラクションに従ってください。
 
-2. In the left pane, click New, click Databases, and then under Azure Cosmos DB, click Create. Create a new Cosmos DB account wit the following values:
+1. [Azure Portal](https://portal.azure.com)にログインする
+
+2. 左のパネルで、New > Cosmos DB を検索してクリックします。そして、次の値で Cosmos DB アカウントを作ってみてください。
 
 Field | Value
 ------------ | -------------
@@ -244,27 +262,29 @@ Subscription | Your subscription (should already be selected)
 Resource Group | Create new, squire
 Location | East US
 
-Here is an example:
+サンプルは下記の通りです。
 
 ![Create Cosmos DB Account](../5-voting-service/src/Content/Images/CosmosDB-1.PNG)
 
-> Note: this Cosmos DB account create step takes a few minutes to finish
+> 注意: Cosmos DB のアカウントを作るには、数分かかります。
 
-3. After the account is created, create a new database named "squire" by selecting `Browse` underneath the `Collections` heading and clicking on `Add Database`. We don't need to create collections because MongoDB's client will do this for us automatically.
+3. Cosmos DB アカウントが作られたら、作成した、Cosmos DB のアカウントをポータル上で選択し、`COLLECTIONS > Browse > Add Database` を選択し"squire" という名前のデータベースを作ります。コレクションは作る必要がありません。MongoDB クライアントが自動的に作成してくれます。
 
-4. Next we need to get the database connection string.You can find it under the section `Connection String` in the left menu on the main screen for your Azure Cosmos DB account
+4. 次に、データベースの Connection String を取得します。`Connection String` のセクションを見つけます。Cosmos DB アカウントの左側の列にあります。
 
 ![Get Connection string for Azure Cosmos DB](images/connection_string.png)
 
-Copy the value of the Primary Connection String and save it. Soon we will add it to the local settings file in Visual Studio Code.
+`Primary Connection String` の値をコピーして、保存しておきましょう。すぐに、Visual Studio Code の local settings file で使うことになります。
 
-#### Updating local settings
+#### local settings のアップデート
 
-You'll now have a url that looks something like: `mongodb://username:password@host:10255/?ssl=true`. This will use the "test" collection by default. I'd recommend creating a "squire" collection and using that as the database and setting the setting, so your URL should be closer to `mongodb://username:password@host:10255/[database]?ssl=true`.
+あなたは、Connection String で次のような URL を見ているだろう。`mongodb://username:password@host:10255/?ssl=true`。これは、デフォルトで"test" コレクション用になっている。私は、`squire` コレクションを作るのをオススメする。そして、データベースのセッティングは次の感じに近くなっているだろう。`mongodb://username:password@host:10255/[database]?ssl=true`.
 
-You should be able to create a new property in `./src/tasks-functions/local.settings.json` called `MONGO_URL`.
+訳者注：今までの設定だと、`[database]` は、`squire` だと思います。
 
-It should look something like:
+新しいプロパティを`./src/tasks-functions/local.settings.json`に作りましょう。変数名は、`MONGO_URL` です。
+
+local.setting.json は次のようになるだろう。
 
 ```json
 {
@@ -279,52 +299,53 @@ It should look something like:
 }
 ```
 
-Be sure that "UseInMemoryStore" is set to false!!!
+`UseInMemoryStore` を `false` にするのを忘れないように。
 
-Now go back and restart your Function's host. If you reload the webpage, it should have no Tasks on it now.
+Function のホストを再起動しましょう。Webページをロードすると、タスクが０件になっていると思います。
 
-Let's deploy the app to Azure before we start adding new tasks.
+では、タスクをたす前に、アプリケーションを、Azure にデプロイしてみましょう。
 
-## 5. Deploying to Azure
+## 5. Azure へのデプロイ
 
-### 1. Create a Function App
-In order to deploy to Azure, we need to create a Function App. A Function App acts as a collection of Functions, which lets us deploy multiple Functions to the same Function App. This let's us share a common endpoint and more.
+### 1. Function App を作成する
 
-You can create a new Function App via the Portal CLI or just Portal menu options.
+Azure にデプロイするためには、Function App を作成する必要があります。Function App は Functions のコレクションとして働きます。そして、複数の Functions を同じ Function App  にデプロイすることができます。それにより、共通のエンドポイントや、そのほかのものをシェアできます。
+
+Function App は、Portal CLI や、ポータルのメニューなどから作成できます。
 
 #### CLI
 
--  Setup Azure Portal CLI following the instructions here - https://docs.microsoft.com/en-us/azure/azure-functions/functions-create-first-azure-function-azure-cli
+-  Azure Portal CLI を使う場合のインストラクションは次の通りです。[ここ](https://docs.microsoft.com/en-us/azure/azure-functions/functions-create-first-azure-function-azure-cli)
 
 #### Portal
 
-1. Click on "+ New" in the portal
-2. Search for "Function App" and click on it
-3. Fill out the details however you'd like try to use
-    - name like "<yourname>-squire"
-    - consumption plan (should be default)
-    - east us
-    - You should try to use the same resource group as your Cosmos DB to make clean up easy
-    - Enable App Insights (not needed, but a good idea)
-4. Click create and then wait for it to create (might take a few seconds).
+1. ポータルで "+ New" をクリックします
+2. "Function App" を検索して、クリックします
+3. 詳細を入力します
+    - name は "<yourname>-squire" などにする
+    - consumption plan (デフォルト)
+    - east us (locatiopn)
+    - Cosmos DB と同じ resrouce group を使うと削除が楽になリマス
+    - App Insight は有効にする。(オプションだが、おすすめ)
+4. create をクリックして、出来上がるのを待つ (数分かかります)
 
-### 2. Package our Functions
+### 2. Functions をパッケージングする
 
-Before we publish, one thing we can do to reduce cold start is to pack all our Functions into a single file. One of the largest impacts to Node.js cold start is module resolution.
+Publish の前に、私たちができることの一つに、コールドスタートの時間を短縮することがあります。全ての Functions をシングルファイルにパックします。Node.js のコールドスタートにとって最もインパクトのあることの一つは、モジュールの解決です。
 
-We've written a tool for Azure Functions which will webpack your code for you. You can download this tool via npm:
+私たちは、Azure Functions のために、webpackをあなたのコードにかけるツールを書きました。npm を使ってダウンロードできます。
 
 ```bash
 npm i -g azure-functions-pack
 ```
 
-then run at the base of your Function App
+そして、Function App のベースで、次のコマンドを実行します。
 
 ```bash
 funcpack pack .
 ```
 
-which should result in:
+結果として、次のような出力が出ると思います。
 
 ```bash
 info: Generating project files/metadata
@@ -332,120 +353,126 @@ info: Webpacking project
 info: Complete!
 ```
 
-Now that we've packed our functions, we can even remove our node_modules directory and it still works. I recommend doing this to speed up deployment. You can just reinstall them later.
+Functions がパッケージ化されました。ライブラリが入っている node_modules は削除可能です。しかし、それなしで動くようになっています。このオペレーションによって、デプロイメントが高速化されます。必要であれば、いつでも再インストールできます。
 
 ```bash
 rm -r node_modules
 ```
 
-### 3. Publish via Azure Functions Core Tools
+### 3. Azure Functions Core Tools を使って Publish する
 
-Now, we can publish our code via the Azure Functions core tools:
+私たちのコードを、Azure Functions Core Tools を使って Publishしましょう。
 
-1. Login to azure
+1. Azure にログインする
 
 ```bash
 func azure login
 ```
 
-2. Publish to Function App
+2. Function App に publish します。
+
+先ほど指定した、Function App 名を指定します。( "<yourname>-squire" )
 
 ```bash
-func azure functionapp publish <YOUR NAME HERE> -i -y
+func azure functionapp publish <FUNCTION APP NAME HERE> -i -y
 ```
 
-This should publish your directory to your Function App.
+このコマンドは、あなたのディレクトリを Function App に publish します。
 
-3. (Optional) Now that you've published you can unpack and install your node modules. It's helpful to write a simple script for this, but we wanted you to do it by hand to understand how it works.
+3. (オプション) すでに、publish したので、アンパックして、node_module をインストールして構いません。シンプルなスクリプトを書いても構いませんが、自分でやって、理解していただきたいと思います。
 
 ```bash
 funcpack unpack .
 npm i
 ```
 
-Now that your Function is deployed you should be able to go access "http://&lt;YOURNAME&gt;.azurewebsites.net/api/tasks" via a browser and it will return data (not the webapp, yet) to confirm everything works.
+あなたの Function がデプロイされて、"http://&lt;YOUR　FUNCTION APP NAME&gt;.azurewebsites.net/api/tasks"にブラウザ経由でアクセスができます。そして、戻り値が帰って来たら正しく動いています。
 
-### 4. Pointing our Angular App at Azure
+### 4. Angular App から Azure Functions を指定する
 
-In order to access our Function App, we need to point it to the right base URL.
+Function App にアクセスするためには、適切な base URLを指定する必要があります。
 
-Go to the `./src/webapp/src/environments/environment.prod.ts` and add your base URL so it looks like this:
+次のファイルを開けて、`./src/webapp/src/environments/environment.prod.ts`
+base URL を次のように追加しましょう。
 
 ```typescript
 export const environment = {
   production: true,
   mocked: false,
-  baseUrl: "https://<YOUR NAME HERE>.azurewebsites.net"
+  baseUrl: "https://<YOUR FUNCTION APP NAME HERE>.azurewebsites.net"
 };
 ```
 
-Now you can open a terminal to "./src/webapp/" and run `npm run build`. This will create a `dist` directory with a static/tree shaken copy of our application.
+ターミナルを開いて、"./src/webapp/" に移動してください。そして、`npm run build` を実行してください。このオペレーションは、`dist` ディレクトリを作ります。それは、アプリケーションのコピーで、static/tree をまぜこぜにしたようなコピー担っています。
 
-If you go to your Resource Group you created for your Function App, you should already have a storage account created with your Function App. We'll use this to create a storage container for our static content.
+Azure Portal で、Function App の Resource Group に行くと、Function App と一緒に作られたstorage account が見つかリます。この storage account を静的コンテンツをホストするために、ストレージコンテナを作るために使います。
 
-Be sure you create your container with the name "content". If you change it, you need to modify the package.json "build" script to use a different name. Also be sure you create it with "Blob" selected for anonymous access.
+"content" という名前のコンテナを作りましょう。もし、この名前を変えるなら、package.json の "build" スクリプトを違う名前に変える必要があります。また、不特定の人がアクセスできるように、Public access level を、"Blob" にしましょう。
 
 ![Container create screenshot](./images/container-create.png)
 
-Now click upload and select all the content in the `dist` directory.
+upload をクリックして、全ての `dist` ディレクトリの内容をアップロードしましょう。
 
-Now if you click on your "index.html" file you just uploaded and open up the URL is gives you, it should load in the browser. But if you bring up your dev console, it won't be able to talk to the Function App as CORS is not enabled.
+アップロードした "index.html" をクリックすると、URL が取得できます。ブラウザの開発者ツールを使ってみてみると、現状だと、 CORS が有効ではないので、Function Appと通信できないでしょう。
 
-We have two options:
+２つのオプションがあります。
 
-1. Enable CORS
-2. Route calls for our static content through an Azure Functions proxy
+1. CORS を有効化する
+2. Azure Functions proxy 経由で静的コンテンツを呼ぶ
 
-I'll list both options. #2 is the one with the nicest outcome because it will be all 1 URL, not a storage account URL. #1 is fast though and useful to learn as well.
 
-#### 1. Enable CORS
+２つのオプションのうち #2 は、より良い方法です。URL がストレージアカウントのURLではなくなるからです。#1 は早いのと、学ぶには有効な手段です。
 
-1. Copy your storage account domain. Should looks like "https://chrandesquire.blob.core.windows.net"
 
-2. Go to your Function App blade and click on your Platform Features option. Then find the CORS option.
+#### 1. CORS を有効にする
 
-3. Add your URL to the bottom of the list and click "save"
+1. storage account のドメインをコピーします。次のような感じでしょう。 "https://chrandesquire.blob.core.windows.net"
+
+2. Function App のブレードに行って、Platform Feature option を選びます。すると、CORS オプションが見つかるはずです。
+
+3. 上記のURLをリストの最後に追加して、"save" ボタンを押します。
 
 ![CORS Screenshot](./images/cors-create.png)
 
-Now you should be able to see add new tasks and see your Function App.
+新しいタスクを足して、Function App をみる準備ができました。
 
-#### 2. Use Azure Functions Proxies
+#### 2. Azure Functions Proxies を使用する
 
-1. Go to your Function App blade
+1. Azure Portalの Function App ブレードに行きます。
 
-2. Click on Function App Settings and use the toggle to enable Azure Functions Proxies
+2. Function App の Settings をクリックして、 Azure Functions Proxy を有効化します。
 
-3. Click on the "+" button next to Proxies on the left menu
+3. 左のメニューのProxies の横にある "+" ボタンをクリックします。
 
-4. Create a new proxy. The name doesn't matter, but I used "index". Set the "route" property to "/" or "/index.html" (or whatever you want). Set the backend URL to the URL to your storage container's index.html file. (Should be "https://<YOURNAME>.blob.core.windows.net/content/index.html"). Click save.
+4. 新しい proxy を作成します。名前はなんでも構いませんが、私は "index" という名前を使います。"route"プロパティを"/" もしくは、"/index.html" (もしくは、好きなものに)設定しましょう。また、backend URL を、あたなのstorage コンテナの index.html ファイルに指定しましょう（"https://<YOURNAME>.blob.core.windows.net/content/index.html"　といった感じ)。そして、Create をクリックします。
 
-5. Now we need to create a route for the rest of the content. Create another new proxy. The name can be "content", the route property should be "/content/{*restOfPath}", the backend URL should be the container (or the same as your index.html page, without index.html at the end) with at the end (should look like "https://<YOURNAME>.blob.core.windows.net/content/{restOfPath}". Click save.
+5. コンテナである content に対して、route の設定が必要です。新たに proxy を作りましょう。名前は、"content" で route プロパティは、"/content/{*restOfPath}" backend URL は、コンテナにします。(もしくは、index.html ページと同じもので、index.htmlを除いたもの)　おそらく "https://<YOURNAME>.blob.core.windows.net/content/{restOfPath}"といった感じになると思います。Create をクリックしてください。
 
-Note that we overwrote the base route for the Function App in the first proxy. Second thing to note is the `{*restOfPath}` token which grabs the rest of the path for us and gives us a token we can use in the backend URL. Importantly, we remove the "*" from the token there, so it is just `{restOfPath}`.
+Function App の最初のプロキシで、base route を上書きしていることに注意してください。２つ目の設定では、`{*restOfPath}`トークンが残りのパスを受け付けて、backend URL に引き渡します。重要なポイントですが、backend URL の方では、"*" を除いて、`{restOfPath}` になります。
 
-Now go to the route you created for your index file and view your webpage working! No CORS needed.
 
-### 5. Connecting your bot to the Bot Framework
+新しく作った、indexにアクセスして、Web ページが動作しているのを確認してください。CORS は必要ありません。
 
-1. To get started, go to the [bot framework developer portal](https://dev.botframework.com/bots/provision?createFirstBot=true) and, if you haven't already, sign up for an account.
+### 5. Bot を the Bot Framework に接続する
 
-2. Click the button to create a new bot and choose `Register an existing bot built using Bot Builder SDK`:
+1. はじめに、[bot framework developer portal](https://dev.botframework.com/bots/provision?createFirstBot=true)に行きましょう。アカウントがなければ、サインアップしましょう。
+
+2. create ボタンをクリックして、新しいBot を作ります。`Register an existing bot built using Bot Builder SDK`を選択してOKを押します。:
 ![Create a Bot](./images/create-a-bot.png)
 
-3.  Fill out the details of your bot. In the `messaging endpoint` value, enter in the Configuration section, enter the url of the `bot` function in your Function App in Azure, including the key in the URL. Then create the Microsoft App ID and Password and save those values for later.
+3. bot の詳細を記述します。`messaging endpoint`には、`bot` function のurl を指定します。URL の中の key 付きです。次に、Microsoft App ID とパスワードを作成して、save します。これらの値はあとで使います。
 ![Configure the Bot](./images/configure-bot.png)
 
-3. Go to your Function App on Azure and set the app settings with the App ID and secret from the previous step:
+
+3. Azure の Function App を開いて、App Settings に、先ほど取得した AppID と　パスワードを下記の環境変数の値としてセットします。
     - MICROSOFT_APP_ID
     - MICROSOFT_APP_PASSWORD
 
-4. You should be able to then "test" your bot via the "test" button. This opens a web based bot interface. Type "hello" in there and then try to tell it to do something (like "fetch me my lance").
+4. Bot Framework のページ上であなたの bot を "test" してみましょう。"test" ボタンを押してください。すると、web ベースのbotインターフェイスが開きます。"hello" とタイプしてみてください。次に、何かをタイプします。例えば ("fetch me my lance")など。
+　恐らく、bot はどうしたら良いかわからないでしょう。新しく、デプロイした、squire bot の webpage に戻ります。Angular で作らて先ほど、Proxyの設定をした、Web ページです。新しいタスクを作ります。今回は、このページ上で、"hello" function を参照するようにします。Function App のページにいって、hello function の URL をコピーし、先ほどのWeb ページに、ペーストします。このタスクは、”hello" ではなく、"hello world" と呼ぶことをオススメします。デフォルトのグリーティングとコンフリクトするからです。 Parameters には、"hello" を追加し、prompt として "What is your name?" を指定してセーブしましょう。
 
-It doesn't know how to do that, probably. Well go back to your newly deployed squire bot webpage (either the CORS or non-CORS version) and create a new task. This time, point it to your "hello" funciton in your Function App that you've already deployed (copy+paste the URL from the Functions UI to get the API key). I'd recommend calling the bot "hello world" rather than "hello" since this conflicts with the default greeting. Make sure to create a parameter named "hello" with a prompt like "What is your name?".
+bot をもう一度テストすると、二回連続で "hello" をタイプすると、プロンプトの内容を返却してくれるはずです。
 
-Now your bot should be able to say hello back!
+お好みであれば、あなたの bot を Slack や、 Microsoft Teams に接続することができます。次のインストラクションをご参照ください。[Bots documentation page](https://docs.microsoft.com/en-us/bot-framework/portal-configure-channels).
 
-If you'd like to, you can connect your bot to Slack or Microsoft teams by following the instructions on the [Bots documentation page](https://docs.microsoft.com/en-us/bot-framework/portal-configure-channels).
-
-At this point, you've completed the module! It was a long journey, but you've done a lot! You've created a Function app and deployed it to Azure. You've learned how to use Cosmos DB. You've learned how to use the Microsoft Bot Framework. You've created a whole new service for extending chat applications with webhooks! Continue on to the next step to learn how to create more plugins for the squirebot.
+ここで、このモジュールも完了させることができました！長旅でしたが、あなたはきっとたくさんのことを学んだでしょう。あなたは、 Function App を作成して、Azure 上に Deploy しました。また、あなたは、Cosmos DB をどのように使うかを学びました。 Microsoft Bot Framework の使い方も学びました。新しいサービスを作成し、 chat アプリケーションを webhook で拡張しました。次のステップで、squirebot のプラグインについて学んで行きましょう。
