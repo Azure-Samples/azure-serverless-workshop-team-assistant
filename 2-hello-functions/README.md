@@ -195,7 +195,7 @@ ${lance}`
 Now try to run this via cURL or Postman (not your browser since this needs to be POST).
 
 ```
-curl -H "Content-Type: application/json" -X POST -d "{\"lance_length":"long\",\"lance_material\":\"metal\"}" http://localhost:7071/api/hello
+curl -H "Content-Type: application/json" -X POST -d "{\"lance_length\":\"long\",\"lance_material\":\"metal\"}" http://localhost:7071/api/hello
 ```
 
 This should return us a fancy ASCII lance. You can now stop your Functions host.
