@@ -466,7 +466,7 @@ Function App の最初のプロキシで、base route を上書きしている�
     - MICROSOFT_APP_PASSWORD
 
 4. Bot Framework のページ上であなたの bot を "test" してみましょう。"test" ボタンを押してください。すると、web ベースのbotインターフェイスが開きます。"hello" とタイプしてみてください。次に、何かをタイプします。例えば ("fetch me my lance")など。
-　恐らく、bot はどうしたら良いかわからないでしょう。新しく、デプロイした、squire bot の webpage に戻ります。Angular で作らて先ほど、Proxyの設定をした、Web ページです。新しいタスクを作ります。今回は、このページ上で、"hello" function を参照するようにします。Function App のページにいって、hello function の URL をコピーし、先ほどのWeb ページに、ペーストします。このタスクは、”hello" ではなく、"hello world" と呼ぶことをオススメします。デフォルトのグリーティングとコンフリクトするからです。 Parameters には、"hello" を追加し、prompt として "What is your name?" を指定してセーブしましょう。
+　恐らく、bot はどうしたら良いかわからないでしょう。新しくデプロイした、squire bot の webpage に戻ります。Angular で作られた、先ほど、Proxyの設定をした、Web ページです。新しいタスクを作ります。今回は、このページ上で、"hello" function を参照するようにします。Function App のページにいって、hello function の URL をコピーし、先ほどのWeb ページに、ペーストします。このタスクは、”hello" ではなく、"hello world" と呼ぶことをオススメします。デフォルトのグリーティングとコンフリクトするからです。 Parameters には、"hello" を追加し、prompt として "What is your name?" を指定してセーブしましょう。
 
 bot をもう一度テストすると、二回連続で "hello" をタイプすると、プロンプトの内容を返却してくれるはずです。
 
