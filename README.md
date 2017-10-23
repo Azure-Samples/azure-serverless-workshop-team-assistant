@@ -1,6 +1,6 @@
 # Azure Serverless Workshop
 
-This is a serverless workshop that will take you through 8 modules involving building a serverless personal assistant in Azure.
+Azure で Serverless のパーソナルアシスタントを作成するワークショップです。全部で８つのモジュールがあります。
 
 ## Table of contents
 
