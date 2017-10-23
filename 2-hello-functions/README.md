@@ -1,22 +1,22 @@
 # Hello Functions
 
-In this module, you'll create a simple Function which listens for HTTP Requests and responds with an ASCII art response. We'll do this all locally to show how fast it is to develop and test locally. It is possible to do this all in the Azure Functions portal, however.
+このモジュールでは、シンプルな、Functions を作ります。HTTP Request と Response のリスナーで アスキーアートのレスポンスを返します。これらを全てローカルで開発して、如何に早く開発ができるかを示します。もちろん、Azure 上にある Azure Functions Portal でも開発が可能です。
 
-## 1. Pre-reqs
+## 1. 準備事項
 
-You'll need:
+以下のものが必要です。
  - Node 8.5.0
  - Azure Functions Core Tools (@core)
     - npm i -g azure-functions-core-tools@core
-    - This has a dependency on dotnet core being installed
- - VS Code or similar text editor
- - cURL, Postman, or a general REST API tool
+    - このツールを使うには、dotnet core がインストールされている必要があります。
+ - VS Code もしくは、その他のテキストエディタ
+ - cURL, Postman, もしくは、その他の REST API ツール
 
-## 2. Create a Function App project
+## 2. Function App project　を作成する
 
-Azure Functions can run locally with a very simple project structure. Essentially, you can create a directory which contains a child directory for each Function. It can also contain shared code/dependencies/static content. Each Function directory needs a `function.json` in it in order to be discovered by the Functions runtime; this file specifies the behavior of your application. The Function directory should also contain your code or you need to add a setting to your `function.json` on where that code lives. For most of this workshop, we'll just drop an `index.js` file in the same directory and let the runtime discover it automatically.
+Azure Functions は、シンプルなプロジェクト構造になっていて、ローカルでも動作します。各Function を格納するサブディレクトリを作ることができます。Function のサブディレクトリは、コードや、依存するもの（ライブラリなど）、静的コンテンツを含むことができます。全ての Functionのディレクトリは、`function.json` が必要です。Functions のランタイムは、それを元に Function を見つけ出します。また、このファイルは、あなたのアプリケーションの振る舞いを決定します。Function のディレクトリは、コードが必要です。もしくは、`function.json` にどこにコードがあるのかが設定されている必要があります。このワークショップの大部分では、我々は、`index.js` を同じディレクトリに置いて使います。そうすると、Azure Functions のランタイムが自動的にコードを発見することができます。
 
-Here's a simple ASCII representation of a Functions project structure.
+Azure Functions のプロジェクト構造を下記に示します。
 
 ```
 (root)
@@ -33,17 +33,17 @@ Here's a simple ASCII representation of a Functions project structure.
  -- index.js
 ```
 
-Fortunately, you don't have to create this all by hand. We can us the Azure Functions core tools to template for us. To create a new Functions Project, let's create a new directory and initialize it.
+このディレクトリ構造をいちいち作る必要はありません。Azure Functions core tools がテンプレートを生成してくれます。新しい Functions のプロジェクトを作成するためには、新しいディレクトリを作って、初期化 (initialize) しましょう。
 
 ```bash
-# Create a new directory
+# 新しいディレクトリを作る
 mkdir hello-functions
 cd hello-functions
-# Initialize that directory
+# ディレクトリを初期化する
 func init
 ```
 
-It should show an output like so:
+出力結果は次のようになる。(Mac の例)
 
 ```
 Writing .gitignore
@@ -53,23 +53,23 @@ Created launch.json
 Initialized empty Git repository in /Users/chris/workspace/hello-functions/.git/
 ```
 
-The tool won't overwrite any existing files, so if you ever accidentally delete a file and want to recreate it (like if you don't check in your `.vscode` directory), just run `func init` again.
+このオペレーションでは、既存のコードは上書きしません。なんらかのきっかけでファイルを消してして再作成したいなら、もう一度 `func init` を実行してください。
 
-## 3. Create a your first Function
+## 3. 最初の Function を作成する
 
-To create our first Function of the workshop, all we need to do is run:
+ワークショップの最初の Function を作成するためには、次のコマンドを実行しましょう。
 
 ```
 func new
 ```
 
-which will prompt us for which type of Function we'd like to create. We can also specify it via command line arguments. In this case, we want to create a JavaScript HTTP Function, so we'll run instead:
+このコマンドは、私たちに、どのタイプの Function を作るのか聞いてきます。コマンドライン引数を指定することもできます。次の例では、JavaScript の HTTP Functions を作る例です。
 
 ```
 func new -l JavaScript -t HttpTrigger -n hello
 ```
 
-which should output something like
+次のような出力例になります。
 
 ```
 Select a language: JavaScript
@@ -79,23 +79,23 @@ Writing /Users/chris/workspace/hello-functions/hello/sample.dat
 Writing /Users/chris/workspace/hello-functions/hello/function.json
 ```
 
-In addition to the directory, this created three files for us:
+加えて、ディレクトリには、つぎの３つのファイルが作られます。
 
-1. `index.js` which contains our code
-2. `function.json` which contains our config for the Function
-3. `sample.dat` which is some test data you can use with the template out of the box. We don't need this, so you can delete it if you'd like.
+1. `index.js` Function のコード
+2. `function.json` Function の設定ファイル
+3. `sample.dat` テンプレートが作成したテスト用のデータ。なくても良い。不要なら消してください。
 
-Let's go ahead and test out our Function now.
+さぁ、最初の Function　をテストしてみましょう。
 
-## 4. Running Azure Functions
+## 4. Azure Functions を実行する
 
-To start your Functions, be sure you're in the root of your Function project and run:
+作成した Function　を実行するためには、Function プロジェクトのルート(local.setting.json, host.json のあるディレクトリ)に移動して、次のコマンドを実行してください。
 
 ```
 func host start
 ```
 
-This should print an output like this:
+次のような出力結果になります。
 
 ```
 
@@ -136,19 +136,23 @@ Http Functions:
 	hello: http://localhost:7071/api/hello
 ```
 
-If you see errors, you might be missing a dependency. Get the attention of one of the instructors if you don't know what's wrong from the errors. One of the commons errors that occurs is if you're running an older version of Node.js, it won't install the Node worker properlly and you'll need to update to a new version of Node and reinstall.
+エラーが発生したら、依存性の問題かもしれません。もう一度手順を見直して、エラーを注意深く見てみましょう。よくありがちなエラーとしては、古いバージョンの Node.js を動かしているというのがあります。もし、適切なバージョンの、Node worker を動かしていなかったら、新しいバージョンにアップデートして、再インストールが必要になるでしょう。
 
-Note at the bottom of that output, we have a URL where our Function is hosted: `http://localhost:7071/api/hello`
+先ほどの出力結果の最後の行をみてみると、作ったFunction がホストられている URL がわかります。`http://localhost:7071/api/hello`
 
-Go ahead an make a GET request to that via cURL, Postman, or even just a web browser. You should get a message like `Please pass a name on the query string or in the request body`. Now try again with a query parameter of `?name=world`. (aka `http://localhost:7071/api/hello?name=world`) which should get you a response like `Hello world`. You can try different name values like `?name=trogdor` and see the response change.
+cURLもしくはブラウザ で、GET リクエストを送ってみよう。おそらく、`Please pass a name on the query string or in the request body`というメッセージが帰ってくると思います。再度クエリーパラメータをつけて送ってみましょう。こんな感じで。`?name=world`. (aka `http://localhost:7071/api/hello?name=world`)。そしたらきっと`Hello world` というレスポンスが帰ってくるでしょう。違う名前を試してみてください。`?name=trogdor`　きっとレスポンスが変わると思います。
 
-While we won't go into detail on all the settings you can do with function.json here, it is worth looking at it and noting we have an `httpTrigger` input and an `http` output for the response. This is how the runtime knows that this Function is an http triggered Function and not a queue triggered Function.
+今はまだ、`function.json` の設定の詳細については説明しませんがみてみましょう。`httpTrigger` の input と、`http` の output が、レスポンスとしてあるだけだということに気づくかもしれません。この設定によって、Azure Functions のランタイムが、この Function が、Queue トリガーではなく、Httpトリガーであるということを知ることができます。
 
-## 5. Changing from hello world to ascii art
+## 5. hello world をアスキーアートに変える
 
-In our workshop, we're building a service called "squirebot". The idea behind the name is that it is a bot which learns how to do things for you, but you have to train it, much like a squire of old. It is only appropriate then, that our first task we'll want squirebot to do for us is fetch us a lance.
+In our workshop, we're building a service called "squirebot（騎士の家来のような意味)". The idea behind the name is that it is a bot which learns how to do things for you, but you have to train it, much like a squire of old. It is only appropriate then, that our first task we'll want squirebot to do for us is fetch us a lance.
+
+本ワークショップでは、"squirebot" というサービスを作ります。このbotは、あなたのためにどのようなことをするか学びます。ただ、あなたはbot に教える必要があります。例えば、古のsquire のように。最初の我々のタスクは　squirebot が、我々に、槍を差し出すといったものになるでしょう。
 
 Let's change our function a bit to instead return some ASCII art. You can read through the code, but essentially we have two different templates for long and short lances and we just do a simple find and replace depending on which letters we want it to be made of.
+
+槍の代わりに私たちの Functions では、アスキーアートを返しましょう。コードを読んでみてください。本質的に、私たちは、２つのテンプレートを持っています。長い槍、短い槍そして、単純に
 
 ```javascript
 module.exports = function (context, req) {
@@ -192,26 +196,34 @@ ${lance}`
 };
 ```
 
-Now try to run this via cURL or Postman (not your browser since this needs to be POST).
+cURL か Postman を使って実行してみましょう。(ブラウザでは、うまくいきません。 POSTがリクエストが必要です。)
+
 
 ```
 curl -H "Content-Type: application/json" -X POST -d "{\"lance_length":"long\",\"lance_material\":\"metal\"}" http://localhost:7071/api/hello
 ```
 
-This should return us a fancy ASCII lance. You can now stop your Functions host.
+槍の美しいアスキーアートが帰ってくるはずです。それでは、Function のホストを止めてください。
 
-## 6. Preparing our task for our squirebot
+## 6. squirebot のためのタスクを準備する
 
-Because this is no longer a hello world Function, and instead a lance fetching Function, one last step is to rename our Function.
+これはもはや hello world Function ではありません。A lance fetching Function でしょう。最後に、Function の名前を変えてみましょう。
 
-The name of your Function is tied to the directory name, which in this case is `hello`. You can rename your directory to rename your Function. You can rename your directory from your file explorer, VS Code, or terminal. Rename your directory to "lanceFetcher".
+Function の名前は、ディレクトリ名と紐づいています。今回だと、`hello` です。Function の名前を変えるために、ディレクトリ名を変えましょう。File Explore, VS Code, terminal 等でディレクトリ名を`lanceFetcher`に変えましょう。
+
 
 `mv ./hello ./lanceFetcher`
 
-Now, if you start the funcitons host again, you'll see your API has changed to `api/lanceFetcher`. You don't have to change your Function name to change your route - you can also do it by setting the `route` property in the `function.json`. For example, if I change the `route` property to `foobar`, can access my function on `api/foobar`. If you want to remove `api` from the base route, you can do this in the host.json. You can [learn about host.json settings on docs.microsoft.com](https://docs.microsoft.com/en-us/azure/azure-functions/functions-host-json).
 
-Congratulations, you've now completed module 2 and created your first Function. You now know the basics on how to create a Functions project, how to create a Function from a template, how to edit and rename a Function, and how to run the Function locally.
 
-## 7. (Optional) Create a C# function in Visual Studio
+再度 functions のホストをスタートしてみましょう。API が、`api/lanceFetcher`に変わっているのがわかると思います。Function 名やルート（route)を変える必要はありません。`route` を変えたい場合は、`function.json`のプロパティとして設定できます。例えば、`route` を、`foobar` に変えたいとします。そうしたら、`api/foobar` でアクセスできるようになります。もし、`api` をベースURLから削除したかったら、`host.json`の中で行えます。[learn about host.json settings on docs.microsoft.com](https://docs.microsoft.com/en-us/azure/azure-functions/functions-host-json)　を参照してください。
 
-You can create a C# function app in Visual Studio with the same HTTP function as above. Follow the tutorial [Create your first function using Visual Studio](https://docs.microsoft.com/en-us/azure/azure-functions/functions-create-your-first-function-visual-studio).
+おめでとうございます。モジュール２はこれで終了です。初めての Function を書きましたね。すでに、Function project を作成するための基礎を学びました。どのように、テンプレートから、Function を作るか、どのように、Function を編集して、名前を変更するか、そして、どのようにローカルで Function を実行するかについても。
+
+## 7. (Optional) C# function を Visual Studio で作成する
+
+
+Visual Studio を使って、上記と同じような C# Function を作ることができます。次のチュートリアルをやってみましょう。
+[Create your first function using Visual Studio](https://docs.microsoft.com/en-us/azure/azure-functions/functions-create-your-first-function-visual-studio).
+
+
