@@ -151,7 +151,6 @@ function run(context, req) {
 //...
 ```
 
-There are a few different approaches that people use with HTTP Triggered Functions:
 Http Trigger の Function を使う時に、いくつかのアプローチがあります。
 
 1. 1 Function 毎に Route と Method を設定する
@@ -199,8 +198,6 @@ Azure Functions に慣れている人は、MongoDB のライブラリの代わ�
 CosmosDB は、CLI かポータルで作成できます。
 
 #### Azure CLI を使った Cosmos DB データベースと、コレクションの作成
-
-You can [install the Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) on your machine, or use it from the [Cloud Shell inside the Azure Portal](https://docs.microsoft.com/en-us/azure/cloud-shell/overview).
 
 Azure CLI をあなたの PC にインストールすることができます。もしくは、Cloud Shell を Azure Portal から使うことができます。
 
@@ -278,13 +275,13 @@ Location | East US
 
 #### local settings のアップデート
 
-あなたは、Connection String で次のような URL を見ているだろう。`mongodb://username:password@host:10255/?ssl=true`。これは、デフォルトで"test" コレクション用になっている。私は、`squire` コレクションを作るのをオススメする。そして、データベースのセッティングは次の感じに近くなっているだろう。`mongodb://username:password@host:10255/[database]?ssl=true`.
+Connection String で次のような URL が表示されていると思います。`mongodb://username:password@host:10255/?ssl=true`。これは、デフォルトで"test" コレクション用になっています。私たちは`squire` コレクションを作るのをオススメします。データベースのセッティングは次の感じに近くなっているだろうと思います。`mongodb://username:password@host:10255/[database]?ssl=true`.
 
 訳者注：今までの設定だと、`[database]` は、`squire` だと思います。
 
 新しいプロパティを`./src/tasks-functions/local.settings.json`に作りましょう。変数名は、`MONGO_URL` です。
 
-local.setting.json は次のようになるだろう。
+local.setting.json は次のようになります。
 
 ```json
 {
@@ -299,7 +296,7 @@ local.setting.json は次のようになるだろう。
 }
 ```
 
-`UseInMemoryStore` を `false` にするのを忘れないように。
+`UseInMemoryStore` を `false` にするのを忘れないようにしてください。
 
 Function のホストを再起動しましょう。Webページをロードすると、タスクが０件になっていると思います。
 
