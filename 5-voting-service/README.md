@@ -1,18 +1,19 @@
-# Voting Service
+# 投票サービス
 
-## Create a serverless service using Node.js and the new Azure Functions Cross Platform Runtime
+## Azure Functions のクロスプラットフォームランタイムと Node.js を使ってサーバーレスサービスを作成しよう
 
-## 1. Overview
+## 1. 概要
 
-In this part of the workshop we will create a voting service that allows a team to create polls to vote on, and then surface it from the Squire bot. We are using the new [cross-platform developer experience](https://blogs.msdn.microsoft.com/appserviceteam/2017/09/25/develop-azure-functions-on-any-platform/) enabled by the Azure Functions runtime 2.0.
+本パートでは、投票サービスを作ります。そして、Squire bot と連携させます。この作業のために、新しい [クロスプラットフォームの Azure Fcuntions Core Tools](https://blogs.msdn.microsoft.com/appserviceteam/2017/09/25/develop-azure-functions-on-any-platform/)を使います。これは、Azure Functions 2.0 がベースになります。
 
-![Architecture](src/Content/Images/Architecture.PNG)
 
-We will be using Node.js, JSON documents, Cosmos DB, and Azure Functions to implement the service. 
+![アーキテクチャ](src/Content/Images/Architecture.PNG)
 
-### 1.1 Voting Session Document 
+Node.js, JSON ドキュメント、CosmosDB そして、Azure Functions を使用します。
 
-The Voting Session document will keep all the information about the voting session, including the question, avaialable options, and the votes. Here is an example JSON document for a Voting session after it's been filled out with a few votes:
+### 1.1 投票サービスの Document 
+
+Cosmos DB に格納される 投票サービス の Document は次のようになります。投票のセッション、(voting session)、質問(question)、オプション (options) そして、投票(vote) です。下記は、JSON ドキュメントの例です。
 
 ```javascript
 {
@@ -45,7 +46,7 @@ The Voting Session document will keep all the information about the voting sessi
 }
 ```
 
-### 1.3 Voting Service Operations
+### 1.3 投票サービスのオペレーション
 
 Operations | Details
 ------------ | -------------
@@ -55,39 +56,39 @@ Vote | Submit user's vote
 Voting Status | Get the latest results from the poll
 Delete Voting Session | Remove the voting session from the data store
 
-Each of the operations will map to an Azure Function that we will develop in this module. While Azure Functions can accept any HTTP verb, we are using POST for all of these functions so it can integrate with the Squire Bot at the end of the module.
+それぞれのオペレーションは、一つの Azure Function にマップされます。それを開発していきます。Azure Functions は、様々なHTTPリクエストを受け付けますが、今回は全てのFunction で、POST を使います。それにより、Squire Bot との連携ができるようになっています。
 
-## 2. Prerequisites
+## 2. 前提条件
 
-Ensure you have the following prerequisites before proceeding:
+次に進む前に前提条件が満たされているか確認しましょう。
 
-- An active Azure account. If you don't have one, you can sign up for a free account https://azure.microsoft.com/en-us/free/
+- Azure アカウント。なければここから作りましょう。 https://azure.microsoft.com/en-us/free/
 
-- Latest current Node.js and npm https://nodejs.org/en/download/current/
+- 最新の Node.js とnpm https://nodejs.org/en/download/current/ (訳者注：8.x がおすすめです。)
 
 - Visual Studio Code https://code.visualstudio.com/Download
 
-- Azure Functions Core Tools. Follow the "Running on your local machine" instructions here to install it: https://blogs.msdn.microsoft.com/appserviceteam/2017/09/25/develop-azure-functions-on-any-platform/
+- Azure Functions Core Tools. 次のインストラクションにしたがってインストールしましょう。 https://blogs.msdn.microsoft.com/appserviceteam/2017/09/25/develop-azure-functions-on-any-platform/
 
-- RESTful Client that will help you test the functions both locally and when deployed to Azure. One option is Postman https://www.getpostman.com/
+- RESTful クライアント　ローカルと、Azure の両方にリクエストが送れるもの。オススメは Postman https://www.getpostman.com/
 
 - Bot Framework Emulator - https://github.com/Microsoft/BotFramework-Emulator/releases/
 
-## 3. Development 
+## 3. 開発
 
-Now it's time to start building our service. 
+サービスを開発しましょう
 
-### 3.1. Serverless Data Store - Azure Cosmos DB
+### 3.1. サーバレスのデータストア - Azure Cosmos DB
 
-First, let's prepare our data store - [Azure Cosmos DB](https://docs.microsoft.com/en-us/azure/cosmos-db/introduction). Cosmos DB is Microsoft's globally distributed, multi-model data service. We will use it's document database API called DocumentDB to store the voting session contents for our service. DocumentDB provides rich and familiar SQL query capabilities with consistent low latencies over schema-less JSON data, which is perfect for our service. You can create it on your Azure subscription via the Azure CLI or the Azure Portal:
+最初にデータストアを準備しましょう。 - [Azure Cosmos DB](https://docs.microsoft.com/en-us/azure/cosmos-db/introduction). Cosmos DB はマイクロソフトのグローバル分散型のマルチモデルデータベースサービスです。投票サービスでは　CosmosDBの DocumentDB と呼ばれるAPI を使用します。Document DB は、リッチで、SQL のようなクエリを使うことができ、低レイテンシーで、スキーマレスのJSON データを格納できます。今回の用途にはピッタリでしょう。Azure ポータルから、データベース環境を作成してみましょう。
 
-#### 3.1.1 Create the Cosmos DB Database and Collection via the Azure CLI in the Portal
+#### 3.1.1 Cosmos DB のデータベースと、コレクションを Portal の Azure CLI から作成する
 
-You can [install the Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) on your machine, or use it from the [Cloud Shell inside the Azure Portal](https://docs.microsoft.com/en-us/azure/cloud-shell/overview).
+Azure CLI をインストールしましょう。[install the Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) もしくは、インストールしなくてもAzure ポータルからも、CLI を使用可能です。 [Cloud Shell inside the Azure Portal](https://docs.microsoft.com/en-us/azure/cloud-shell/overview).
 
-Using the Azure CLI, or the Cloud Shell button on the menu in the upper-right of the Azure portal, replace the value of `databaseAccountname` with a unique name, and run the following file to create our Cosmos DB account and collection:
+Azure CLI もしくは、Azure ポータルのメニューの右上にある Cloud Shell ボタンをクリックして　次のファイルを実行しましょう。`databaseAccountname` を他と重複しない名前に書き換えてください。このファイルを実行すると、Cosmos DB アカウントと、コレクションが出来上がります。
 
-> Note: the Cosmos DB account create step takes a few minutes to finish
+> 注意： Cosmos DB アカウントは、作成するのに数分かかります。
 
 ```sh
 #!/bin/bash
@@ -130,15 +131,16 @@ az cosmosdb list-keys \
     --name $databaseAccountname \
     --resource-group $resourceGroupName
 ```
-At the end of running the commands you should have access to the Cosmos DB account keys. Copy the value of the primaryMasterKey and save it. Soon we will add it to the local settings file in Visual Studio Code.
 
-#### 3.1.2 Optional: Create the Cosmos DB Database and Collection via the Azure Portal
+このファイルを実行すると、最後に、Cosmos DB アカウントのキーが出力されます。その中で、primaryMasterKey を保存しておきましょう。後の設定で必要になります。
 
-Follow these instructions if you didn't use the Azure CLI or Cloud Shell to create the data store and prefer to use the Azure Portal.
+#### 3.1.2 オプション： Cosmos DB のデータベースとコレクションをポータルから作成する
 
-1. Login in to the [Azure Portal](https://portal.azure.com)
+次の方法を使えば、CLI と同じことが、Azure ポータルでも実施可能です。
 
-2. In the left pane, click New, click Databases, and then under Azure Cosmos DB, click Create. Create a new Cosmos DB account wit the following values:
+1. [Azure Portal](https://portal.azure.com)にログインします。
+
+2. 左のパネルで、New > Databases をクリックします。次に、Azure Cosmos DB の下の Create をクリックします。次の値を入力して、Cosmos DB アカウントを作成しましょう。
 
 Field | Value
 ------------ | -------------
@@ -148,13 +150,13 @@ Subscription | Your subscription (should already be selected)
 Resource Group | Create new, votingbot
 Location | East US
 
-Here is an example:
+入力例：
 
 ![Create Cosmos DB Account](src/Content/Images/CosmosDB-1.PNG)
 
-> Note: this Cosmos DB account create step takes a few minutes to finish
+> 注意： Cosmos DB アカウントは、作成するのに数分かかります。
 
-3. After the account is created, create a new collection and a database with the following values (the same values as in the pritscreen):
+3. Cosmos DB アカウントが作成されたら、コレクションとデータベースを次のデータを入れて作成しましょう。
 
 Field | Value
 ------------ | -------------
@@ -164,30 +166,30 @@ Initial Throughput Capacity | 400
 Partition Key | /votingname
 Database | Use Existing, votingbot
 
- A partition key is a property (or path) within your documents that is used to distribute your data among the servers or partitions for scale.
+ パーティションキー (a partition key)は、ドキュメントの中のプロパティで、あなたのデータをサーバやパーティションの中で、分散させるのに使われます。
  
 ![Create database and collection in your Azure Cosmos DB account](src/Content/Images/CosmosDB-2.PNG)
 
-4. Next we need to get the database connection string.You can find it under the section Keys in the left menu on the main screen for your Azure Cosmos DB account
+4. 次にデータベースの Connection String を取得します。左側のメニューの中の Keys セクションを探して、その中の、Azure Cosmos DB account > Connection String をクリックします。
 
 ![Get Connection string for Azure Cosmos DB](src/Content/Images/CosmosDB-3.PNG)
 
-Copy the value of the Primary Connection String and save it. Soon we will add it to the local settings file in Visual Studio Code. 
+Primary Connection String の値を保存します。あとでこの値は利用します。
 
-Now we are ready to start creating our voting service using the Azure Functions CLI and Visual Studio Code! In the next section we will walk you through the process.
+これで Azure Functions CLI と、Visual Studio Code を使って投票サービスを作成する準備が整いました。
 
-### 3.2. Create Voting Function
+### 3.2. 投票を作成するサービス
 
-Create a folder called `VotingBot` on your machine. It will contain all the code for our functions. 
-Next let's use the Azure Functions CLI to create a new Function app in the current folder, initialize a git repo, add the CosmosDB extension, and create the first function in the app. From the Terminal, in the `VotingBot` folder, enter the following commands: 
+`VotingBot` というフォルダを作りましょう。この中に functions を書いていきます。次に、Azure Functions CLI を使って、新しい Function app を作りましょう。git リポジトリを初期化し、Cosmos DB のエクステンションを追加し、最初の Function を書いていきます。ターミナルから、`VotingBot` フォルダーの中で次のコマンドを実行しましょう。
+
 
 ```sh
 
-//Install the CosmosDB extension for your Functions to use
-func extensions install -p Microsoft.Azure.WebJobs.Extensions.CosmosDB -v 3.0.0-beta4
-
 //This initializes the function app and repo
 func init
+
+//Install the CosmosDB extension for your Functions to use
+func extensions install -p Microsoft.Azure.WebJobs.Extensions.CosmosDB -v 3.0.0-beta4
 
 //This creates a new function in the function app
 func new 
@@ -200,9 +202,10 @@ func new
 code . 
 ```
 
-Next let's modify the main files for this function.
+次に、Function のコードを変更しましょう。
 
-Modify the `local.settings.json` file in the `VotingBot` folder and add a `votingbot_COSMOSDB` entry to the values section, then update the connection string with the values for your Cosmos DB account name and the primary key, or connection string, that you copied earlier:
+`VotingBot` ディレクトリの中の`local.settings.json` を更新しましょう。`votingbot_COSMOSDB` を追加します。先ほど作成した、 Cosmos DB のアカウント名と　Primary Key もしくは、Connection String を使って下記のように設定しましょう。
+
 
 ```javascript
 {
@@ -215,11 +218,12 @@ Modify the `local.settings.json` file in the `VotingBot` folder and add a `votin
 
 ```
 
-This `local.settings.json` file is where you can put local values to be used by all your functions in this function app.
+`local.settings.json` ファイルは Function App のローカル実行用の設定ファイルです。Function App に含まれる全ての function がこれを使います。
 
-The function will be triggered via an HTTP call (HttpTrigger), and will have a Cosmos DB Binding. Before continuing [learn more about Azure Functions triggers and bindings here](https://docs.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings). 
+今回のfunction は、Httpコール(HttpTrigger)をトリガーします。次のページで、トリガーとバインディングについて学んで見ましょう。[learn more about Azure Functions triggers and bindings here](https://docs.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings). 
 
-In Visual Studio Code modify the `function.json` file in the `CreateVotingode` folder to define the trigger and bindings as follows:
+Visual Studio Code では、`CreateVotingnode`フォルダの中の `function.json`を編集します。これにより、トリガーやバインディングが設定されます。
+
 
 ```javascript
 {
@@ -251,8 +255,8 @@ In Visual Studio Code modify the `function.json` file in the `CreateVotingode` f
 }
 ```
 
-The main logic inside the function will be to add votes and voters fields to the voting options, and then use the documentDB binding to save the voting session JSON to our data store.
-Now change the contents of `index.js` with the following code. This file contains all the code logic for this function. The `message` part of the response is what the SquireBot will use once we integrate with it:
+次に、コードを投票や、そのオプションを追加する function を作成します。ここでは、documentDB のバインディングを投票セッションのJSONをデータストアに格納するために使っています。`index.js` の内容を次のように書き換えましょう。response  にある `message` のパートは後ほど　　SquireBot で使います。
+
 
 ```javascript
 
@@ -298,19 +302,22 @@ module.exports = function (context, req) {
 
 ```
 
-Now it is time to test the function. From the terminal / command line, type the following from your `votingbot` folder (not the CreateVotingNode folder): 
+作成した function をテストして見ましょう。ターミナルもしくは、コマンドラインから、`votingbot` フォルダに移動して、次のコマンドを入力します。
+
 ```javascript
 func host start
 ```
 
-You should see the Azure Functions runtime start hosting your CreateVotingNode function locally with the following message at the end:
+Azure Functions のランタイムがどうして、CreateVotingNode サービスをローカルPC上でホストします。最後に次のようなメッセージを出力するはずです。
+
 ```sh
 Http Functions:
 
         CreateVotingNode: http://localhost:7071/api/CreateVotingNode
 ``` 
 
-Now we are ready to test the function, running locally, but connecting to CosmosDB on your Azure subscription. In this function we create the voting session by accepting POST requests with the following JSON body, so this will be the object we process in the body of the function:
+テストの準備が整いました。今、Azure Functions はローカルで動いていますが、Azure 上の Cosmos DB に接続しています。この function に Postmanなどのツールから次の JSON ボディをポストします。すると　function が実行されます。
+
 ```javascript
 {
     "votingname": "pizza vote",
@@ -320,17 +327,19 @@ Now we are ready to test the function, running locally, but connecting to Cosmos
 }
 ``` 
 
-One option is to use Postman on that URL, with the content of a Voting Session without the ids. As a result, if it's successful, we will get the document we created in Azure Cosmos DB with the ids:
+次の例では、Postman を使って、ポストしています。投票セッションの idつけずにリクエストを送って見ましょう。成功すると、Azure Cosmos DB のドキュメントを、id 付きで取得できるようになっています。
 
 ![Postman testing](src/Content/Images/CreateVoting-Postman.PNG)
 
-You can also debug the function - once the function is running, in Visual Studio Code, in the Debug view, click the Play button next to Attach to Azure Functions. Now you can attach breakpoints, inspect variables, and step through code. Try it out!
+ロカールでデバッグも可能です。 ローカルで、functions が動くと、Visual Sutdio Code の Debug view で、Attach to Azure Functions の横の Play ボタンを押すと、ブレイクポイントを設定したり、変数を調査したりできます。是非お試しを。
 
-### 3.3. Serverless Function - Close / Re-Open Voting Session
 
-In this function we will disable or enable a voting session by modifying the value of `isOpen` in the stored voting session document.
+### 3.3. サーバーレス function - 投票セッションのクローズと再オープン
 
- From the `VotingBot` folder in the command prompt executing the following commands:
+この function では、投票セッションを、無効化したり、有効化したりします。これには、投票セッションドキュメントの、プロパティである`isOpen` を使います。
+
+
+ `VotingBot` フォルダから、次のコマンドを実行して function を作成しましょう。
 
 ```javascript
 //This creates a new function in the function app
@@ -343,7 +352,9 @@ func new
 code . 
 ```
 
-The bindings configuration for this function is different from the Create Voting function. We define both an in binding to find the existing document using the `votingname` value from the request, and an output binding to update the document on our data store. Update `function.json` in the `CloseVotingNode` folder with the following:
+function のバインディングの設定は、先ほどのサービスとは異なります。リクエストに含まれる `votingname` の値から既存のドキュメントを見つけるバインディングと、ドキュメントを更新する出力バインディングが設定されています。`CloseVotingNode` フォルダの中の `functions.json` を次のように書き換えましょう。 
+
+
 
 ```javascript
 {
@@ -382,7 +393,7 @@ The bindings configuration for this function is different from the Create Voting
 }
 ```
 
-In this function the bindings do a lot of the work for us, so your code can focus on your logic. Update `index.js` in the `CloseVotingNode` folder with the following:
+この function の中で、バインディングは、たくさんの作業をしてくれています。それにより私たちはロジックに集中することができます。`CloseVotingNode` フォルダの中の `index.js` を次のように書き換えましょう。
 
 ```javascript
 module.exports = function (context, req) {
@@ -432,7 +443,7 @@ module.exports = function (context, req) {
 };
 ```
 
-This function will accept POST request with the following request object:
+この function は、次のようなボディを持ったPOST リクエストを受付ます。
 
 ```javascript
 {
@@ -441,11 +452,13 @@ This function will accept POST request with the following request object:
 }
 ```
 
-You can change isOpen to true or false to open or close a voting session.
+この function で、isOpen を true もしくは、false に設定することができます。それは投票セッションをオープンしたり、クローズするのに使われます。
 
-Let's run and test the function in the same way we did in Create Voting function against the URL for this function at http://localhost:7071/api/CloseVotingNode.
+function を動かして、テストして見ましょう。URL はこちらになるはずです。 http://localhost:7071/api/CloseVotingNode.
 
-From the terminal or command line in your `VotingBot` folder, start hosting the functions locally again with `func host start`. This time you should see both functions being hosted, with the following message at the end of the logs:
+
+ターミナルかコマンドラインから、`VotingBot` フォルダに移動し、`func host start` コマンドを実行します。すると次のようなラインが表示されます。
+
 ```sh
 Http Functions:
 
@@ -457,11 +470,11 @@ Here's an example of testing the function using Postman:
 
 ![Postman testing](src/Content/Images/CloseVoting-Postman.PNG)
 
-### 3.4.  Serverless Function - Vote on a Voting Session
+### 3.4.  サーバレス function - 投票セッションで投票する
 
-In this function we will receive votes and update the voting session.
+この function は、投票を受け付けて、投票セッションをアップデートします。
 
-From the `VotingBot` folder in the command prompt executing the following commands:
+コマンドプロンプトなどで `VotingBot` フォルダに移動して、次のコマンドを実行して、function を作成しましょう。
 
 ```javascript
 //This creates a new function in the function app
@@ -474,8 +487,7 @@ func new
 code . 
 ```
 
-Update `function.json` in the `VoteNode` folder as follows to include an output binding for our data store, it's the same as the previous function:
-
+`VoteNode` の中の `function.json` を変更しましょう。先の例と同じようにバインディングを含んでいます。
 
 ```javascript
 {
@@ -514,7 +526,8 @@ Update `function.json` in the `VoteNode` folder as follows to include an output 
 }
 ```
 
-The logic for this function is to update the Voting Session document with a new vote based on the data we are getting from the request. Update `index.js` in the `VoteNode` folder with the following:
+投票セッションのドキュメントを更新する function を書きます。リクエストから取得した、投票データから更新します。`VoteNode` の `index.js` を次のように更新しましょう。
+
 
 ```javascript
 module.exports = function (context, req) {
@@ -592,7 +605,7 @@ module.exports = function (context, req) {
 };
 ```
 
-The function will work with the following request object:
+今回の function は次のリクエストでうまく動作します。
 
 ```javascript
 {
@@ -602,14 +615,14 @@ The function will work with the following request object:
 }
 ```
 
-Run and test this new function similarly to the previous two functions. You should get the new document back. For example:
+先の function と同じように、このfunctionを動かしてテストしてみましょう。
 ![Postman testing](src/Content/Images/Vote-Postman.PNG)
 
-### 3.5.  Serverless Function - Voting Session Status 
+### 3.5.  サーバレス function - 投票セッションステータス取得
 
-Voting Status will give us the score of a voting session. 
+投票セッションステータスを取得することで、投票セッションのスコアを見ることができます。
 
-From the `VotingBot` folder in the command prompt executing the following commands:
+`VotingBot` フォルダから、次のコマンドを使って、新い function を作成します。
 
 ```javascript
 //This creates a new function in the function app
@@ -622,9 +635,10 @@ func new
 code . 
 ```
 
-While this function could just implement the GET HTTP method and require an `id` in the query string, we will make it work with an POST HTTP method in order to integrate with the Squire Bot. The function therefore requires an id value in the body of the request.
+この function は本来 `id` をクエリーストリングに持った GET Http メソッドを受け付けるように実装することもできるでしょう。しかし、私たちは、Squire Bot と連携させるため、POST で実装しました。そのため、本 function では、リクエスト Body に id の値をもたせてください。
 
-Update `function.json` of your VotingStatusNode function with the following:
+
+`VotingStatusNode` の `function.json` を次のように更新しましょう。
 
 ```javascript
 {
@@ -655,7 +669,8 @@ Update `function.json` of your VotingStatusNode function with the following:
 }
 ```
 
-The binding will return the voting document with all of the votes. We then return the whole voting document:
+このバインディングは、全ての投票ドキュメントを返却します。同じように `index.js` を更新しましょう。
+
 
 ```javascript
 module.exports = function (context, req) {
@@ -700,7 +715,7 @@ module.exports = function (context, req) {
 };
 ```
 
-Run and test it similarly to the previous functions. The function will work with the following request object:
+function のテストのためには、前回と同様に、POST で次のボディを持ったリクエストを送りましょう。
 
 ```javascript
 {
@@ -711,11 +726,11 @@ Run and test it similarly to the previous functions. The function will work with
 For example:
 ![Postman testing](src/Content/Images/VotingStatus-Postman.PNG)
 
-### 3.6.  Serverless Function - Delete Voting Session 
+### 3.6.  サーバレス function - 投票セッションの削除
 
-Delete Voting Session will delete the voting session document with all its votes. 
+投票セッションの削除をすることで、全ての投票も削除されます。 
 
-From the `VotingBot` folder in the command prompt executing the following commands:
+'VotingBot` のフォルダから、次のコマンドで、新しい function を作成します。
 
 ```javascript
 //This creates a new function in the function app
@@ -728,7 +743,8 @@ func new
 code . 
 ```
 
-Update `function.json` with the following:
+`function.json` を更新しましょう。
+
 ```javascript
 {
   "disabled": false,
@@ -757,7 +773,9 @@ Update `function.json` with the following:
 }
 ```
 
-We can't delete CosmosDB documents using bindings, so we will use the `documentdb` npm package to delete the document. Update `index.js` with the following in the `DeleteVoting` folder:
+ドキュメントの削除には、CosmosDB バインディングは使えません。代わりに `documentdb` npm パッケージを使います。`DeleteVoting` フォルダの`index.js`を更新しましょう。
+
+
 
 ```javascript
 var documentClient = require("documentdb").DocumentClient;
@@ -822,19 +840,22 @@ function deleteDocument(partitionKey, id) {
 };
 ```
 
-In this file we are using the `documentdb` npm package. So that you can test the function locally, you need to install the package too. You can easily do that in Visual Studio Code or from the command line / terminal:
 
-1. From the command line or terminal, browse to the folder of the DeleteVotingNode function:
+
+`documentdb` npm パッケージを使っていますので、function を実行するときに一工夫必要です。
+
+1. コマンドラインか、ターミナルから、`DeleteVotingNode` に移動しましょう。
 ```javascript
 cd DeleteVotingNode
 ```
 
-2. Then type
+2. 次のコマンドで、npm パッケージをインストールします。`node_modules`が作成されてそこに、ライブラリが格納されます。プロダクションコードの開発では、`npm init` などで、`package.json` を作成し、3-squirebot で学んだ方法で、パッケージ化するのをおすすめします。
+
 ```javascript
 npm install documentdb
 ```
 
-This functions will expect the voting session id in the request body:
+これで、function は動作するようになりますので、同じようにテストしましょう。リクエスト Body にセッションid を渡します。
 
 ```javascript
 {
@@ -842,19 +863,27 @@ This functions will expect the voting session id in the request body:
 }
 ```
 
-Run and test it similarly to the previous functions. For example:
+
+Postman などから、実行して、テストして見ましょう。
 
 ![Postman testing](src/Content/Images/DeleteVoting-Postman.PNG)
 
-## 4. Azure Configuration
+## 4. Azure の設定
 
-Alright. Now that we have all the functions running locally, we can push it to Azure. Azure Functions on Azure can be deployed (through several ways)[https://docs.microsoft.com/en-us/azure/azure-functions/functions-continuous-deployment]. In order to get the code running in Azure you need a little bit more work.
+今までは、Azure Functions をローカルで実行してきましたが、それを Azure にプッシュしてみましょう。Azure Function はいくつかの方法で、Azure にデプロイ可能です。[https://docs.microsoft.com/en-us/azure/azure-functions/functions-continuous-deployment]. 
 
-#### 4.1 Create the Function App via the Azure CLI in the Portal
+#### 4.1 Azure ポータルの Azure CLI から、Function App を作成する
 
-You can [install the Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) on your machine, or use it from the [Cloud Shell inside the Azure Portal](https://docs.microsoft.com/en-us/azure/cloud-shell/overview).
+Azure CLIをインストールする [install the Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) もしくは、ポータルの Cloud Shell を使ってください。 [Cloud Shell inside the Azure Portal](https://docs.microsoft.com/en-us/azure/cloud-shell/overview).
 
-Using the Azure CLI, or the Cloud Shell button on the menu in the upper-right of the Azure portal, replace the value of the `storageAccountName` and `functionAppName` variables below with unique names that you make up, and `votingBotCosmosDBConnStr` with the same connection string to your CosmosDB instance from before. Then run the following file to create our Function App:
+Azure CLI か、Azure ポータルのメニューの右上にある Cloud Shell ボタンを使って、次のファイルを実行してみましょう。
+
+下記の変数に値を設定してください。それぞれのサービス内で、重複していない名前にしてください。
+それぞれ StorageAccount の名前、Function App の名前、そして、Cosmos DBのコネクションストリングです。これによって、Function App が作成されます。
+
+* `storageAccountName`
+* `functionAppName` 
+* `votingBotCosmosDBConnStr`
 
 ```sh
 #!/bin/bash
@@ -889,26 +918,27 @@ az functionapp config appsettings set --name $functionAppName \
 --settings FUNCTIONS_EXTENSION_VERSION=beta votingbot_COSMOSDB=$votingBotCosmosDBConnStr
 ```
 
-Once you have created the Function App on your Azure subscription, navigate to your `VotingBot` folder and execute the following command following the instructions, replacing `FunctionAppName` for the name of your function app from the previous script:
+Function App が Azure に作成されたら、`VotingBot` フォルダに移動してください。次のコマンドを実行してください。`FunctionAppName` は先ほど指定した名前と同じものを使用してください。
 
 ```javascript
 func azure functionapp publish <<FunctionAppName>>
 ```
 
-You can then test your function using Postman again, but using the URL of your deployed function on Azure. [Use the Azure Portal to get the URLs of your deployed functions](https://docs.microsoft.com/en-us/azure/azure-functions/functions-create-first-azure-function#test-the-function).
+Postman から再度テストをして見ましょう。ただし、URL はあなたが今デプロイした Azure 上の Azure Functions のものを使います。Azure にデプロイした Functionの URL はこちらの記事をご参照ください。[Use the Azure Portal to get the URLs of your deployed functions](https://docs.microsoft.com/en-us/azure/azure-functions/functions-create-first-azure-function#test-the-function).
 
 
-## 5. Integrate into Squire Bot
+## 5. Squire Bot とのインテグレーション
 
-In this final step of the lab we will integrate Voting Service with Squire Bot. 
 
-We will add Voting Service to the features of Squire Bot. The first step is to add all the functions we created as tasks in Squire Bot's web app. 
+最後に 投票サービスを Squire Bot と連携させてみましょう。 
 
-Please follow the instructions for starting Squire Bot locally. Then access the webapp at http://localhost:4200 and configure each of the tasks providing name, description, POST url and required parametets. You can see below how Create Voting was setup:
+投票サービスの機能を Squire Bot に追加します。最初のステップは、今回作った全ての Function を、Squire Bot の Web ページから、Taskとして登録していきます。
+
+Squire Bot の Web ページをローカルで立ち上げます。そして、ブラウザから　http://localhost:4200 にアクセスします。それぞれの Task で下記のパラメータを設定していきます。名前、description(概要) POST URL と必要なパラメータです。投票を作成するサービスの例だと、次のような感じです。
 
 ![Create Voting Task](src/Content/Images/CreateVotingTask.PNG)
 
-Please use the following table to configure the rest of the tasks
+同様に次のテーブルの内容を、残りのタスクに設定してください。
 
 Task | Parameters
 ------------ | -------------
@@ -918,12 +948,13 @@ Vote | id, user, option
 Voting Status | id
 Delete Voting | id
 
-Now it is time to test Voting Service with Squire Bot. 
 
-Please start Bot Framework emulator and connect to http://localhost:7071/api/bot
+設定したら、テストしてみましょう。
 
-Then start the dialog by typing the name of the task you defined in Squire Bot web app. Here it is an example for the voting task:
+Bot Framework emulator を動かして、こちらに接続しましょう。 http://localhost:7071/api/bot
+
+最初のダイアログで、あなたが、Squire Bot で指定したタスクの名前をタイプします。これは会話のサンプルです。
 
 ![Voting Task in Bot Emulator](src/Content/Images/SquireBotInAction.PNG)
 
-Great! You completed the module and now our Squire Bot is even smarter and can help you collect votes from friends and colleagues!
+これでこのモジュールも終了しました。Squire Bot は、より賢くなって投票を集める機能まで追加されました。
