@@ -1,6 +1,6 @@
-# Coder Cards: geek trading card generator
+# Coder Cards: ギークなトレーディングカードを自動生成
 
-CoderCards is a geek trading card generator. It uses Microsoft Cognitive Services to detect the predominant emotion in a face, which is used to choose a card back.
+CoderCards はギークなトレーディングカードを自動生成します。Microsoft Cognitive Services を利用して顔の表情を解析、その結果によってカードを返します。
 
 ## 前提条件
 
