@@ -48,15 +48,15 @@ CoderCards はギークなトレーディングカードを自動生成します
 
 1. Cognitive Services Emotion API キー: 
 
-     - Azure ポータルで **+ New** をクリック。 **Emotion API** を検索。
-    - 必須情報を入力して **F0** インスタンスを利用。
+    - Azure ポータルで **+ New** をクリック。 **Emotion API** を検索。
+    - 必須情報を入力して **F0** インスタンスを利用。
 
 ## 2. CoderCards project の構成
 
 1. git clone などで [CoderCards project on GitHub](https://github.com/Azure-Samples/functions-dotnet-codercards) からプロジェクトを取得。
 
-   - Windows  の場合は `master` ブランチを使用
-   - Mac/Linux の場合は `core` ブランチを使用
+    - Windows  の場合は `master` ブランチを使用
+    - Mac/Linux の場合は `core` ブランチを使用
 
 1. Azure ポータルで利用するストレージアカウントを選択。ない場合は作成。
 
@@ -162,9 +162,9 @@ func azure functionapp publish function-app-name --publish-app-settings
 
 1. Azure Storage explorer で利用しているアカウントに接続. 
 
-    - `input-local` コンテナを選択。
-    - **Set public access level** を右クリック。
-    - **Public read access for blobs only** を選択。
+    - `input-local` コンテナを選択。
+    - **Set public access level** を右クリック。
+    - **Public read access for blobs only** を選択。
 
 2. 正方形の画像を `input-local` に保存して、ファイル名をコピー。
 
@@ -184,7 +184,7 @@ func azure functionapp publish function-app-name --publish-app-settings
 2. コマンドプロンプトで `CoderCardsClient` フォルダに移動して、以下を実行。
 
     - Run `npm install`
-    - Run `npm start`. これでサイトが `http://127.0.0.1:8080/`で開始。 
+    - Run `npm start`. これでサイトが `http://127.0.0.1:8080/`で開始。 
 
 
 ## (オプション) 6. 手動での実行 
