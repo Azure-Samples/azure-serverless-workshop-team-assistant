@@ -1,32 +1,32 @@
-# Add a team schedule module to your bot
+# ボットへのチームスケジュール機能の追加
 
-## Overview
+## 概要
 
-In this module we will use Azure Functions and Logic Apps to build in functionality that integrates with team calendars.  The idea is you can ask your bot to find a suitable meeting time between teammates, and it will respond back with available times.
+このモジュールでは Azure Functions と Logic Apps を利用した、チームのカレンダー連携機能を開発します。例えばチームメイトとのミーティングを行う際、共通した空き時間をボットに探してもらうということが出来ます。
 
-The eventual flow will be:  
-1. Bot is notified of a command to find schedules `Schedule appointment` for `jeff,thiago`
-1. Logic Apps goes and grabs the calendar details for each person provided
-1. A Function is called to calculate availability in calendars
-1. A response is returned to the user with available times
+最終的なフローは以下の通りです。
+1. ボットは複数ユーザーの共通空きスケジュールを検索するコマンドを、`Schedule appointment` for `jeff,thiago` として受け取る。
+1. Logic Apps が各ユーザーの予定を取得する。
+1. Azure Function で各ユーザーの空き時間を計算する。
+1. 各ユーザー共通の空き時間が返される。
 
-To simplify the lab we already have a Google account setup with 2 users whos calendars we are going to look into.  However, the lab could work with any number of google calendars - as long as you have an account that can access them.  The Google API requires you reference the calendar by the calendar ID, like `azureserverlessdemo@gmail.com` would be the main calendar for that account.  In a real-world solution we would likely store a "friendly name" for the calendar - but for the purpose of simplicity we will keep the full calendar ID for this module.
+簡単にラボを進められるように、すでに 2 ユーザー分の Google アカウントを用意しています。実際にはアクセスできるアカウントがある限り、対象人数は自由に変更できます。Google API では `azureserverlessdemo@gmail.com` のようなアカウント ID を使ってメインの予定を取得できます。実際には予定表の名前を使う場合が多いのですが、今回はアカウント ID を使って予定にアクセスします。
 
-First let's build a function that can calculate available timeslots after recieving a list of scheduled appointments.  This function will find all timeslots during a day between 8am and 5pm.
+まずは受け取った予定から、空き時間を調べるファンクションを作成します。このラボでは、朝 8 時から夕方 5 時の間で空き時間を取得します。
 
-## Building the function
+## ファクションの開発
 
-Let's build a function to find available time slots when the schedule is hard-coded in.
+まず予定をハードコードした状態で動作するものを作成します。
 
-1. In your function app on your machine, create a new javascript function called `SchedulerBot`
+1. src\tasks-functions フォルダで名前が `SchedulerBot` の JavaScript の HttpTrigger ファクションを作成します。
     * `func new` -> `JavaScript` -> `HttpTrigger`
-1. Open the new function in Visual Studio Code: `code .`
-1. In the new `index.js` file, overwrite with the following: [code snippet](src/step-1/index.js)
-    * This code will run and return any available slot within a set of scheduled events.  
-1. Test to make sure the function works
-    * `func host start` -> do a POST on the exposed URL locally `http://localhost:7071/api/SchedulerBot`
+1. Visual Studio Code で作成したファンクションを開きます。: `code .`
+1. `index.js` ファイルを以下のコードに置き換えます。: [code snippet](src/step-1/index.js)
+    * このコードは、指定された時間帯で空いているスロットを検索します。
+1. ファンクションが期待通り動くかテストします。
+    * `func host start` -> `http://localhost:7071/api/SchedulerBot` に POST を送信します。
 
-**Response from step-1 index.js**
+**期待される応答**
 
 ```javascript
 {
@@ -40,9 +40,9 @@ Let's build a function to find available time slots when the schedule is hard-co
 }
 ```
 
-This is stating that there is one available timeslot between 2:01pm and 5:00pm. Now let's replace the function so the schedule will be passed in and dynamically generated.  This will work when our Logic App is able to pass in the schedule information from Google Calendar.
+この応答は 2:01pm から 5:00pm の間で空きがあることを意味します。では次にファンクションを更新して予定が動的に渡された際に機能するようにします。これで Logic App で Google カレンダーから予定を取得して渡されても動作します。
 
-1. Go back to the `index.js` file and replace the 
+1. `index.js` ファイルに戻り、以下の場所を  [code snippet](src/step-2/index.snippet.js) に差し替えます。 
 
 ```javascript
 var scheduledEvents = [
@@ -55,11 +55,22 @@ var scheduledEvents = [
     //TODO: Change scheduled events to events from Google Calendar
 ```
 
-with this snippet: [code snippet](src/step-2/index.snippet.js)  (the full index.js should look [like this](src/step-2/index.js))
+全てのコードは [このように](src/step-2/index.js) なります。
+尚、このコードは UTC+8 タイムゾーンを想定しているため、
+``` javascript
+start: items['start'].toLocaleTimeString('en-US', { hour12: false }),
+end: items['end'].toLocaleTimeString('en-US', { hour12: false })
+```
+のコードを、PC のローカルで日本時間である場合は -9-8 = -15 (夏時間の場合は -16) を追加します。
+```javascript
+start: new Date(new Date(items['start']).getTime() + (-15 * 3600000)).toLocaleTimeString('en-US', { hour12: false }),
+end: new Date(new Date(items['end']).getTime() + (-15 * 3600000)).toLocaleTimeString('en-US', { hour12: false })
+```
+に差し替えます。
 
-1. Run the function again after saving changes, and this time when you POST, post with the following JSON body: [sample JSON](src/step-2/sample.json).  This is what the Logic App will generate.
+1. 再度ファンクションを実行しますが、今回は POST の Body として、[こちらのサンプル JSON](src/step-2/sample.json) を渡します。これは Logic App から渡されるものと同じです。
 
-**Response from step-2 index.js with sample.json body**
+**期待される応答**
 ```javascript
 {
     "availableSlots": 2,
@@ -75,73 +86,73 @@ with this snippet: [code snippet](src/step-2/index.snippet.js)  (the full index.
     ]
 }
 ```
-1. Publish the function app to Azure
-    * `func azure functionapp publish {yourAzureFunctionAppName}`  
 
-Now the function can correctly return back available times - we just need to write a Logic App to pull in calendar data.
+1. Azure 公開時には UTC で計算されるため、日本時間のカレンダーを使う場合は、以下のように変更してから、Azure に公開します。
+```javascript
+start: new Date(new Date(items['start']).getTime() + (9 * 3600000)).toLocaleTimeString('en-US', { hour12: false }),
+end: new Date(new Date(items['end']).getTime() + (9 * 3600000)).toLocaleTimeString('en-US', { hour12: false })
+```
+    * `func azure functionapp publish {yourAzureFunctionAppName}` 
 
-## Building the Logic App
+これで Azure Function で正しい時間を返せるようになりました。次には Logic App で予定データを取得します。
 
-So we have a Google Account setup with the following schedule for calendars from Jeff (azureserverlessdemo - the green items) and Thiago (ujmqvr5.... - the yellow ones).  We need to pull *both* of their agendas and push this data to our Function to calculate when there is an available meeting time between 8am and 5pm.  Here's a sample of both of their calendars:  
+## Logic App の開発
+
+例えば以下のよう Jeff (緑の予定) と Thiago (黄色の予定) があったとします。この場合、朝 8 時から夕方 5 時の間で、二人ともが予定が空いている時間帯を探します。  
 
 ![agenda](images/8.png)  
 
-Do this we are going to use Azure Logic Apps and their connectors with services like Google Calendar.  We will also be doing a small "scatter-gather" pattern by spinning a worker for each calendar and then aggregating the results for all calendars.
+そのために、Azure Logic Apps を使って Google カレンダーに接続し、各ユーザーの予定を同時に取得したのち結果を集計します。
 
-1. Go to the [Azure Portal](https://portal.azure.com)
-1. Create a new logic app called `scheduler-bot` in any region you prefer
-1. Open the logic app and add a `Request` trigger
-1. Click on the `Use sample payload to generate schema` button to specify the shape of the request.
-1. Paste in the following example request from the bot:  
+1. [Azure ポータル](https://portal.azure.com) にログインします。
+1. 新しい Logic App を任意のリージョンに作り、`scheduler-bot` と名付けます。
+1. トリガーとして `Request` トリガーを使います。
+1. ”Use sample payload to generate schema” をクリックして、以下のコードをペーストします。
     ```json
     {
         "people": "azureserverlessdemo@gmail.com,ujmqvr5ouk8p9nmia2o4h6o33o@group.calendar.google.com"
     }
     ```
-    This is specifying that the bot will send in a "people" parameter.  It will have a single value that is **comma seperated**.  We'll need to split it up in the app.  
-1. Now we need to initialize a variable that will store each event schedule.  Add a step for **Initialize variable**.  Name the variable **schedules**, make it an Array, and you can leave the value empty.  
-    ![](images/4.png)
-1. Add a New step, and under **..More** select **Add a for each** as we need to grab calendar details FOR EACH of the `people` from the trigger.  However, if you recall the "people" we are sending in with the sample above are all in a single property.  They are seperated by a comma.  So we need to "split" the people by commas.  Doing a split will return an array, something like: `['person1', 'person2']` which will allow us to iterate over each person.  While we could write an Azure Function to do this, there is a simple [workflow definition language](http://aka.ms/logicappsdocs) to do basic transformations like this.  
-1. In the `Select an output from previous steps`, select the **Expression** tab on the right and type in the following expression to split the people by a `,`: `split(triggerBody()['people'], ',')` -> then press **OK**  
-    **HINT**: If you don't see expressions, zoom your browser out. You may be in "responsive" mode.  
+    これでボットが、people というデータをコンマ区切りで送ることが分かります。Logic App でこの内容を分割していきます。   
+1. 次に変数を初期化します。 **Initialize variable** ステップを追加し、 変数名を **schedules**、型を Array とします。
+    ![](images/4.png)
+1. **..More** メニューより **Add a for each** を追加します。ここでは HTTP Request に渡されたアドレスごとに Google カレンダーの予定を取得します。ただ、people のデータは配列ではなくカンマ区切りの文字列で渡されるため、split 関数を使って配列に変換する必要があります。`Select an output from previous steps` を選択して、右側に出るメニューより **Expression** タブをクリックします。Expression として `split(triggerBody()['people'], ',')` と入力して **OK** をクリックします。
+    **ヒント**: もし expressions タブが出ない場合、左側のメニューを消すなどして画面領域を広くしてみてください。 
     ![](images/5.png)
-1. Add an action - **Google Calendar - List the events on a calendar**  
-![google calendar action](images/1.png)  
-1. Sign in with the following account:
+1. Foreach の中で、**Google Calendar - List the events on a calendar** アクションを追加します。
+![google calendar action](images/1.png)  
+1. 以下のアカウントでサインインするか、自分のアカウントでサインインします。(多要素認証が聞かれた場合は、自分のアカウントを利用してください。):
     * username: `azureserverlessdemo@gmail.com`
     * password: `s3rverless1`
-1. For the **Calendar ID** select **Enter custom value**.  Choose another expression to get the current item of the foreach loop.  The expression is: `item()`.  Open the expression editor tab again and type in `item()`  
-1. Add another step in the foreach to **Append to array variable** - append the **Event List** to the "schedules" array.  
-    ![](images/6.png)  
-1. After/outside the foreach, call the function to evaluate the responses.
-    * Add a function, select your app, select the `ScheduleBot` function
-    * Pass in the **schedules** variable to the function
-1. Add a response after the function, paste in the following to return a message to the bot.  This will just return a stringified version of the response body from the Function Step (called `SchedulerBot`):  
+1. **Calendar ID** では **Enter custom value** を選択し、 再度 Expression より `item()` と入力します。これで foreach で渡されるメールアドレスが指定できます。
+1. 続いて　**Append to array variable** ステップを追加して、"schedules" 配列に **Event List** を追加します。  
+    ![](images/6.png)  
+1. foreach の外側に Azure Function のステップを追加します。
+    * Function の一覧より、先ほど作成した `ScheduleBot` を選択します。
+    * **schedules** 変数を引数として渡します。
+1. 最後に response アクションを追加し、ユーザーに返す結果を指定します。Body に以下のスニペットをペーストします。  
     ```json
     {
     "message": "@{body('SchedulerBot')}"
     }
     ```  
     ![](images/7.png)
-1. Save the logic app, and copy the trigger invoke URL from the trigger.  If you want before registering with the bot you can debug by using a REST client (like Postman) and POSTing to the Logic App URL with sample payload from step 5 above.  However you can just register it to your bot to see it work live if you want.
+1. Logic　App を保存します。一番上の Request トリガーを展開して、URL をコピーし、Postman 等のツールで POST メッセージを送ってみてください。
 
-## Train the bot
-Go to the Squire UX and add a new skill.
+## スキルの追加
+Angular の Squire アプリに接続して、以下のようなスキルを追加します。
 
 
-|Field|Value|
+|フィールド|値|
 |--|--|
 |Title|Schedule appointment|
 |Description|Get available time to meet with people|
 |Method|POST|
-|URL|*Copy the URL from your Logic app trigger*|
+|URL|*Logic app トリガーのアドレス*|
 |Parameter Name|people|
-|Parameter Prompt|Who do you want to schedule it with? (Comma seperated)|
+|Parameter Prompt|誰とのスケジュールを確認しますか？(コンマ区切り)|
 
 
-Go to your bot and ask it to `Schedule appointment`.
+登録後、Bot から `Schedule appointment` と送信して、動作するか確認します。スケジュール確認の対象を聞かれた際は、`azureserverlessdemo@gmail.com,ujmqvr5ouk8p9nmia2o4h6o33o@group.calendar.google.com`　のようにカンマ区切りで対象のユーザーを指定します。
 
-When it asks with whom, paste in the following 2 google calendars:
-`azureserverlessdemo@gmail.com,ujmqvr5ouk8p9nmia2o4h6o33o@group.calendar.google.com`
-
-We could continue to improve the bot by adding in some aliases for the Logic App via CosmosDB or some other store. For instance `jeff` could substitute to `azureserverlessdemo@gmail.com`, making the bot easier to communicate with. For sake of simplicity we will leave as-is for now.
+ボットをより高度に、かつ便利にするために、例えば `jeff` というアリアスを作って `azureserverlessdemo@gmail.com`にマップすることもできますが、このモジュールではここまでとします。
