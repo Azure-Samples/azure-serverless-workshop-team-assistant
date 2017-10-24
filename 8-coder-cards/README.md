@@ -1,31 +1,32 @@
-# Coder Cards: geek trading card generator
+# Coder Cards: ギークなトレーディングカードを自動生成
 
-CoderCards is a geek trading card generator. It uses Microsoft Cognitive Services to detect the predominant emotion in a face, which is used to choose a card back.
+CoderCards はギークなトレーディングカードを自動生成します。Microsoft Cognitive Services を利用して顔の表情を解析、その結果によってカードを返します。
 
-## Prerequisites
+## 前提条件
 
-1. Visual Studio, either:
-   - [Visual Studio 2017 Update 3](https://www.visualstudio.com/downloads/) with the Azure workload installed (Windows)
-   - [Visual Studio Code](https://code.visualstudio.com/download) with the [C# extension](https://code.visualstudio.com/docs/languages/csharp) (Mac/Linux)
+1. Visual Studio:
+   - [Visual Studio 2017 Update 3](https://www.visualstudio.com/downloads/) および Azure workload 機能のインストール (Windows)
+   - [Visual Studio Code](https://code.visualstudio.com/download) で [C# extension](https://code.visualstudio.com/docs/languages/csharp) の追加　(Mac/Linux)
 
-1. If running on a Mac/Linux, [.NET Core 2.0](https://www.microsoft.com/net/core#macos)
+1. Mac/Linux の場合、 [.NET Core 2.0](https://www.microsoft.com/net/core#macos) のインストール
 
-1. If running on a Mac/Linx, install [azure\-functions\-core\-tools](https://www.npmjs.com/package/azure-functions-core-tools)@core from npm. For more information, see https://aka.ms/func-xplat.
+1. Mac/Linx の場合、npm で install [azure\-functions\-core\-tools](https://www.npmjs.com/package/azure-functions-core-tools)@core 実行。詳細はこちらを参照。 https://aka.ms/func-xplat
 
-1. [Azure Storage Explorer](https://azure.microsoft.com/en-us/features/storage-explorer/).
+1. [Azure Storage Explorer](https://azure.microsoft.com/en-us/features/storage-explorer/)
 
-1. [Bot Framework Emulator](https://github.com/Microsoft/BotFramework-Emulator/releases/). 
+1. [Bot Framework Emulator](https://github.com/Microsoft/BotFramework-Emulator/releases/)
 
-    * NOTE: There's a problem with the latest Mac installers. So, install the older release [botframework\-emulator\-3\.5\.19\-mac\.zip](https://github.com/Microsoft/BotFramework-Emulator/releases/download/v3.5.19/botframework-emulator-3.5.19-mac.zip). The emulator will automatically download updates when it launches, and you simply have to restart it once that is complete.
+    * 注意: 最新の Mac 用インストーラーで問題がある場合、以前のバージョンを使ってください。 [botframework\-emulator\-3\.5\.19\-mac\.zip](https://github.com/Microsoft/BotFramework-Emulator/releases/download/v3.5.19/botframework-emulator-3.5.19-mac.zip). 起動時に最新の更新を自動で取得します。
 
 1. Azure Storage Account
 
 1. [Azure CLI 2.0](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
 
-## About CoderCards
 
-* There are two functions defined in this project:
-  * **RequestImageProcessing**. HTTP trigger that writes a queue message. The request payload must be in the following form:
+## CoderCards について
+
+* このプロジェクトでは 2 つの機能が提供されます。:
+  * **RequestImageProcessing**. HTTP でトリガーされ、キューにメッセージを書き込み明日。要求のペイロードは以下のスキーマとなります。:
 
   ```json
       {
@@ -35,46 +36,47 @@ CoderCards is a geek trading card generator. It uses Microsoft Cognitive Service
       }
   ```
 
-  * **GenerateCard**. Queue trigger that binds to the blob specified in the BlobName property of the queue payload. Based on the predominant emotion of the input image, it generates a card using one of 4 card templates.
+  * **GenerateCard**. キューの書き込みでトリガーされ、ペイロードにある Blob の情報を使います。入力されたイメージの感情を解析し、4 つのテンプレートからカードを生成します。
      
-     * The card is written to the output blob container specified by the app setting `output-container`. 
+     * カードは App Setting で指定された `output-container`に書き出されます。 
 
-Here's a visualization of the bindings, using the [Azure Functions Bindings Visualizer](https://functions-visualizer.azurewebsites.net):
+以下が [Azure Functions Bindings Visualizer](https://functions-visualizer.azurewebsites.net) を使って生成されたバインディングの情報です。:
 
 ![Functions bindings](images/function-bindings.png)
 
-## 1. Create Emotion API key
+## 1. Emotion API キーの作成
 
-1. Create an Cognitive Services Emotion API key: 
+1. Cognitive Services Emotion API キー: 
 
-    - In the Azure portal, click **+ New** and search for **Emotion API**.
-    - Enter the required information in the Create blade. You may use the free tier **F0** for this module.
+    - Azure ポータルで **+ New** をクリック。 **Emotion API** を検索。
+    - 必須情報を入力して **F0** インスタンスを利用。
 
-## 2. Configure the CoderCards project
+## 2. CoderCards project の構成
 
-1. Get the [CoderCards project on GitHub](https://github.com/Azure-Samples/functions-dotnet-codercards), either by `git clone` or downloading the zip.
+1. git clone などで [CoderCards project on GitHub](https://github.com/Azure-Samples/functions-dotnet-codercards) からプロジェクトを取得。
 
-   - Use the `master` branch if you're on Windows
-   - Use the `core` branch if you're on a Mac.
+    - Windows  の場合は `master` ブランチを使用
+    - Mac/Linux の場合は `core` ブランチを使用
 
-1. In the portal, find the resource group and account name for the Azure Storage account you wish to use.
+1. Azure ポータルで利用するストレージアカウントを選択。ない場合は作成。
 
-1. From a terminal, navigate to the **functions-dotnet-codercards** directory. Run the following, using the storage account name and resource group from above:
+1. ターミナルを開き、**functions-dotnet-codercards** に移動して、以下のコマンドを実行。
 
     ```
     az login
-    python <Storage Account Name> <Resource group> true
+    python setup.py <Storage Account Name> <Resource group> true
     ```
 
-    This will modify the file **local.settings.json**. The last argument controls whether to create containers prefixed with "local", which is useful if you want to use the same storage account when running locally and in Azure.
+    この操作で **local.settings.json** が変更されます。エラーが出る場合は、Python 3 がインストールされているか確認し、python3 を実行してください。最後の引数は local プリフィックスを付けるか決めるもので、これでローカル用と Azure 用の構成を作成可能です。
 
-1. If using Visual Studio, open **CoderCards.sln**. On a Mac, open the **functions-dotnet-codercards** folder in VS Code. 
+1. Visual Studio を利用している場合、**CoderCards.sln** を開く。Mac の場合は **functions-dotnet-codercards** フォルダーを Visual Studio
+ Code で開く。 
 
-1. Open the file **CoderCards/local.settings.json** 
+1. **CoderCards/local.settings.json** ファイルを開く。
 
-1. In the Azure portal, select your Emotion API instance. Select the **Keys** menu item and copy the value of **KEY 1**. Paste the value for the key `EmotionAPIKey`in **local.settings.json**.
+1. Azure ポータルより Emotion API を開き、**Keys** メニューよりキーをコピー。`EmotionAPIKey` にペースト。
 
-1. Add the following `Host` setting to **local.settings.json**, as a peer to the `Values` collection:
+1.  **local.settings.json** に以下の `Host` 設定を `Values` に並べて追加。
 
     ```json
     {
@@ -89,39 +91,39 @@ Here's a visualization of the bindings, using the [Azure Functions Bindings Visu
     }
     ```
 
-### Summary of App Settings 
+### App Settings のサマリー
 
-| Key                 | Description |
+| キー                  | 説明 |
 |-----                | ------|
-| AzureWebJobsStorage | Storage account connection string |
-| EmotionAPIKey       | Key for [Cognitive Services Emotion API](https://www.microsoft.com/cognitive-services/en-us/emotion-api) |
-| input-queue         |  Name of Storage queue for to trigger card generation. Use a value like "local-queue" locally and "input-queue" on Azure
-| input-container     | Name of Storage container for input images. Use a value like "input-local" locally and "card-input" on Azure |
-| output-container     | Name of Storage container for output images. Use a value like "output-local" locally and "card-output" on Azure |
-| SITEURL              | Set to `http://localhost:7072` locally. Not required on Azure. |
-| STORAGE_URL          | URL of storage account, in the form `https://accountname.blob.core.windows.net/` |
-| CONTAINER_SAS        | SAS token for uploading to input-container. Include the "?" prefix. |
+| AzureWebJobsStorage | ストレージアカウントの接続文字列 |
+| EmotionAPIKey       | [Cognitive Services Emotion API](https://www.microsoft.com/cognitive-services/en-us/emotion-api) のキー |
+| input-queue         |  カード生成のトリガーとなるキューの名前。ローカルの場合は "local-queue"、Azure の場合は "input-queue" を利用 |
+| input-container     | 入力イメージのストレージコンテナの名前。 ローカルの場合は "input-local"、Azure の場合は "card-input" を利用 |
+| output-container     | 出力イメージのストレージコンテナの名前。 ローカルの場合は "output-local"、Azure の場合は "card-output" を利用 |
+| SITEURL              | `http://localhost:7072` に設定。Azure 展開時は不要。 |
+| STORAGE_URL          | ストレージアカウントの URL `https://accountname.blob.core.windows.net/` |
+| CONTAINER_SAS        | 入力コンテナへのファイルアップロード用 SAS トークン "?" から始まる。 |
 
-If you want to set these values in Azure, you can set them in **local.settings.json** and use the Azure Functions Core Tools to publish to Azure.
+Azure 上でこれらの値を設定したい場合は、**local.settings.json** に値を設定して、Azure Functions Core Tools で公開。
 
 ```
 func azure functionapp publish function-app-name --publish-app-settings
 ```
 
-## 3. Run the project
+## 3. プロジェクトの実行
 
-1. Compile and run:
+1.コンパイルして実行:
 
-    - If using Visual Studio, just press F5 to compile and run **CoderCards.sln**.
+    - Visual Studio を使っている場合、**CoderCards.sln** を開き、F5 を押下。
 
-    - If using VS Code on a Mac, run `dotnet build; dotnet publish`. Then, navigate to the output folder and run the Functions core tools:
+    - VS Code を Mac で使っている場合は、ビルドタスクが `dotnet build` を実行。その後 output フォルダに移動して、ファンクション実行。
 
         ```
         cd CoderCards/bin/Debug/netstandard2.0/osx/publish
         func host start
         ```
 
-    You should see output similar to the following:
+     以下のような結果が表示される。
 
     ```
     Http Functions:
@@ -139,11 +141,11 @@ func azure functionapp publish function-app-name --publish-app-settings
     [10/6/17 7:01:18 AM] Host lock lease acquired by instance ID '0000000000000000000000005CADA547'.
     ```
 
-2. To test that the host is up and running, navigate to [http://localhost:7072/api/Settings](http://localhost:7072/api/Settings).
+2. ファンクションが起動しているかは、 [http://localhost:7072/api/Settings](http://localhost:7072/api/Settings) にアクセスして確認。
 
-## 4. Use the bot
+## ボットでの利用
 
-1. Go to the Squire UX and add a new skill:
+1. Squire UX にて、以下のスキルを追加。
 
     |Field|Value|
     |--|--|
@@ -158,38 +160,38 @@ func azure functionapp publish function-app-name --publish-app-settings
     |Parameter Name|Title|
     |Parameter Prompt|What is the person's title?|
 
-1. In Azure Storage explorer, navigate to the storage account you're using. 
+1. Azure Storage explorer で利用しているアカウントに接続. 
 
-    - Select the container `input-local`.
-    - Right-click and select **Set public access level**.
-    - Select **Public read access for blobs only**.
+    - `input-local` コンテナを選択。
+    - **Set public access level** を右クリック。
+    - **Public read access for blobs only** を選択。
 
-2. Upload a *square* image of a face to `input-local` and copy the filename.
+2. 正方形の画像を `input-local` に保存して、ファイル名をコピー。
 
-2. Go to your bot and ask it to `generate CoderCard`. Provide the filename you uploaded earlier.
+2. ボットで `generate CoderCard`を送信。アップロードしたファイル名を送信。
 
-3. Check the functions output window to see when the function is complete. The file will be written to the `output-local` container. Use Azure Storage Explorer to see the results.
+3. ファンクションのアウトプットから作成が成功したことを確認。生成されたカードは `output-local` コンテナに作成されるので、 Azure Storage Explorer で確認。
 
     ```
     [10/4/2017 1:34:59 AM] Function completed (Success, Id=a1d2a381-4eb6-4d82-8dc9-324ad90932c4, Duration=4993ms)
     [10/4/2017 1:34:59 AM] Executed 'GenerateCard' (Succeeded, Id=a1d2a381-4eb6-4d82-8dc9-324ad90932c4)
     ```
 
-## (Optional) 5. Use the CoderCards SPA
+## (オプション) 5. CoderCards SPA の利用
 
-1. Run the Functions host on port 7071. Either modify the port **local.settings.json** or pass an explicit port when you start the functions host: `func host start --port 7071`.
+1. Functions ホストをポート 7071 で実行。**local.settings.json** の設定を変更するか、 `func host start --port 7071`コマンドを実行。
 
-2. In a command prompt, go to the `CoderCardsClient` directory.
+2. コマンドプロンプトで `CoderCardsClient` フォルダに移動して、以下を実行。
 
     - Run `npm install`
-    - Run `npm start`. This will launch a webpage at `http://127.0.0.1:8080/`. 
+    - Run `npm start`. これでサイトが `http://127.0.0.1:8080/`で開始。 
 
 
-## (Optional) 6. Running manually 
+## (オプション) 6. 手動での実行 
 
-1. Choose images that are **square** and upload to the `input-local` container. (Images that aren't square will be stretched.)
+1. 正方形の画像を `input-local` コンテナにアップロード。(正方形でない画像はストレッチされる)
 
-1. Send an HTTP request using Postman or CURL, specifying the path of the blob you just uploaded:
+1. Postman 等で POST 要求を送信。
 
     `POST http://localhost:7072/api/RequestImageProcessing`
 
