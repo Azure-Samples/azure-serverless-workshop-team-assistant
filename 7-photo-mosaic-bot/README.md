@@ -66,10 +66,10 @@
 
     ```
     az login
-    python <Storage Account Name> <Resource group>
+    python setup.py <Storage Account Name> <Resource group>
     ```
 
-    この操作で **local.settings.json** が変更されます。
+    この操作で **local.settings.json** が変更されます。エラーが出る場合は、Python 3 がインストールされているか確認し、python3 を実行してください。
 
     または Azure ポータル上で Azure Cloud Shell を開き、 `python` を選択してスクリプトを実行。表示された結果を`local.settings.json`に手動で反映。 
 
