@@ -1,136 +1,135 @@
-# Photo Mosaic Bot
+# フォトモザイクボット
 
-This bot will generate a photo mosaic of an input image, using [Cognitive Services Custom Vision Service](https://azure.microsoft.com/en-us/services/cognitive-services/custom-vision-service/) to generate a photo mosaic from an input image.
+今回は [Cognitive Services Custom Vision Service](https://azure.microsoft.com/en-us/services/cognitive-services/custom-vision-service/)　を使って、入力された写真を使ったフォトモザイクを生成するボットを開発します。
 
-For example, you can train your model with Orlando landmarks, such as the Orlando Eye. Custom Vision will recognize an image of the Orlando Eye, and the function will create a photo mosaic composed of Bing image search results for "Orlando Eye." See example below.
+例えば、オーランドのランドマークである "Orlando Eye" をカスタムビジョンで認識するようにトレーニングして、Bing 画像検索の結果からモザイクを作るといったことが出来ます。
 
 ![Orlando Eye Mosaic](images/orlando-eye-both.jpg)
 
-## Prerequisites
+## 前提条件
 
-1. Visual Studio, either:
-   - [Visual Studio 2017 Update 3](https://www.visualstudio.com/downloads/) with the Azure workload installed (Windows)
-   - [Visual Studio Code](https://code.visualstudio.com/download) with the [C# extension](https://code.visualstudio.com/docs/languages/csharp) (Mac/Linux)
+1. Visual Studio:
+   - [Visual Studio 2017 Update 3](https://www.visualstudio.com/downloads/) および Azure workload 機能のインストール (Windows)
+   - [Visual Studio Code](https://code.visualstudio.com/download) で [C# extension](https://code.visualstudio.com/docs/languages/csharp) の追加　(Mac/Linux)
 
-1. If running on a Mac/Linux, [.NET Core 2.0](https://www.microsoft.com/net/core#macos)
+1. Mac/Linux の場合、 [.NET Core 2.0](https://www.microsoft.com/net/core#macos) のインストール
 
-1. If running on a Mac/Linx, install [azure\-functions\-core\-tools](https://www.npmjs.com/package/azure-functions-core-tools)@core from npm. For more information, see https://aka.ms/func-xplat.
+1. Mac/Linx の場合、npm で install [azure\-functions\-core\-tools](https://www.npmjs.com/package/azure-functions-core-tools)@core 実行。詳細はこちらを参照。 https://aka.ms/func-xplat.
 
 1. [Bot Framework Emulator](https://github.com/Microsoft/BotFramework-Emulator/releases/). 
 
-    * NOTE: There's a problem with the latest Mac installers. So, install the older release [botframework\-emulator\-3\.5\.19\-mac\.zip](https://github.com/Microsoft/BotFramework-Emulator/releases/download/v3.5.19/botframework-emulator-3.5.19-mac.zip). The emulator will automatically download updates when it launches, and you simply have to restart it once that is complete.
+    * 注意: 最新の Mac 用インストーラーで問題がある場合、以前のバージョンを使ってください。 [botframework\-emulator\-3\.5\.19\-mac\.zip](https://github.com/Microsoft/BotFramework-Emulator/releases/download/v3.5.19/botframework-emulator-3.5.19-mac.zip). 起動時に最新の更新を自動で取得します。
 
 1. Azure Storage Account
 
 1. [Azure CLI 2.0](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
 
-## 1. Create API keys
+## 1. API キーの作成
 
-1. Create a Bing Search API key:
+1. Bing Search API キー:
 
-    - In the Azure portal, click **+ New** and search for **Bing Search APIs**. 
-    - Enter the required information in the Create blade. You may use the lowest service tier of **S1** for this module.
+    - Azure ポータルより、**+ New** をクリック、**Bing Search APIs** を検索。
+    - 必須情報を入力して **S1** インスタンスを利用。
 
-1. (Optional) Create a Computer Vision API key. The function will fall back to the regular Computer Vision API if there isn't a match with images that have been trained in the Custom Vision Service. If you plan to test only with images that will match custom vision, you can skip this step.
+1. (オプション) Computer Vision API キーも合わせて作成。作成するファンクションは カスタムビジョンで画像が認識できない場合、通常の Computer Vision API を使うため必須ではない。
 
-    To create a Computer Vision API key:
+    Computer Vision API キーの作成手順:
 
-    - In the Azure portal, click **+ New** and search for **Computer Vision API**.
-    - Enter the required information in the Create blade. You may use the free tier **F0** for this module.
+    - Azure ポータルで **+ New** をクリック。 **Computer Vision API** を検索。
+    - 必須情報を入力して **F0** インスタンスを利用。
 
-## 2. Set up Custom Vision Service project
+## 2. Custom Vision Service プロジェクトの作成
 
-1. Go to https://www.customvision.ai/
+1. https://www.customvision.ai/ に、Microsoft アカウントでログイン。
 
-1. Sign in with a Microsoft account
+1. 新しいプロジェクトを作成し、Domains より "Landmarks" を指定。
+   
+1. 画像を追加し、タグを指定。Chrome のエクステンションである [Bulk Image Downloader](http://www.talkapps.org/bulk-image-downloader) を使ってランドマークの画像を一括ダウンロードも可能。
 
-1. Create a new project and select the image type, such as "Landmarks"
-   
-1. Add images and tag them. You can use a Chrome extension such as [Bulk Image Downloader](http://www.talkapps.org/bulk-image-downloader) to download Google or Bing images of landmarks.
+1. いくつかのランドマークを追加したら、**Train** ボタンをクリック。少なくとも5 の画像と各画像に 2 つのタグを登録。
 
-1. Once you have added several landmarks, click the **Train** button on the upper right. Make sure you have at least 2 tags and 5 images for each tag. 
+1. (オプション) **Test** タブからテストが可能。
 
-1. (Optional) Test image recognition using the **Test** tab.
-
-1. Click on the **Performance** tab. If you have more than one iteration, choose the latest iteration and click **Make default**.
+1. **Performance** タブをクリック。複数の iteration がある場合、最新のものを選択して、**Make default** を選択。
 
 
-## 3. Configure the photo mosaic project
+## 3. フォトモザイクプロジェクトの構成
 
-1. Get the [photo mosaic project on GitHub](https://github.com/Azure-Samples/functions-dotnet-photo-mosaic), either by `git clone` or downloading the zip.
+1. git clone などで [photo mosaic project on GitHub](https://github.com/Azure-Samples/functions-dotnet-photo-mosaic) からプロジェクトを取得
 
-   - Use the `master` branch if you're on Windows
-   - Use the `core` branch if you're on a Mac.
+   - Windows  の場合は `master` ブランチを使用
+   - Mac/Linux の場合は `core` ブランチを使用
 
-1. In the portal, find the resource group and account name for the Azure Storage account you wish to use.
+1. Azure ポータルで利用するストレージアカウントを選択。ない場合は作成。
 
-1. From a terminal, navigate to the **functions-dotnet-photo-mosaic** directory. Run the following, using the storage account name and resource group from above:
+1. ターミナルを開き、**functions-dotnet-photo-mosaic** に移動して、以下のコマンドを実行。
 
     ```
     az login
     python <Storage Account Name> <Resource group>
     ```
 
-    This will modify the file **local.settings.json**.
+    この操作で **local.settings.json** が変更されます。
 
-    Alternatively, you can run the script from the Azure Cloud Shell in the Azure Portal. Just run `python` and paste the script. The script prints out settings values that you can use to manually modify `local.settings.json`. 
+    または Azure ポータル上で Azure Cloud Shell を開き、 `python` を選択してスクリプトを実行。表示された結果を`local.settings.json`に手動で反映。 
 
-    Ensure that you see "Setup successful!" in the output.
+    "Setup successful!" が表示されることを確認。
 
-1. If using Visual Studio, open **MosaicMaker.sln**. On a Mac, open the **functions-dotnet-photo-mosaic** folder in VS Code. 
+1. Visual Studio を利用している場合、**MosaicMaker.sln** を開く。Mac の場合は **functions-dotnet-photo-mosaic** フォルダーを Visual Studio
+ Code で開く。 
 
-1. Open the file **MosaicMaker/local.settings.json** 
+1. **MosaicMaker/local.settings.json** ファイルを開く。
 
-1. In the [Custom Vision portal](https://www.customvision.ai/), get the URL for your prediction service. Select **Prediction URL** and copy the second URL in the dialog box, under the section "**If you have an image file**". It will have the form `https://southcentralus.api.cognitive.microsoft.com/customvision/v1.0/Prediction/<guid>/image`. Paste this value for the key `PredictionApiUrl` in **local.settings.json**.
+1. [Custom Vision ポータル](https://www.customvision.ai/), で Performance のタブより **Prediction URL** を選択。**If you have an image file** にある URL をコピーし、 **local.settings.json** ファイルの `PredictionApiUrl` にペースト。
 
-1. In the Custom Vision portal, select the settings gear in the upper right. Copy the value of **Prediction Key** for the key `PredictionApiKey` in **local.settings.json**.
+1. Custom Vision ポータルで設定ギアアイコンをクリックして、**Prediction Key** をコピー。`PredictionApiKey` にペースト。
 
     ![Prediction API key](images/custom-vision-keys.png)
 
-1. In the Azure portal, select your Bing Search APIs instance. Select the **Keys** menu item and copy the value of **KEY 1**. Paste the value for the key `SearchAPIKey`in **local.settings.json**.
+1. Azure ポータルより Bing Search APIs を開き、**Keys** メニューよりキーをコピー。`SearchAPIKey` にペースト。
 
-1. (Optional) Photo mosaic will fall back to the regular vision service if there is not a match with custom vision. Paste your key for your Cognitive Services Vision Service as the value for `MicrosoftVisionApiKey` in **local.settings.json**.
+1. (オプション) Cognitive Services Vision Service のキーを `MicrosoftVisionApiKey` にペースト。
 
-### Summary of App Settings 
+### App Settings のサマリー
 
-| Key                  | Description |
+| キー                  | 説明 |
 |-----                 | ------|
-| AzureWebJobsStorage  | Storage account connection string. |
-| SearchAPIKey         | Key for [Bing Search API](https://azure.microsoft.com/en-us/services/cognitive-services/bing-web-search-api/). |
-| MicrosoftVisionApiKey | Key for [Computer Vision Service](https://azure.microsoft.com/en-us/services/cognitive-services/computer-vision/). |
-| PredictionApiUrl     | Endpoint for [Cognitive Services Custom Vision Service](https://azure.microsoft.com/en-us/services/cognitive-services/custom-vision-service/). It should end with "image". |
-| PredictionApiKey     | Prediction key for [Cognitive Services Custom Vision Service](https://azure.microsoft.com/en-us/services/cognitive-services/custom-vision-service/). |
-| generate-mosaic      | Name of Storage queue for to trigger mosaic generation. Default value is "generate-mosaic". |
-| input-container      | Name of Storage container for input images. Default value is "input-images". |
-| output-container     | Name of Storage container for output images. Default value is "mosaic-output". |
-| tile-image-container | Name of Storage container for tile images. Default value is "tile-images". |
-| SITEURL              | Set to `http://localhost:7072` locally. Not required on Azure. |
-| STORAGE_URL          | URL of storage account, in the form `https://accountname.blob.core.windows.net/` |
-| CONTAINER_SAS        | SAS token for uploading to input-container. Include the "?" prefix. |
-| APPINSIGHTS_INSTRUMENTATIONKEY | (optional) Application Insights instrumentation key. | 
+| AzureWebJobsStorage  | ストレージアカウントの接続文字列 |
+| SearchAPIKey         | [Bing Search API](https://azure.microsoft.com/en-us/services/cognitive-services/bing-web-search-api/) のキー |
+| MicrosoftVisionApiKey | [Computer Vision Service](https://azure.microsoft.com/en-us/services/cognitive-services/computer-vision/) のキー |
+| PredictionApiUrl     | [Cognitive Services Custom Vision Service](https://azure.microsoft.com/en-us/services/cognitive-services/custom-vision-service/) のエンドポイント URL ("image" で終わる方) |
+| PredictionApiKey     | [Cognitive Services Custom Vision Service](https://azure.microsoft.com/en-us/services/cognitive-services/custom-vision-service/) のキー |
+| generate-mosaic      | ストレージキューの名前。既定で "generate-mosaic" |
+| input-container      | 入力イメージのストレージコンテナの名前。既定で "input-images" |
+| output-container     | 出力イメージのストレージコンテナの名前。既定で "mosaic-output" |
+| tile-image-container | モザイクタイルイメージのストレージコンテナの名前。既定で "tile-images" |
+| SITEURL              | `http://localhost:7072` に設定。Azure 展開時は不要。 |
+| STORAGE_URL          | ストレージアカウントの URL `https://accountname.blob.core.windows.net/` |
+| CONTAINER_SAS        | 入力コンテナへのファイルアップロード用 SAS トークン "?" から始まる。 |
+| APPINSIGHTS_INSTRUMENTATIONKEY | (オプション) Application Insights 用キー | 
 | MosaicTileWidth      | Default width of each mosaic tile. |
 | MosaicTileHeight     | Default height of each mosaic tile. |
 
-If you want to set these values in Azure, you can set them in **local.settings.json** and use the Azure Functions Core Tools to publish to Azure.
+Azure 上でこれらの値を設定したい場合は、**local.settings.json** に値を設定して、Azure Functions Core Tools で公開。
 
 ```
 func azure functionapp publish function-app-name --publish-app-settings
 ```
 
-## 4. Run the project
+## 4. プロジェクトの実行
 
-1. Compile and run:
+1. コンパイルして実行:
 
-    - If using Visual Studio, just press F5 to compile and run **PhotoMosaic.sln**.
+    - Visual Studio を使っている場合、PhotoMosaic.sln を開き、F5 を押下。
 
-    - If using VS Code on a Mac, the build task will run `dotnet build`. Then, navigate to the output folder and run the Functions core tools:
+    - VS Code を Mac で使っている場合は、ビルドタスクが `dotnet build` を実行。その後 output フォルダに移動して、ファンクション実行。
 
         ```
         cd MosaicMaker/bin/Debug/netstandard2.0/osx
         func host start
         ```
 
-    You should see output similar to the following:
+    以下のような結果が表示される。
 
     ```
     Http Functions:
@@ -149,13 +148,13 @@ func azure functionapp publish function-app-name --publish-app-settings
     Debugger listening on [::]:5858
     ```
 
-2. To test that the host is up and running, navigate to [http://localhost:7072/api/Settings](http://localhost:7072/api/Settings).
+2. ファンクションが起動しているかは、 [http://localhost:7072/api/Settings](http://localhost:7072/api/Settings) にアクセスして確認。
 
-## 5. Use the bot
+## 5. ボットでの利用
 
-1. Go to the Squire UX and add a new skill:
+1. Squire UX にて、以下のスキルを追加。
 
-    |Field|Value|
+    |フィールド|値|
     |--|--|
     |Title|generate mosaic|
     |Description|Generate a photo mosaic|
@@ -164,9 +163,9 @@ func azure functionapp publish function-app-name --publish-app-settings
     |Parameter Name|InputImageUrl|
     |Parameter Prompt|What is the source image URL?|
 
-2. Go to your bot and ask it to `generate mosaic`. Use an Google or Bing image URL of a landmark you've already trained, but try to use an image that you haven't trained it on.
+2. ボットで `generate mosaic` を送信。既にトレーニング済みのトレードマーク写真を Google や Bing 画像の URL として送信。
 
-3. The bot will show the URL where the generated mosaic will be available. Check the functions output window to see when the function is complete:
+3. Bot はモザイクを作成したのち、URL を返信。ファンクションのアウトプットから作成が成功したことを確認。
 
     ```
     [10/4/2017 1:34:55 AM] Executing 'CreateMosaic' (Reason='New queue message detected on 'generate-mosaic'.', Id=a1d2a381-4eb6-4d82-8dc9-324ad90932c4)
@@ -182,9 +181,9 @@ func azure functionapp publish function-app-name --publish-app-settings
     [10/4/2017 1:34:59 AM] Executed 'CreateMosaic' (Succeeded, Id=a1d2a381-4eb6-4d82-8dc9-324ad90932c4)
     ```
 
-## (Optional) 6. Run manaually
+## (オプション) 6. 手動での実行
 
-To run manually, send an HTTP request using Postman or CURL:
+直接手動で実行したい場合、以下の URL に Postman 等で POST リクエストを送信。
 
 `POST http://localhost:7072/api/RequestMosaic`
 
