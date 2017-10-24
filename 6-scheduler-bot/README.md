@@ -1,24 +1,25 @@
-# ボットへのチームスケジュール機能の追加
+# 複数ユーザーの空き予定確認機能を追加
 
 ## 概要
 
-このモジュールでは Azure Functions と Logic Apps を利用した、チームのカレンダー連携機能を開発します。例えばチームメイトとのミーティングを行う際、共通した空き時間をボットに探してもらうということが出来ます。
+このモジュールでは Azure Functions と Logic Apps を利用した、Google カレンダーとの連携機能を開発します。例えばチームメイトとのミーティングを行う際、共通した空き時間をボットに探してもらうということが出来ます。
 
 最終的なフローは以下の通りです。
-1. ボットは複数ユーザーの共通空きスケジュールを検索するコマンドを、`Schedule appointment` for `jeff,thiago` として受け取る。
+1. ボットは複数ユーザーの共通空きスケジュールを検索するコマンド、`Schedule appointment` を受け取る。
+1. 検索対象のユーザーを指定する。
 1. Logic Apps が各ユーザーの予定を取得する。
 1. Azure Function で各ユーザーの空き時間を計算する。
 1. 各ユーザー共通の空き時間が返される。
 
-簡単にラボを進められるように、すでに 2 ユーザー分の Google アカウントを用意しています。実際にはアクセスできるアカウントがある限り、対象人数は自由に変更できます。Google API では `azureserverlessdemo@gmail.com` のようなアカウント ID を使ってメインの予定を取得できます。実際には予定表の名前を使う場合が多いのですが、今回はアカウント ID を使って予定にアクセスします。
+簡単にラボを進められるように、すでに 2 ユーザー分の Google アカウントを用意しています。今回開発するロジック上は、対象人数は自由に変更できます。Google API では `azureserverlessdemo@gmail.com` のようなアカウント ID を使ってメインの予定を取得できます。複数の予定表がある場合は予定表の名前を使えますが、今回はアカウント ID を使ってメインの予定にのみアクセスします。
 
 まずは受け取った予定から、空き時間を調べるファンクションを作成します。このラボでは、朝 8 時から夕方 5 時の間で空き時間を取得します。
 
 ## ファクションの開発
 
-まず予定をハードコードした状態で動作するものを作成します。
+まず予定をハードコードした状態で動作するファンクションを作成します。
 
-1. src\tasks-functions フォルダで名前が `SchedulerBot` の JavaScript の HttpTrigger ファクションを作成します。
+1. src\tasks-functions フォルダに移動し、名前が `SchedulerBot` の JavaScript の HttpTrigger ファクションを作成します。
     * `func new` -> `JavaScript` -> `HttpTrigger`
 1. Visual Studio Code で作成したファンクションを開きます。: `code .`
 1. `index.js` ファイルを以下のコードに置き換えます。: [code snippet](src/step-1/index.js)
@@ -61,14 +62,12 @@ var scheduledEvents = [
 start: items['start'].toLocaleTimeString('en-US', { hour12: false }),
 end: items['end'].toLocaleTimeString('en-US', { hour12: false })
 ```
-のコードを、PC のローカルで日本時間である場合は -9-8 = -15 (夏時間の場合は -16) を追加します。
+の箇所を、PC のローカルタイムゾーンを考慮して差分を追加します。もしローカルのタイムゾーンが日本時間である場合は -8-9 = -15 (夏時間の場合は -16) を追加します。
 ```javascript
 start: new Date(new Date(items['start']).getTime() + (-15 * 3600000)).toLocaleTimeString('en-US', { hour12: false }),
 end: new Date(new Date(items['end']).getTime() + (-15 * 3600000)).toLocaleTimeString('en-US', { hour12: false })
 ```
-に差し替えます。
-
-1. 再度ファンクションを実行しますが、今回は POST の Body として、[こちらのサンプル JSON](src/step-2/sample.json) を渡します。これは Logic App から渡されるものと同じです。
+1. 再度ファンクションを実行しますが、今回は POST の Body として、[こちらのサンプル JSON](src/step-2/sample.json) を渡します。これは Logic App から渡されるものと同じようなデータです。
 
 **期待される応答**
 ```javascript
@@ -86,8 +85,9 @@ end: new Date(new Date(items['end']).getTime() + (-15 * 3600000)).toLocaleTimeSt
     ]
 }
 ```
+時刻が異なる場合はタイムゾーンの影響です。
 
-1. Azure 公開時には UTC で計算されるため、日本時間のカレンダーを使う場合は、以下のように変更してから、Azure に公開します。
+1. Azure 公開時には全て UTC で計算されるため、日本時間のカレンダーを使う場合は、以下のように変更してから Azure に公開します。
 ```javascript
 start: new Date(new Date(items['start']).getTime() + (9 * 3600000)).toLocaleTimeString('en-US', { hour12: false }),
 end: new Date(new Date(items['end']).getTime() + (9 * 3600000)).toLocaleTimeString('en-US', { hour12: false })
