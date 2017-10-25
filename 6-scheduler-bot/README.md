@@ -98,9 +98,9 @@ end: new Date(new Date(items['end']).getTime() + (9 * 3600000)).toLocaleTimeStri
 
 ## Logic App の開発
 
-例えば以下のよう Jeff (緑の予定) と Thiago (黄色の予定) があったとします。この場合、朝 8 時から夕方 5 時の間で、二人ともが予定が空いている時間帯を探します。  
+例えば以下のよう Jeff (緑の予定) と Thiago (黄色の予定) があったとします。この場合、朝 8 時から夕方 5 時の間で、二人ともが予定が空いている時間帯を探します。
 
-![agenda](images/8.png)  
+![agenda](images/8.png)
 
 そのために、Azure Logic Apps を使って Google カレンダーに接続し、各ユーザーの予定を同時に取得したのち結果を集計します。
 
@@ -113,35 +113,48 @@ end: new Date(new Date(items['end']).getTime() + (9 * 3600000)).toLocaleTimeStri
         "people": "azureserverlessdemo@gmail.com,ujmqvr5ouk8p9nmia2o4h6o33o@group.calendar.google.com"
     }
     ```
-    これでボットが、people というデータをコンマ区切りで送ることが分かります。Logic App でこの内容を分割していきます。   
+    これでボットが、people というデータをコンマ区切りで送ることが分かります。Logic App でこの内容を分割していきます。   
 1. 次に変数を初期化します。 **Initialize variable** ステップを追加し、 変数名を **schedules**、型を Array とします。
-    ![](images/4.png)
+
+    ![](images/4.png)
+
 1. **..More** メニューより **Add a for each** を追加します。ここでは HTTP Request に渡されたアドレスごとに Google カレンダーの予定を取得します。ただ、people のデータは配列ではなくカンマ区切りの文字列で渡されるため、split 関数を使って配列に変換する必要があります。`Select an output from previous steps` を選択して、右側に出るメニューより **Expression** タブをクリックします。Expression として `split(triggerBody()['people'], ',')` と入力して **OK** をクリックします。
     **ヒント**: もし expressions タブが出ない場合、左側のメニューを消すなどして画面領域を広くしてみてください。 
+
     ![](images/5.png)
+
 1. Foreach の中で、**Google Calendar - List the events on a calendar** アクションを追加します。
-![google calendar action](images/1.png)  
+
+    ![google calendar action](images/1.png)  
+
 1. 以下のアカウントでサインインするか、自分のアカウントでサインインします。(多要素認証が聞かれた場合は、自分のアカウントを利用してください。):
+
     * username: `azureserverlessdemo@gmail.com`
     * password: `s3rverless1`
+
 1. **Calendar ID** では **Enter custom value** を選択し、 再度 Expression より `item()` と入力します。これで foreach で渡されるメールアドレスが指定できます。
+
 1. 続いて　**Append to array variable** ステップを追加して、"schedules" 配列に **Event List** を追加します。  
-    ![](images/6.png)  
+
+    ![](images/6.png)  
+
 1. foreach の外側に Azure Function のステップを追加します。
     * Function の一覧より、先ほど作成した `ScheduleBot` を選択します。
     * **schedules** 変数を引数として渡します。
+
 1. 最後に response アクションを追加し、ユーザーに返す結果を指定します。Body に以下のスニペットをペーストします。  
     ```json
     {
-    "message": "@{body('SchedulerBot')}"
+        "message": "@{body('SchedulerBot')}"
     }
     ```  
     ![](images/7.png)
+
 1. Logic　App を保存します。一番上の Request トリガーを展開して、URL をコピーし、Postman 等のツールで POST メッセージを送ってみてください。
 
 ## スキルの追加
-Angular の Squire アプリに接続して、以下のようなスキルを追加します。
 
+Angular の Squire アプリに接続して、以下のようなスキルを追加します。
 
 |フィールド|値|
 |--|--|
@@ -152,7 +165,6 @@ Angular の Squire アプリに接続して、以下のようなスキルを追�
 |Parameter Name|people|
 |Parameter Prompt|誰とのスケジュールを確認しますか？(コンマ区切り)|
 
-
 登録後、Bot から `Schedule appointment` と送信して、動作するか確認します。スケジュール確認の対象を聞かれた際は、`azureserverlessdemo@gmail.com,ujmqvr5ouk8p9nmia2o4h6o33o@group.calendar.google.com`　のようにカンマ区切りで対象のユーザーを指定します。
 
-ボットをより高度に、かつ便利にするために、例えば `jeff` というアリアスを作って `azureserverlessdemo@gmail.com`にマップすることもできますが、このモジュールではここまでとします。
+ボットをより高度に、かつ便利にするために、例えば `jeff` というアリアスを作って `azureserverlessdemo@gmail.com` にマップすることもできますが、このモジュールではここまでとします。
