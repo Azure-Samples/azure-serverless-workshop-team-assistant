@@ -105,6 +105,7 @@ CoderCards はギークなトレーディングカードを自動生成します
 Azure 上でこれらの値を設定したい場合は、**local.settings.json** に値を設定して、Azure Functions Core Tools で公開。
 
 ```
+python setup.py storage-account resource-group false
 func azure functionapp publish function-app-name --publish-app-settings
 ```
 
