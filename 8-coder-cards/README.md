@@ -139,8 +139,7 @@ func azure functionapp publish function-app-name --publish-app-settings
     [10/6/17 7:01:18 AM] Host lock lease acquired by instance ID '0000000000000000000000005CADA547'.
     ```
 
-1. ファンクションが起動しているかは、 http://localhost:7072/api/Settings にアクセスして確認。[http://localhost:7072/api/Settings](http://localhost:7072/api/Settings).
-
+1. ファンクションが起動しているかは、 http://localhost:7072/api/Settings にアクセスして確認。
     
 
 ## 4. ボットでの利用

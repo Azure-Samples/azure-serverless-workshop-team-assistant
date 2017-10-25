@@ -28,15 +28,15 @@
 
 1. Bing Search API キー:
 
-    - Azure ポータルより、**+ New** をクリック、**Bing Search APIs** を検索。
-    - 必須情報を入力して **S1** インスタンスを利用。
+    - Azure ポータルより、**+ New** をクリック、**Bing Search APIs** を検索。
+    - 必須情報を入力して **S1** インスタンスを利用。
 
 1. (オプション) Computer Vision API キーも合わせて作成。作成するファンクションは カスタムビジョンで画像が認識できない場合、通常の Computer Vision API を使うため必須ではない。
 
-    Computer Vision API キーの作成手順:
+    Computer Vision API キーの作成手順:
 
-    - Azure ポータルで **+ New** をクリック。 **Computer Vision API** を検索。
-    - 必須情報を入力して **F0** インスタンスを利用。
+    - Azure ポータルで **+ New** をクリック。 **Computer Vision API** を検索。
+    - 必須情報を入力して **F0** インスタンスを利用。
 
 ## 2. Custom Vision Service プロジェクトの作成
 
@@ -57,8 +57,8 @@
 
 1. git clone などで [photo mosaic project on GitHub](https://github.com/Azure-Samples/functions-dotnet-photo-mosaic) からプロジェクトを取得
 
-   - Windows  の場合は `master` ブランチを使用
-   - Mac/Linux の場合は `core` ブランチを使用
+    - Windows  の場合は `master` ブランチを使用
+    - Mac/Linux の場合は `core` ブランチを使用
 
 1. Azure ポータルで利用するストレージアカウントを選択。ない場合は作成。
 
@@ -120,16 +120,15 @@ func azure functionapp publish function-app-name --publish-app-settings
 
 1. コンパイルして実行:
 
-    - Visual Studio を使っている場合、PhotoMosaic.sln を開き、F5 を押下。
-
-    - VS Code を Mac で使っている場合は、ビルドタスクが `dotnet build` を実行。その後 output フォルダに移動して、ファンクション実行。
+    - Visual Studio を使っている場合、PhotoMosaic.sln を開き、F5 を押下。
+    - VS Code を Mac で使っている場合は、ビルドタスクが `dotnet build` を実行。その後 output フォルダに移動して、ファンクション実行。
 
         ```
         cd MosaicMaker/bin/Debug/netstandard2.0/osx
         func host start
         ```
 
-    以下のような結果が表示される。
+    以下のような結果が表示される。
 
     ```
     Http Functions:
@@ -148,13 +147,14 @@ func azure functionapp publish function-app-name --publish-app-settings
     Debugger listening on [::]:5858
     ```
 
-2. ファンクションが起動しているかは、 [http://localhost:7072/api/Settings](http://localhost:7072/api/Settings) にアクセスして確認。
+1. ファンクションが起動しているかは、 http://localhost:7072/api/Settings にアクセスして確認。
+
 
 ## 5. ボットでの利用
 
 1. Squire UX にて、以下のスキルを追加。
 
-    |フィールド|値|
+    |フィールド|値|
     |--|--|
     |Title|generate mosaic|
     |Description|Generate a photo mosaic|
