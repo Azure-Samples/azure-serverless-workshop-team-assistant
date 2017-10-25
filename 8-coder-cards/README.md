@@ -26,7 +26,7 @@ CoderCards はギークなトレーディングカードを自動生成します
 ## CoderCards について
 
 * このプロジェクトでは 2 つの機能が提供されます。:
-  * **RequestImageProcessing**. HTTP でトリガーされ、キューにメッセージを書き込み明日。要求のペイロードは以下のスキーマとなります。:
+  * **RequestImageProcessing** : HTTP 要求でトリガーされ、キューにメッセージを書き込みます。要求のペイロードは以下のスキーマとなります。
 
   ```json
       {
@@ -36,9 +36,9 @@ CoderCards はギークなトレーディングカードを自動生成します
       }
   ```
 
-  * **GenerateCard**. キューの書き込みでトリガーされ、ペイロードにある Blob の情報を使います。入力されたイメージの感情を解析し、4 つのテンプレートからカードを生成します。
+  * **GenerateCard** : キューの書き込みでトリガーされ、ペイロードにある Blob の情報を使います。入力された画像の感情を解析し、4 つのテンプレートからギークなトレーディングカードを生成します。
      
-     * カードは App Setting で指定された `output-container`に書き出されます。 
+     * カードは App Setting で指定された `output-container`に書き出されます。 
 
 以下が [Azure Functions Bindings Visualizer](https://functions-visualizer.azurewebsites.net) を使って生成されたバインディングの情報です。:
 
@@ -46,10 +46,8 @@ CoderCards はギークなトレーディングカードを自動生成します
 
 ## 1. Emotion API キーの作成
 
-1. Cognitive Services Emotion API キー: 
-
-    - Azure ポータルで **+ New** をクリック。 **Emotion API** を検索。
-    - 必須情報を入力して **F0** インスタンスを利用。
+1. Azure ポータルで **+ New** をクリック。 **Emotion API** を検索。
+1. 必須情報を入力。今回のモジュールでは **F0** インスタンスを利用。
 
 ## 2. CoderCards project の構成
 
@@ -58,7 +56,7 @@ CoderCards はギークなトレーディングカードを自動生成します
     - Windows  の場合は `master` ブランチを使用
     - Mac/Linux の場合は `core` ブランチを使用
 
-1. Azure ポータルで利用するストレージアカウントを選択。ない場合は作成。
+1. Azure ポータルで利用するストレージアカウントを確認。無い場合は新規に作成。
 
 1. ターミナルを開き、**functions-dotnet-codercards** に移動して、以下のコマンドを実行。
 
@@ -67,14 +65,14 @@ CoderCards はギークなトレーディングカードを自動生成します
     python setup.py <Storage Account Name> <Resource group> true
     ```
 
-    この操作で **local.settings.json** が変更されます。エラーが出る場合は、Python 3 がインストールされているか確認し、python3 を実行してください。最後の引数は local プリフィックスを付けるか決めるもので、これでローカル用と Azure 用の構成を作成可能です。
+    この操作で **local.settings.json** ファイルが変更されます。エラーが出る場合は、Python 3 がインストールされているか確認してください。最後の引数は true の場合ローカル用の設定を false の場合は Azure 用の構成を作成します。
 
 1. Visual Studio を利用している場合、**CoderCards.sln** を開く。Mac の場合は **functions-dotnet-codercards** フォルダーを Visual Studio
  Code で開く。 
 
 1. **CoderCards/local.settings.json** ファイルを開く。
 
-1. Azure ポータルより Emotion API を開き、**Keys** メニューよりキーをコピー。`EmotionAPIKey` にペースト。
+1. Azure ポータルより作成した Emotion API を開き、**Keys** メニューよりキーをコピー。`EmotionAPIKey` にペースト。
 
 1.  **local.settings.json** に以下の `Host` 設定を `Values` に並べて追加。
 
@@ -95,35 +93,36 @@ CoderCards はギークなトレーディングカードを自動生成します
 
 | キー                  | 説明 |
 |-----                | ------|
-| AzureWebJobsStorage | ストレージアカウントの接続文字列 |
-| EmotionAPIKey       | [Cognitive Services Emotion API](https://www.microsoft.com/cognitive-services/en-us/emotion-api) のキー |
-| input-queue         |  カード生成のトリガーとなるキューの名前。ローカルの場合は "local-queue"、Azure の場合は "input-queue" を利用 |
-| input-container     | 入力イメージのストレージコンテナの名前。 ローカルの場合は "input-local"、Azure の場合は "card-input" を利用 |
-| output-container     | 出力イメージのストレージコンテナの名前。 ローカルの場合は "output-local"、Azure の場合は "card-output" を利用 |
+| AzureWebJobsStorage | ストレージアカウントの接続文字列。 |
+| EmotionAPIKey       | [Cognitive Services Emotion API](https://www.microsoft.com/cognitive-services/en-us/emotion-api) のキー。 |
+| input-queue         |  カード生成のトリガーとなるキューの名前。ローカルの場合は "local-queue"、Azure の場合は "input-queue" を利用。 |
+| input-container     | 入力イメージのストレージコンテナの名前。 ローカルの場合は "input-local"、Azure の場合は "card-input" を利用。 |
+| output-container     | 出力イメージのストレージコンテナの名前。 ローカルの場合は "output-local"、Azure の場合は "card-output" を利用。 |
 | SITEURL              | `http://localhost:7072` に設定。Azure 展開時は不要。 |
-| STORAGE_URL          | ストレージアカウントの URL `https://accountname.blob.core.windows.net/` |
-| CONTAINER_SAS        | 入力コンテナへのファイルアップロード用 SAS トークン "?" から始まる。 |
+| STORAGE_URL          | ストレージアカウントの URL を次の形式で。 `https://accountname.blob.core.windows.net/` |
+| CONTAINER_SAS        | 入力コンテナへのファイルアップロード用 SAS トークンを指定。 "?" から始まるものを指定。 |
 
 Azure 上でこれらの値を設定したい場合は、**local.settings.json** に値を設定して、Azure Functions Core Tools で公開。
 
 ```
+python setup.py storage-account resource-group false
 func azure functionapp publish function-app-name --publish-app-settings
 ```
 
-## 3. プロジェクトの実行
+## 3. プロジェクトの実行Run the project　
 
-1.コンパイルして実行:
+1. コンパイルして実行:
 
-    - Visual Studio を使っている場合、**CoderCards.sln** を開き、F5 を押下。
+    - Visual Studio を使っている場合、**CoderCards.sln** を開き、F5 を押下。 
 
-    - VS Code を Mac で使っている場合は、ビルドタスクが `dotnet build` を実行。その後 output フォルダに移動して、ファンクション実行。
+    - VS Code を Mac で使っている場合は、ビルドタスクが dotnet build を実行。その後 output フォルダに移動して、ファンクション実行。
 
         ```
         cd CoderCards/bin/Debug/netstandard2.0/osx/publish
         func host start
         ```
 
-     以下のような結果が表示される。
+    以下のような結果が表示される。
 
     ```
     Http Functions:
@@ -141,9 +140,10 @@ func azure functionapp publish function-app-name --publish-app-settings
     [10/6/17 7:01:18 AM] Host lock lease acquired by instance ID '0000000000000000000000005CADA547'.
     ```
 
-2. ファンクションが起動しているかは、 [http://localhost:7072/api/Settings](http://localhost:7072/api/Settings) にアクセスして確認。
+1. ファンクションが起動しているかは、 http://localhost:7072/api/Settings にアクセスして確認。
+    
 
-## ボットでの利用
+## 4. ボットでの利用
 
 1. Squire UX にて、以下のスキルを追加。
 
@@ -166,11 +166,11 @@ func azure functionapp publish function-app-name --publish-app-settings
     - **Set public access level** を右クリック。
     - **Public read access for blobs only** を選択。
 
-2. 正方形の画像を `input-local` に保存して、ファイル名をコピー。
+1. 正方形の画像を `input-local` に保存して、ファイル名をコピー。
 
-2. ボットで `generate CoderCard`を送信。アップロードしたファイル名を送信。
+1. ボットで `generate CoderCard`を送信。アップロードしたファイル名を送信。
 
-3. ファンクションのアウトプットから作成が成功したことを確認。生成されたカードは `output-local` コンテナに作成されるので、 Azure Storage Explorer で確認。
+1. ファンクションのアウトプットから作成が成功したことを確認。生成されたカードは `output-local` コンテナに作成されるので、 Azure Storage Explorer で確認。
 
     ```
     [10/4/2017 1:34:59 AM] Function completed (Success, Id=a1d2a381-4eb6-4d82-8dc9-324ad90932c4, Duration=4993ms)
@@ -183,8 +183,8 @@ func azure functionapp publish function-app-name --publish-app-settings
 
 2. コマンドプロンプトで `CoderCardsClient` フォルダに移動して、以下を実行。
 
-    - Run `npm install`
-    - Run `npm start`. これでサイトが `http://127.0.0.1:8080/`で開始。 
+    - `npm install` 実行
+    - `npm start` 実行。これでサイトが `http://127.0.0.1:8080/`で開始される。 
 
 
 ## (オプション) 6. 手動での実行 
