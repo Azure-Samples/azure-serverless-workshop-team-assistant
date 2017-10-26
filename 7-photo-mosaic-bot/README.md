@@ -120,7 +120,7 @@ func azure functionapp publish function-app-name --publish-app-settings
 
 1. コンパイルして実行:
 
-    - Visual Studio を使っている場合、PhotoMosaic.sln を開き、F5 を押下。
+    - Visual Studio を使っている場合、**MosaicMaker.sln** を開き、F5 を押下。
     - VS Code を Mac で使っている場合は、ビルドタスクが `dotnet build` を実行。その後 output フォルダに移動して、ファンクション実行。
 
         ```
