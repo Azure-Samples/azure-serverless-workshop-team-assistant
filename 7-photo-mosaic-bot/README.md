@@ -48,7 +48,7 @@ For example, you can train your model with Orlando landmarks, such as the Orland
    
 1. Add images and tag them. You can use a Chrome extension such as [Bulk Image Downloader](http://www.talkapps.org/bulk-image-downloader) to download Google or Bing images of landmarks.
 
-1. Once you have added several landmarks, click the **Train** button on the upper right. Make sure you have at least 2 tags and 5 images for each tag. 
+1. Once you have added several landmarks, click the **Train** button on the upper right. Make sure you have at least 2 different landmarks (with the landmark name as it's tag) and 5 images for each landmark. 
 
 1. (Optional) Test image recognition using the **Test** tab.
 
@@ -68,8 +68,10 @@ For example, you can train your model with Orlando landmarks, such as the Orland
 
     ```
     az login
-    python <Storage Account Name> <Resource group>
+    python setup.py <Storage Account Name> <Resource group>
     ```
+
+    If you get python errors, make sure you've installed Python 3 and run the command `python3` instead (see [Installing Python 3 on Mac OS X](http://docs.python-guide.org/en/latest/starting/install3/osx/)).
 
     This will modify the file **local.settings.json**.
 
@@ -117,13 +119,17 @@ If you want to set these values in Azure, you can set them in **local.settings.j
 func azure functionapp publish function-app-name --publish-app-settings
 ```
 
-## 4. Run the project
+## 4. Load Tile Images
+
+When the function app creates a mosaic, it needs source images to compose the mosaic.  The **tile-image-container** referred to in App Settings (defaulted to **tile-images**) is the container that the function will look for images to use.  Running the **setup.py** script above generated the containers for you, but you'll need to load images that container.  Using the portal, [Azure Storage Explorer](https://azure.microsoft.com/en-us/features/storage-explorer/), or any other method of uploading blobs, upload images into the **tile-image-container** inside of your storage account.  You can reuse the landmark images you downloaded earlier if desired.
+
+## 5. Run the project
 
 1. Compile and run:
 
     - If using Visual Studio, just press F5 to compile and run **PhotoMosaic.sln**.
 
-    - If using VS Code on a Mac, the build task will run `dotnet build`. Then, navigate to the output folder and run the Functions core tools:
+    - If using VS Code on a Mac, open the Command Pallet (⇧⌘P) and run the Build Task which will run `dotnet build`. Then, navigate to the output folder and run the Functions core tools:
 
         ```
         cd MosaicMaker/bin/Debug/netstandard2.0/osx
@@ -151,7 +157,7 @@ func azure functionapp publish function-app-name --publish-app-settings
 
 2. To test that the host is up and running, navigate to [http://localhost:7072/api/Settings](http://localhost:7072/api/Settings).
 
-## 5. Use the bot
+## 6. Use the bot
 
 1. Go to the Squire UX and add a new skill:
 
@@ -182,7 +188,7 @@ func azure functionapp publish function-app-name --publish-app-settings
     [10/4/2017 1:34:59 AM] Executed 'CreateMosaic' (Succeeded, Id=a1d2a381-4eb6-4d82-8dc9-324ad90932c4)
     ```
 
-## (Optional) 6. Run manaually
+## (Optional) 7. Run manually
 
 To run manually, send an HTTP request using Postman or CURL:
 

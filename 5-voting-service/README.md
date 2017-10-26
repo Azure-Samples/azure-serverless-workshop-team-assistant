@@ -2,6 +2,11 @@
 
 ## Create a serverless service using Node.js and the new Azure Functions Cross Platform Runtime
 
+
+### Version Note
+This walkthrough is for V2 of Azure Functions.  If you are running the V1 of Azure Functions, please refer to [this guide](../5-voting-service.v1/).
+
+
 ## 1. Overview
 
 In this part of the workshop we will create a voting service that allows a team to create polls to vote on, and then surface it from the Squire bot. We are using the new [cross-platform developer experience](https://blogs.msdn.microsoft.com/appserviceteam/2017/09/25/develop-azure-functions-on-any-platform/) enabled by the Azure Functions runtime 2.0.

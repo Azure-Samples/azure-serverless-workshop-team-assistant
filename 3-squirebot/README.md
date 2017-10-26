@@ -408,7 +408,7 @@ I'll list both options. #2 is the one with the nicest outcome because it will be
 
 ![CORS Screenshot](./images/cors-create.png)
 
-Now you should be able to see add new tasks and see your Function App.
+Now you should be able to see add new tasks and see your Function App.  As a reminder, the tasks you previously saw when running the application locally will not show up as you are now pointing at the CosmosDB in Azure.
 
 #### 2. Use Azure Functions Proxies
 
@@ -424,7 +424,7 @@ Now you should be able to see add new tasks and see your Function App.
 
 Note that we overwrote the base route for the Function App in the first proxy. Second thing to note is the `{*restOfPath}` token which grabs the rest of the path for us and gives us a token we can use in the backend URL. Importantly, we remove the "*" from the token there, so it is just `{restOfPath}`.
 
-Now go to the route you created for your index file and view your webpage working! No CORS needed.
+Now go to the route you created for your index file and view your webpage working! No CORS needed.  As a reminder, the tasks you previously saw when running the application locally will not show up as you are now pointing at the CosmosDB in Azure.
 
 ### 5. Connecting your bot to the Bot Framework
 
