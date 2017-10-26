@@ -103,13 +103,16 @@ Do this we are going to use Azure Logic Apps and their connectors with services 
     ![](images/4.png)
 1. Add a New step, and under **..More** select **Add a for each** as we need to grab calendar details FOR EACH of the `people` from the trigger.  However, if you recall the "people" we are sending in with the sample above are all in a single property.  They are seperated by a comma.  So we need to "split" the people by commas.  Doing a split will return an array, something like: `['person1', 'person2']` which will allow us to iterate over each person.  While we could write an Azure Function to do this, there is a simple [workflow definition language](http://aka.ms/logicappsdocs) to do basic transformations like this.  
 1. In the `Select an output from previous steps`, select the **Expression** tab on the right and type in the following expression to split the people by a `,`: `split(triggerBody()['people'], ',')` -> then press **OK**  
-    **HINT**: If you don't see expressions, zoom your browser out. You may be in "responsive" mode.  
+    **HINT**: If you don't see expressions, zoom your browser out. You may be in "responsive" mode.  Note that zooming out the design surface will not work, you MUST zoom out the browser.
     ![](images/5.png)
 1. Add an action - **Google Calendar - List the events on a calendar**  
 ![google calendar action](images/1.png)  
 1. Sign in with the following account:
     * username: `azureserverlessdemo@gmail.com`
     * password: `s3rverless1`
+    
+    You may be asked to verify the account when you login.  If so, please see a proctor.
+
 1. For the **Calendar ID** select **Enter custom value**.  Choose another expression to get the current item of the foreach loop.  The expression is: `item()`.  Open the expression editor tab again and type in `item()`  
 1. Add another step in the foreach to **Append to array variable** - append the **Event List** to the "schedules" array.  
     ![](images/6.png)  

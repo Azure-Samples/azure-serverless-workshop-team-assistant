@@ -2,6 +2,9 @@
 
 ## Create a serverless service using Node.js and Azure Functions 
 
+### Version Note
+This walkthrough is for V1 of Azure Functions.  If you are running the V2 of Azure Functions, please refer to [this guide](../5-voting-service/).
+
 ## 1. Overview
 
 In this part of the workshop we will create a voting service that allows a team to create polls to vote on, and then surface it from the Squire bot.  

@@ -63,8 +63,10 @@ Here's a visualization of the bindings, using the [Azure Functions Bindings Visu
 
     ```
     az login
-    python <Storage Account Name> <Resource group> true
+    python setup.py <Storage Account Name> <Resource group> true
     ```
+
+    If you get python errors, make sure you've installed Python 3 and run the command `python3` instead (see [Installing Python 3 on Mac OS X](http://docs.python-guide.org/en/latest/starting/install3/osx/)).
 
     This will modify the file **local.settings.json**. The last argument controls whether to create containers prefixed with "local", which is useful if you want to use the same storage account when running locally and in Azure.
 
