@@ -10,7 +10,7 @@ module.exports = function (context, req) {
                 end: items['end'].toLocaleTimeString('en-US', { hour12: false })
             });
             context.log(items['start']);
-            context.log(items['start'].getUTCHours());
+            context.log(new Date(items['start']).getUTCHours());
         })
     });
 
