@@ -196,7 +196,7 @@ cURL か Postman を使って実行してみましょう。(ブラウザでは�
 
 
 ```
-curl -H "Content-Type: application/json" -X POST -d "{\"lance_length":"long\",\"lance_material\":\"metal\"}" http://localhost:7071/api/hello
+curl -H "Content-Type: application/json" -X POST -d "{\"lance_length\":\"long\",\"lance_material\":\"metal\"}" http://localhost:7071/api/hello
 ```
 
 槍の美しいアスキーアートが帰ってくるはずです。それでは、Function のホストを止めてください。
