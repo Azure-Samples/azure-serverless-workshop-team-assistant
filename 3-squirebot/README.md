@@ -305,6 +305,7 @@ You can create a new Function App via the Portal CLI or just Portal menu options
     - consumption plan (should be default)
     - east us
     - You should try to use the same resource group as your Cosmos DB to make clean up easy
+    - Create a new Storage Account (this is different from your Cosmos DB)
     - Enable App Insights (not needed, but a good idea)
 4. Click create and then wait for it to create (might take a few seconds).
 
